@@ -69,6 +69,9 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    providers: Provider;
+    services: Service;
+    appointments: Appointment;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -77,6 +80,9 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    providers: ProvidersSelect<false> | ProvidersSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
+    appointments: AppointmentsSelect<false> | AppointmentsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -155,6 +161,165 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "providers".
+ */
+export interface Provider {
+  id: string;
+  account: {
+    relationTo: 'users';
+    value: string | User;
+  };
+  displayName: string;
+  slug?: string | null;
+  headline?: string | null;
+  bio?: unknown;
+  specialties?:
+    | {
+        id?: string | null;
+        label: string;
+        description?: string | null;
+      }[]
+    | null;
+  contact?: {
+    email?: string | null;
+    phone?: string | null;
+    website?: string | null;
+  } | null;
+  location?: {
+    address?: string | null;
+    city?: string | null;
+    region?: string | null;
+    postalCode?: string | null;
+    country?: string | null;
+    timeZone?: string | null;
+  } | null;
+  availability?: {
+    defaultDurationMinutes?: number | null;
+    windows?:
+      | {
+          id?: string | null;
+          day?:
+            | 'monday'
+            | 'tuesday'
+            | 'wednesday'
+            | 'thursday'
+            | 'friday'
+            | 'saturday'
+            | 'sunday'
+            | null;
+          startTime?: string | null;
+          endTime?: string | null;
+        }[]
+      | null;
+  } | null;
+  services?:
+    | {
+        relationTo: 'services';
+        value: string | Service;
+      }[]
+    | null;
+  profileImage?: string | Media | null;
+  meta?: {
+    rating?: number | null;
+    reviewCount?: number | null;
+    languages?:
+      | {
+          id?: string | null;
+          language: string;
+        }[]
+      | null;
+  } | null;
+  createdAt: string;
+  updatedAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: string;
+  title: string;
+  slug?: string | null;
+  category?: string | null;
+  description?: unknown;
+  providers?:
+    | {
+        relationTo: 'providers';
+        value: string | Provider;
+      }[]
+    | null;
+  durationMinutes: number;
+  bufferMinutesBefore?: number | null;
+  bufferMinutesAfter?: number | null;
+  pricing?: {
+    amount: number;
+    currency: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD';
+    taxRate?: number | null;
+  } | null;
+  isActive?: boolean | null;
+  leadTimeHours?: number | null;
+  instructions?: string | null;
+  media?: (string | Media)[] | null;
+  createdAt: string;
+  updatedAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "appointments".
+ */
+export interface Appointment {
+  id: string;
+  reference?: string | null;
+  client: {
+    relationTo: 'users';
+    value: string | User;
+  };
+  provider: {
+    relationTo: 'providers';
+    value: string | Provider;
+  };
+  service: {
+    relationTo: 'services';
+    value: string | Service;
+  };
+  status: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'no_show';
+  schedule: {
+    start: string;
+    end: string;
+    timeZone: string;
+    location?: string | null;
+    bufferBefore?: number | null;
+    bufferAfter?: number | null;
+    durationMinutes?: number | null;
+  };
+  pricingSnapshot: {
+    amount: number;
+    currency: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD';
+    durationMinutes?: number | null;
+    taxRate?: number | null;
+  };
+  clientNotes?: string | null;
+  internalNotes?: string | null;
+  cancellation?: {
+    cancelledAt?: string | null;
+    reason?: string | null;
+  } | null;
+  reminders?:
+    | {
+        id?: string | null;
+        sentAt?: string | null;
+        channel?: 'email' | 'sms' | 'push' | null;
+        status?: 'scheduled' | 'sent' | 'failed' | null;
+      }[]
+    | null;
+  metadata?: {
+    [k: string]: unknown;
+  } | null;
+  createdAt: string;
+  updatedAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -252,6 +417,131 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "providers_select".
+ */
+export interface ProvidersSelect<T extends boolean = true> {
+  account?: T;
+  displayName?: T;
+  slug?: T;
+  headline?: T;
+  bio?: T;
+  specialties?:
+    | T
+    | {
+        id?: T;
+        label?: T;
+        description?: T;
+      };
+  contact?: T;
+  location?: T;
+  availability?:
+    | T
+    | {
+        defaultDurationMinutes?: T;
+        windows?:
+          | T
+          | {
+              id?: T;
+              day?: T;
+              startTime?: T;
+              endTime?: T;
+            };
+      };
+  services?: T;
+  profileImage?: T;
+  meta?:
+    | T
+    | {
+        rating?: T;
+        reviewCount?: T;
+        languages?:
+          | T
+          | {
+              id?: T;
+              language?: T;
+            };
+      };
+  createdAt?: T;
+  updatedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  category?: T;
+  description?: T;
+  providers?: T;
+  durationMinutes?: T;
+  bufferMinutesBefore?: T;
+  bufferMinutesAfter?: T;
+  pricing?:
+    | T
+    | {
+        amount?: T;
+        currency?: T;
+        taxRate?: T;
+      };
+  isActive?: T;
+  leadTimeHours?: T;
+  instructions?: T;
+  media?: T;
+  createdAt?: T;
+  updatedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "appointments_select".
+ */
+export interface AppointmentsSelect<T extends boolean = true> {
+  reference?: T;
+  client?: T;
+  provider?: T;
+  service?: T;
+  status?: T;
+  schedule?:
+    | T
+    | {
+        start?: T;
+        end?: T;
+        timeZone?: T;
+        location?: T;
+        bufferBefore?: T;
+        bufferAfter?: T;
+        durationMinutes?: T;
+      };
+  pricingSnapshot?:
+    | T
+    | {
+        amount?: T;
+        currency?: T;
+        durationMinutes?: T;
+        taxRate?: T;
+      };
+  clientNotes?: T;
+  internalNotes?: T;
+  cancellation?:
+    | T
+    | {
+        cancelledAt?: T;
+        reason?: T;
+      };
+  reminders?:
+    | T
+    | {
+        id?: T;
+        sentAt?: T;
+        channel?: T;
+        status?: T;
+      };
+  metadata?: T;
+  createdAt?: T;
+  updatedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
