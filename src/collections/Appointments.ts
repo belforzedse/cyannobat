@@ -1,7 +1,8 @@
-import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
+import type { CollectionAfterChangeHook, CollectionBeforeValidateHook, CollectionConfig } from 'payload'
 import type { PayloadRequest } from 'payload/dist/types/index.js'
 
 import type { Service as ServiceDoc } from '../payload-types'
+import { bookingHold } from '../lib/redis'
 
 const generateReference = (): string => {
   const timestamp = Date.now().toString(36).toUpperCase()
@@ -176,6 +177,29 @@ const serviceSchedulingHook: CollectionBeforeValidateHook = async ({ data, origi
   return data
 }
 
+const releaseBookingHoldAfterCreate: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
+  if (operation !== 'create') return doc
+
+  const serviceId = extractRelationshipId(doc?.service)
+  const slot = typeof doc?.schedule === 'object' && doc?.schedule !== null ? (doc.schedule as { start?: unknown }).start : null
+  const slotStart = typeof slot === 'string' ? slot : null
+
+  if (!serviceId || !slotStart) {
+    return doc
+  }
+
+  try {
+    await bookingHold.release({
+      serviceId,
+      slot: slotStart,
+    })
+  } catch (error) {
+    req.payload.logger.error?.('Failed to release booking hold after appointment creation', error)
+  }
+
+  return doc
+}
+
 export const Appointments: CollectionConfig = {
   slug: 'appointments',
   labels: {
@@ -188,6 +212,7 @@ export const Appointments: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [serviceSchedulingHook],
+    afterChange: [releaseBookingHoldAfterCreate],
   },
   access: {
     read: async ({ req }) => {
