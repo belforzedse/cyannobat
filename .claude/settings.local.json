@@ -11,7 +11,17 @@
       "Bash(git commit -m \"$(cat <<''EOF''\nResolve merge conflicts and complete UI enhancements\n\n- Keep improved UI styling for buttons and cards\n- Resolved all merge conflicts from parallel work\n- GlassCard now has better hover effects with shadow-accent\n- Page animations with staggered entrance and gradient text\n- Form inputs with smooth transitions\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(pnpm run build:*)",
       "Bash(git commit:*)",
-      "Read(//d/cyan/infinity-store/**)"
+      "Read(//d/cyan/infinity-store/**)",
+      "Bash(curl:*)",
+      "Bash(docker-compose:*)",
+      "Bash(docker exec:*)",
+      "Bash(pkill:*)",
+      "Bash(pnpm run dev)",
+      "Bash(docker run:*)",
+      "Bash(postgres:16-alpine)",
+      "Bash(npx ts-node:*)",
+      "Bash(npx tsx:*)",
+      "Bash(copy \"D:\\cyan\\infinity-store\\infinityv1\\frontend\\public\\fonts\\peyda-*.woff2\" \"D:\\cyan\\cyannobat\\public\\fonts\"\")"
     ],
     "deny": [],
     "ask": []

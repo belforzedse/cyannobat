@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
 
-const Nav = () => {
+const Header = () => {
   const prefersReducedMotion = useReducedMotion();
 
   return (
@@ -12,7 +12,7 @@ const Nav = () => {
       initial={{ y: prefersReducedMotion ? 0 : -24, opacity: prefersReducedMotion ? 1 : 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: 'easeOut' }}
-      className="glass sticky top-4 z-40 flex items-center justify-between px-6 py-3 text-right"
+      className="glass rounded-2xl sticky top-4 z-40 flex items-center justify-between px-6 py-3 text-right"
     >
       <div
         className="pointer-events-none absolute inset-0 rounded-2rem bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-30 -z-10 dark:via-white/10"
@@ -42,4 +42,4 @@ const Nav = () => {
   );
 };
 
-export default Nav;
+export default Header;
