@@ -1,5 +1,16 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment Setup
+
+Copy the example environment file and adjust the values for your local setup:
+
+```bash
+cp .env.example .env
+# then edit .env to set secure secrets and connection strings
+```
+
+Ensure the credentials match your local PostgreSQL and Redis instances (the defaults assume the Docker Compose services).
+
 ## Getting Started
 
 First, run the development server:
