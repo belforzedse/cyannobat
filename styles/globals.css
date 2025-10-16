@@ -16,16 +16,16 @@
 }
 
 [data-theme='dark'] {
-  --bg: 8 12 18;
+  --bg: 15 18 25;
   --fg: 230 236 242;
   --muted: 150 160 172;
-  --card: 20 26 32;
-  --border: 52 78 86;
+  --card: 25 30 40;
+  --border: 60 70 85;
   --accent: 159 221 231;
   --accent-strong: 79 120 131;
-  --glass: 20 26 32 / 0.55;
+  --glass: 25 30 40 / 0.60;
   --ring: 159 221 231;
-  --shadow-primary: rgba(31, 38, 135, 0.5);
+  --shadow-primary: rgba(15, 20, 35, 0.4);
 }
 
 html,
@@ -48,6 +48,14 @@ body {
   position: relative;
   overflow-x: hidden;
   min-height: 100%;
+}
+
+[data-theme='dark'] body {
+  background:
+    radial-gradient(circle at 20% -10%, rgba(100, 150, 170, 0.25), transparent 50%),
+    radial-gradient(circle at 80% 0%, rgba(80, 120, 140, 0.2), transparent 45%),
+    radial-gradient(circle at 40% 85%, rgba(100, 140, 160, 0.15), transparent 60%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(36, 38, 40, 0.15));
 }
 
 body::before {
@@ -135,17 +143,17 @@ body::after {
   }
 
   [data-theme='dark'] .glass {
-    border-color: rgba(255, 255, 255, 0.2);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+    border-color: rgba(255, 255, 255, 0.25);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
     box-shadow:
-      0 8px 32px rgba(31, 38, 135, 0.5),
-      inset 0 2px 8px rgba(255, 255, 255, 0.15),
-      inset 0 -2px 8px rgba(0, 0, 0, 0.3);
+      0 8px 32px rgb(var(--shadow-primary)),
+      inset 0 2px 8px rgba(255, 255, 255, 0.2),
+      inset 0 -2px 8px rgba(0, 0, 0, 0.2);
   }
 
   [data-theme='dark'] .glass::before {
-    border-color: rgba(255, 255, 255, 0.15);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 50%);
+    border-color: rgba(255, 255, 255, 0.2);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
   }
 
   .btn-primary {
@@ -179,6 +187,19 @@ body::after {
 
   .btn-primary:active {
     transform: translateY(-1px);
+  }
+
+  [data-theme='dark'] .btn-primary {
+    color: rgb(15, 23, 42);
+    box-shadow:
+      0 8px 32px rgba(159, 221, 231, 0.3),
+      inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  }
+
+  [data-theme='dark'] .btn-primary:hover {
+    box-shadow:
+      0 12px 40px rgba(159, 221, 231, 0.4),
+      inset 0 1px 2px rgba(255, 255, 255, 0.5);
   }
 
   .btn-secondary {
@@ -216,16 +237,19 @@ body::after {
   }
 
   [data-theme='dark'] .btn-secondary {
-    border-color: rgba(255, 255, 255, 0.15);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+    border-color: rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.06));
     box-shadow:
-      0 6px 20px rgba(31, 38, 135, 0.4),
-      inset 0 1px 2px rgba(255, 255, 255, 0.2);
+      0 6px 20px rgb(var(--shadow-primary)),
+      inset 0 1px 2px rgba(255, 255, 255, 0.3);
   }
 
   [data-theme='dark'] .btn-secondary:hover {
-    border-color: rgba(159, 221, 231, 0.5);
-    background: linear-gradient(135deg, rgba(159, 221, 231, 0.2), rgba(159, 221, 231, 0.08));
+    border-color: rgba(159, 221, 231, 0.6);
+    background: linear-gradient(135deg, rgba(159, 221, 231, 0.25), rgba(159, 221, 231, 0.12));
+    box-shadow:
+      0 8px 28px rgba(159, 221, 231, 0.25),
+      inset 0 1px 2px rgba(255, 255, 255, 0.4);
   }
 }
 
