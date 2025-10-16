@@ -66,6 +66,8 @@ body {
     radial-gradient(circle at 80% 0%, rgba(110, 169, 183, 0.4), transparent 45%),
     radial-gradient(circle at 40% 85%, rgba(159, 221, 231, 0.35), transparent 60%),
     linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(36, 38, 40, 0.1));
+  background-attachment: fixed;
+  background-size: 100% 100%;
   position: relative;
   overflow-x: hidden;
   min-height: 100%;
@@ -77,6 +79,8 @@ body {
     radial-gradient(circle at 80% 0%, rgba(80, 120, 140, 0.2), transparent 45%),
     radial-gradient(circle at 40% 85%, rgba(100, 140, 160, 0.15), transparent 60%),
     linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(36, 38, 40, 0.15));
+  background-attachment: fixed;
+  background-size: 100% 100%;
 }
 
 body::before {
