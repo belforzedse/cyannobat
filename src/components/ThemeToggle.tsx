@@ -14,14 +14,16 @@ const ThemeToggle = () => {
     setMounted(true);
   }, []);
 
+  const buttonClassName =
+    'group relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-white/30 text-foreground shadow-lg backdrop-blur-xl transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-white/10';
+
   if (!mounted) {
     return (
-      <button
-        aria-label="تغییر حالت نمایش"
-        className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/20 text-foreground backdrop-blur-lg transition"
-        type="button"
-      >
+      <button aria-label="تغییر حالت نمایش" className={buttonClassName} type="button">
         <span className="sr-only">تغییر حالت نمایش</span>
+        <span aria-hidden="true" className="flex items-center justify-center">
+          <Moon className="h-5 w-5" aria-hidden="true" />
+        </span>
       </button>
     );
   }
@@ -35,10 +37,11 @@ const ThemeToggle = () => {
   return (
     <button
       aria-label="تغییر حالت نمایش"
-      className="group relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-white/30 text-foreground shadow-lg backdrop-blur-xl transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-white/10"
+      className={buttonClassName}
       type="button"
       onClick={toggle}
     >
+      <span className="sr-only">تغییر حالت نمایش</span>
       <AnimatePresence initial={false} mode="wait">
         <motion.span
           key={resolvedTheme}
