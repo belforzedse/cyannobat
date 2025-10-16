@@ -37,7 +37,7 @@ const ServiceCard = ({
       )}
     >
       {badge && (
-        <span className="absolute right-3 top-3 rounded-full bg-accent/20 px-3 py-1 text-xs font-medium text-accent dark:bg-accent/10">
+        <span className="absolute top-3 [dir='ltr']:left-3 [dir='rtl']:right-3 rounded-full bg-accent/20 px-3 py-1 text-xs font-medium text-accent dark:bg-accent/10">
           {badge}
         </span>
       )}
