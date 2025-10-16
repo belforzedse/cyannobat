@@ -1,16 +1,11 @@
-import { z } from 'zod'
-import configPromise from '@payload-config'
+import type { ZodIssue } from 'zod'
+import { sql } from 'drizzle-orm'
+import configPromise, { payloadDrizzle } from '@payload-config'
 import { bookingHold } from '@/lib/redis'
+import { bookingAvailabilityQuerySchema } from '@/lib/schemas/booking'
 import { getPayload } from 'payload'
 
-const querySchema = z.object({
-  serviceId: z.string({ required_error: 'serviceId is required' }).min(1, 'serviceId is required'),
-  slot: z
-    .string({ required_error: 'slot is required' })
-    .datetime({ message: 'slot must be an ISO 8601 date string' }),
-})
-
-const buildValidationErrorResponse = (issues: z.ZodIssue[]): Response => {
+const buildValidationErrorResponse = (issues: ZodIssue[]): Response => {
   return Response.json(
     {
       message: 'Invalid request',
@@ -64,7 +59,7 @@ export const dynamic = 'force-dynamic'
 
 export const GET = async (request: Request): Promise<Response> => {
   const rawParams = Object.fromEntries(new URL(request.url).searchParams.entries())
-  const parsed = querySchema.safeParse(rawParams)
+  const parsed = bookingAvailabilityQuerySchema.safeParse(rawParams)
 
   if (!parsed.success) {
     return buildValidationErrorResponse(parsed.error.issues)
@@ -121,19 +116,11 @@ export const GET = async (request: Request): Promise<Response> => {
 
   let existingAppointment = false
   try {
-    const existing = await payload.find({
-      collection: 'appointments',
-      where: {
-        and: [
-          { service: { equals: serviceId } },
-          { 'schedule.start': { equals: normalizedSlot } },
-        ],
-      },
-      depth: 0,
-      limit: 1,
-    })
+    const existing = await payloadDrizzle.execute(
+      sql`select 1 from "appointments" where "service" = ${serviceId} and ("schedule"->>'start') = ${normalizedSlot} limit 1`,
+    )
 
-    existingAppointment = existing?.docs?.length > 0
+    existingAppointment = Array.isArray(existing?.rows) && existing.rows.length > 0
   } catch (error) {
     payload.logger.error?.('Failed to check existing appointments', error)
   }

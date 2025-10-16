@@ -1,27 +1,11 @@
-import { z } from 'zod'
-import configPromise from '@payload-config'
+import type { ZodIssue } from 'zod'
+import { sql } from 'drizzle-orm'
+import configPromise, { payloadDrizzle } from '@payload-config'
 import { bookingHold } from '@/lib/redis'
+import { bookingHoldRequestSchema } from '@/lib/schemas/booking'
 import { getPayload } from 'payload'
 
-const requestSchema = z
-  .object({
-    serviceId: z.string({ required_error: 'serviceId is required' }).min(1, 'serviceId is required'),
-    slot: z
-      .string({ required_error: 'slot is required' })
-      .datetime({ message: 'slot must be an ISO 8601 date string' }),
-    ttlSeconds: z
-      .number({ invalid_type_error: 'ttlSeconds must be a number' })
-      .int('ttlSeconds must be an integer')
-      .positive('ttlSeconds must be greater than zero')
-      .max(60 * 60, 'ttlSeconds cannot exceed one hour')
-      .default(5 * 60),
-    customerId: z.string().min(1).optional(),
-    providerId: z.string().min(1).optional(),
-    metadata: z.record(z.unknown()).optional(),
-  })
-  .strict()
-
-const buildValidationErrorResponse = (issues: z.ZodIssue[]): Response =>
+const buildValidationErrorResponse = (issues: ZodIssue[]): Response =>
   Response.json(
     {
       message: 'Invalid request',
@@ -119,7 +103,7 @@ export const POST = async (request: Request): Promise<Response> => {
       { status: 400 },
     )
   }
-  const parsed = requestSchema.safeParse(rawBody)
+  const parsed = bookingHoldRequestSchema.safeParse(rawBody)
 
   if (!parsed.success) {
     return buildValidationErrorResponse(parsed.error.issues)
@@ -188,19 +172,11 @@ export const POST = async (request: Request): Promise<Response> => {
   }
 
   try {
-    const existingAppointment = await payload.find({
-      collection: 'appointments',
-      where: {
-        and: [
-          { service: { equals: serviceId } },
-          { 'schedule.start': { equals: normalizedSlot } },
-        ],
-      },
-      depth: 0,
-      limit: 1,
-    })
+    const existingAppointment = await payloadDrizzle.execute(
+      sql`select 1 from "appointments" where "service" = ${serviceId} and ("schedule"->>'start') = ${normalizedSlot} limit 1`,
+    )
 
-    if (existingAppointment.docs.length > 0) {
+    if (Array.isArray(existingAppointment?.rows) && existingAppointment.rows.length > 0) {
       return Response.json(
         {
           message: 'Unable to create booking hold',
