@@ -74,7 +74,7 @@ const HeroPage = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.6 }}
-            className="flex flex-wrap items-center justify-end gap-4 pt-4"
+            className="flex flex-row-reverse flex-wrap items-center justify-end gap-4 pt-4"
           >
             <Link
               href="/reserve"
