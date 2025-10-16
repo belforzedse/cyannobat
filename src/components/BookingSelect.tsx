@@ -15,7 +15,8 @@ const BookingSelect = ({ label, error, helper, options, className, ...props }: B
       <div className="relative">
         <select
           className={clsx(
-            'w-full rounded-xl border border-white/20 bg-white/50 px-4 py-2.5 pr-10',
+            'w-full rounded-xl border border-white/20 bg-white/50 px-4 py-2.5',
+            "[dir='ltr']:pr-10 [dir='rtl']:pl-10",
             'text-right text-base text-foreground',
             'transition-all duration-200 appearance-none cursor-pointer',
             'hover:bg-white/60 hover:border-white/30',
@@ -37,7 +38,12 @@ const BookingSelect = ({ label, error, helper, options, className, ...props }: B
             </option>
           ))}
         </select>
-        <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted">
+        <div
+          className={clsx(
+            'pointer-events-none absolute top-1/2 -translate-y-1/2 text-muted',
+            "[dir='ltr']:right-3 [dir='rtl']:left-3",
+          )}
+        >
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
