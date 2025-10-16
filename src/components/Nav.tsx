@@ -15,15 +15,7 @@ const Nav = () => {
       className="glass sticky top-4 z-40 flex items-center justify-between px-6 py-3 text-right"
     >
       <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/10 opacity-70 -z-10 dark:from-white/10 dark:to-white/5"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute -top-20 left-1/3 h-40 w-40 rounded-full bg-white/45 blur-[120px] opacity-70 -z-10 dark:bg-white/10"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute -bottom-16 right-10 h-36 w-36 rounded-full bg-accent/35 blur-3xl opacity-70 -z-10 dark:bg-accent-strong/40"
+        className="pointer-events-none absolute inset-0 rounded-2rem bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-30 -z-10 dark:via-white/10"
         aria-hidden
       />
       <div className="flex items-center gap-2">
