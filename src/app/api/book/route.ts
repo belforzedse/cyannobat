@@ -36,7 +36,7 @@ const ensureServiceIsBookable = async (
       collection: 'services',
       id: serviceId,
       depth: 0,
-    })) as RawService | null
+    })) as unknown as RawService | null
 
     if (!service || typeof service !== 'object') {
       return { service: null, errors: ['SERVICE_NOT_FOUND'] as const }
@@ -231,9 +231,18 @@ export const POST = async (request: Request): Promise<Response> => {
     const appointment = await payload.create({
       collection: 'appointments',
       data: {
-        client: clientId,
-        provider: resolvedProviderId,
-        service: serviceId,
+        client: {
+          relationTo: 'users',
+          value: clientId,
+        },
+        provider: {
+          relationTo: 'providers',
+          value: resolvedProviderId,
+        },
+        service: {
+          relationTo: 'services',
+          value: serviceId,
+        },
         status,
         schedule: {
           start: normalizedSlot,
@@ -250,7 +259,7 @@ export const POST = async (request: Request): Promise<Response> => {
         },
         clientNotes,
         metadata,
-      },
+      } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     })
 
     try {

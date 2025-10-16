@@ -1,11 +1,13 @@
 // storage-adapter-import-placeholder
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { drizzle } from 'drizzle-orm/node-postgres'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
+import pg from 'pg'
 
 import { Media } from './collections/Media'
 import { Appointments } from './collections/Appointments'
@@ -24,8 +26,13 @@ export const payloadPostgresAdapter = postgresAdapter({
   },
 })
 
-export const payloadDrizzle = payloadPostgresAdapter.drizzle
-export const payloadDbPool = payloadPostgresAdapter.pool
+// Create a direct connection for Drizzle ORM usage
+const pool = new pg.Pool({
+  connectionString,
+})
+
+export const payloadDrizzle = drizzle(pool)
+export const payloadDbPool = pool
 
 export default buildConfig({
   admin: {

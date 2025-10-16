@@ -1,5 +1,5 @@
 import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
-import type { PayloadRequest } from 'payload/dist/types/index.js'
+import type { PayloadRequest } from 'payload'
 
 const normalizeSlug = (input: string): string =>
   input

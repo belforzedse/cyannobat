@@ -1,5 +1,5 @@
-import type { CollectionAfterChangeHook, CollectionBeforeValidateHook, CollectionConfig } from 'payload'
-import type { PayloadRequest } from 'payload/dist/types/index.js'
+import type { CollectionAfterChangeHook, CollectionBeforeValidateHook, CollectionConfig, Where } from 'payload'
+import type { PayloadRequest } from 'payload'
 
 import type { Service as ServiceDoc } from '../payload-types'
 import { bookingHold } from '../lib/redis'
@@ -220,12 +220,12 @@ export const Appointments: CollectionConfig = {
       if (isAdmin(req.user)) return true
 
       const providerIds = await getProviderIdsForUser(req)
-      const orConstraints: Record<string, unknown>[] = [
+      const orConstraints: Where[] = [
         {
           client: {
             equals: req.user.id,
           },
-        },
+        } as Where,
       ]
 
       if (providerIds.length > 0) {
@@ -233,10 +233,10 @@ export const Appointments: CollectionConfig = {
           provider: {
             in: providerIds,
           },
-        })
+        } as Where)
       }
 
-      return { or: orConstraints }
+      return { or: orConstraints } as Where
     },
     create: ({ req }) => Boolean(req.user),
     update: async ({ req }) => {
@@ -244,12 +244,12 @@ export const Appointments: CollectionConfig = {
       if (isAdmin(req.user)) return true
 
       const providerIds = await getProviderIdsForUser(req)
-      const constraints: Record<string, unknown>[] = [
+      const constraints: Where[] = [
         {
           client: {
             equals: req.user.id,
           },
-        },
+        } as Where,
       ]
 
       if (providerIds.length > 0) {
@@ -257,22 +257,22 @@ export const Appointments: CollectionConfig = {
           provider: {
             in: providerIds,
           },
-        })
+        } as Where)
       }
 
-      return { or: constraints }
+      return { or: constraints } as Where
     },
     delete: async ({ req }) => {
       if (!req.user) return false
       if (isAdmin(req.user)) return true
 
       const providerIds = await getProviderIdsForUser(req)
-      const constraints: Record<string, unknown>[] = [
+      const constraints: Where[] = [
         {
           client: {
             equals: req.user.id,
           },
-        },
+        } as Where,
       ]
 
       if (providerIds.length > 0) {
@@ -280,10 +280,10 @@ export const Appointments: CollectionConfig = {
           provider: {
             in: providerIds,
           },
-        })
+        } as Where)
       }
 
-      return { or: constraints }
+      return { or: constraints } as Where
     },
   },
   fields: [

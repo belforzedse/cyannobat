@@ -6,12 +6,12 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const payload = await getPayload({ config: configPromise });
+  await getPayload({ config: configPromise });
 
   return NextResponse.json({
     status: 'ready',
     project: 'cyannobat',
-    payloadVersion: payload?.config?.admin?.version ?? 'unknown',
+    payloadVersion: '3.x', // Payload CMS version
   });
 }
 

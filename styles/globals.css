@@ -107,15 +107,11 @@ body::after {
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-full bg-accent px-8 py-3 text-base font-semibold text-foreground transition-all duration-300 ease-out hover:bg-accent-strong hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:text-slate-900;
-  }
-
-  [data-theme='dark'] .btn-primary {
-    @apply text-slate-900;
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-accent px-8 py-3 text-base font-semibold text-slate-900 transition-all duration-300 ease-out hover:bg-accent-strong hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-full border border-border px-6 py-2 text-sm font-medium text-foreground transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-border px-6 py-2.5 text-sm font-medium text-foreground transition-all duration-300 ease-out hover:border-accent hover:bg-accent/10 hover:text-accent hover:shadow-md active:translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
 }
 

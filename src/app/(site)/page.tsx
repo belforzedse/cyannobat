@@ -25,31 +25,67 @@ const HeroPage = () => {
   return (
     <div className="flex flex-col gap-16 pb-12">
       <motion.section
-        initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 20 }}
+        initial={{
+          opacity: prefersReducedMotion ? 1 : 0,
+          y: prefersReducedMotion ? 0 : 20,
+        }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: prefersReducedMotion ? 0 : 0.7, ease: 'easeOut' }}
-        className="glass relative overflow-hidden px-8 pb-12 pt-16 text-right sm:px-12 lg:px-16"
+        transition={{
+          duration: prefersReducedMotion ? 0 : 0.7,
+          ease: "easeOut",
+        }}
+        className="glass relative overflow-hidden px-8 pb-16 pt-20 text-right sm:px-12 lg:px-20"
       >
-        <div className="absolute inset-x-0 -top-24 h-48 bg-gradient-to-b from-accent/40 via-transparent to-transparent" aria-hidden />
-        <div className="absolute -right-20 top-10 h-48 w-48 rounded-full bg-accent/25 blur-3xl" aria-hidden />
-        <div className="flex flex-col items-end gap-6">
-          <span className="rounded-full border border-white/25 bg-white/20 px-4 py-1 text-sm text-muted shadow-inner dark:bg-white/10">
+        <div
+          className="absolute inset-x-0 -top-32 h-64 bg-gradient-to-b from-accent/50 via-transparent to-transparent"
+          aria-hidden
+        />
+        <div
+          className="absolute -right-32 top-0 h-64 w-64 rounded-full bg-accent/30 blur-3xl"
+          aria-hidden
+        />
+        <div className="flex flex-col items-end gap-8">
+          <motion.span
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="rounded-full border border-white/25 bg-white/20 px-4 py-1.5 text-xs font-medium text-muted shadow-inner backdrop-blur-sm dark:bg-white/10"
+          >
             سایان نوبت — cyannobat
-          </span>
-          <h1 className="max-w-2xl text-balance text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+          </motion.span>
+          <motion.h1
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="max-w-3xl text-balance bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-4xl font-bold leading-tight tracking-tight text-transparent sm:text-5xl lg:text-7xl"
+          >
             سایان نوبت
-          </h1>
-          <p className="max-w-xl text-balance text-lg text-muted sm:text-xl">
-            رزرو نوبت سریع، ساده و شفاف؛ تجربه‌ای الهام‌گرفته از دقت و ظرافت طراحی اپل برای مدیریت درمان شما.
-          </p>
-          <div className="flex flex-wrap items-center justify-end gap-4">
-            <Link href="/رزرو" className="btn-primary text-base font-semibold">
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="max-w-2xl text-balance text-base leading-relaxed text-muted sm:text-lg"
+          >
+            رزرو نوبت سریع، ساده و شفاف؛ تجربه‌ای الهام‌گرفته از دقت و ظرافت
+            طراحی اپل برای مدیریت درمان شما.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+            className="flex flex-wrap items-center justify-end gap-4 pt-4"
+          >
+            <Link
+              href="/reserve"
+              className="btn-primary"
+            >
               رزرو نوبت
             </Link>
             <Link href="#steps" className="btn-secondary">
               مشاهده مراحل
             </Link>
-          </div>
+          </motion.div>
         </div>
       </motion.section>
 
@@ -57,12 +93,23 @@ const HeroPage = () => {
         {steps.map((step, index) => (
           <motion.div
             key={step.title}
-            initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 24 }}
+            initial={{
+              opacity: prefersReducedMotion ? 1 : 0,
+              y: prefersReducedMotion ? 0 : 24,
+            }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.4 }}
-            transition={{ delay: prefersReducedMotion ? 0 : index * 0.1, duration: prefersReducedMotion ? 0 : 0.5, ease: 'easeOut' }}
+            transition={{
+              delay: prefersReducedMotion ? 0 : index * 0.1,
+              duration: prefersReducedMotion ? 0 : 0.5,
+              ease: "easeOut",
+            }}
           >
-            <GlassCard title={step.title} description={step.description} className="h-full">
+            <GlassCard
+              title={step.title}
+              description={step.description}
+              className="h-full"
+            >
               <div className="mt-4 flex items-center justify-end gap-2 text-sm text-accent">
                 <span className="font-semibold">۰{index + 1}</span>
                 <span>گام</span>
@@ -73,17 +120,29 @@ const HeroPage = () => {
       </section>
 
       <motion.section
-        initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 24 }}
+        initial={{
+          opacity: prefersReducedMotion ? 1 : 0,
+          y: prefersReducedMotion ? 0 : 24,
+        }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: 'easeOut' }}
+        transition={{
+          duration: prefersReducedMotion ? 0 : 0.6,
+          ease: "easeOut",
+        }}
         className="glass relative overflow-hidden px-8 py-10 text-right sm:px-12"
       >
-        <div className="absolute left-0 top-0 h-32 w-32 -translate-x-12 -translate-y-12 rounded-full bg-accent-strong/20 blur-3xl" aria-hidden />
+        <div
+          className="absolute left-0 top-0 h-32 w-32 -translate-x-12 -translate-y-12 rounded-full bg-accent-strong/20 blur-3xl"
+          aria-hidden
+        />
         <div className="flex flex-col items-end gap-3">
-          <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">مدیریت هوشمند نوبت‌دهی</h2>
+          <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">
+            مدیریت هوشمند نوبت‌دهی
+          </h2>
           <p className="max-w-2xl text-balance text-base leading-8 text-muted">
-            با داشبورد مدیریتی، گزارش‌های لحظه‌ای و ادغام‌پذیری با سامانه‌های درمانی، تیم شما هر لحظه بر عملکرد مطب و کلینیک نظارت خواهد داشت.
+            با داشبورد مدیریتی، گزارش‌های لحظه‌ای و ادغام‌پذیری با سامانه‌های
+            درمانی، تیم شما هر لحظه بر عملکرد مطب و کلینیک نظارت خواهد داشت.
           </p>
         </div>
       </motion.section>

@@ -32,7 +32,7 @@ const ensureServiceIsBookable = async (
       collection: 'services',
       id: serviceId,
       depth: 0,
-    })) as RawService | null
+    })) as unknown as RawService | null
 
     if (!service || typeof service !== 'object') {
       return { service: null, errors: ['SERVICE_NOT_FOUND'] as const }

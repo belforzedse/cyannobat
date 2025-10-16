@@ -13,7 +13,7 @@ const GlassCard = ({ title, description, children, className, accent = false }: 
   return (
     <article
       className={clsx(
-        'glass group relative overflow-hidden p-6 text-right transition-transform duration-500 ease-out hover:-translate-y-1 hover:shadow-xl',
+        'glass group relative overflow-hidden p-6 text-right transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-accent/20',
         accent && 'before:absolute before:inset-x-12 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-accent before:via-accent-strong before:to-accent/60',
         className,
       )}
