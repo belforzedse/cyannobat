@@ -1,10 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
+import BookingInput from '@/components/BookingInput';
+import ServiceCard from '@/components/ServiceCard';
 
 const BookingPage = () => {
   const prefersReducedMotion = useReducedMotion();
+  const [selectedService, setSelectedService] = useState('');
+  const [selectedDoctor, setSelectedDoctor] = useState('');
 
   return (
     <motion.section
@@ -36,59 +41,74 @@ const BookingPage = () => {
           transition={{ delay: 0.3, duration: 0.5 }}
           className="max-w-2xl text-balance leading-relaxed text-muted"
         >
-          لطفاً اطلاعات مورد نیاز را تکمیل کنید تا گام‌های بعدی برای هماهنگی نوبت در اختیار شما قرار گیرد. این پیش‌نمایش تنها جهت نمایش رابط کاربری است.
+          لطفاً اطلاعات مورد نیاز را تکمیل کنید تا گام‌های بعدی برای هماهنگی نوبت در اختیار شما قرار گیرد.
         </motion.p>
       </header>
 
-      <form className="grid gap-6">
+      <form className="grid gap-8">
+        {/* Service Selection */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.5 }}
+          className="space-y-3"
         >
-          <label className="flex flex-col items-end gap-2.5">
-            <span className="text-sm font-medium text-muted">انتخاب خدمت</span>
-            <select className="w-full rounded-xl border border-white/20 bg-white/40 px-4 py-2.5 text-right text-base text-foreground shadow-inner transition-all duration-300 focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-white/10">
-              <option>مشاوره عمومی</option>
-              <option>ویزیت تخصص قلب</option>
-              <option>چکاپ دوره‌ای</option>
-            </select>
-          </label>
+          <h3 className="text-sm font-semibold text-foreground">انتخاب خدمت</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              { value: 'general', label: 'مشاوره عمومی' },
+              { value: 'cardio', label: 'ویزیت تخصص قلب' },
+              { value: 'checkup', label: 'چکاپ دوره‌ای' },
+            ].map((service) => (
+              <ServiceCard
+                key={service.value}
+                title={service.label}
+                isSelected={selectedService === service.value}
+                onClick={() => setSelectedService(service.value)}
+                icon="🏥"
+              />
+            ))}
+          </div>
         </motion.div>
 
+        {/* Doctor Selection */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
+          className="space-y-3"
         >
-          <label className="flex flex-col items-end gap-2.5">
-            <span className="text-sm font-medium text-muted">انتخاب پزشک</span>
-            <select className="w-full rounded-xl border border-white/20 bg-white/40 px-4 py-2.5 text-right text-base text-foreground shadow-inner transition-all duration-300 focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-white/10">
-              <option>دکتر نسرین حاتمی</option>
-              <option>دکتر امید فرهی</option>
-              <option>دکتر لیلا محمدی</option>
-            </select>
-          </label>
+          <h3 className="text-sm font-semibold text-foreground">انتخاب پزشک</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              { value: 'nasrin', label: 'دکتر نسرین حاتمی', badge: '۱۵ سال تجربه' },
+              { value: 'omid', label: 'دکتر امید فرهی', badge: 'متخصص' },
+              { value: 'leila', label: 'دکتر لیلا محمدی', badge: 'پرطرفدار' },
+            ].map((doctor) => (
+              <ServiceCard
+                key={doctor.value}
+                title={doctor.label}
+                badge={doctor.badge}
+                isSelected={selectedDoctor === doctor.value}
+                onClick={() => setSelectedDoctor(doctor.value)}
+                icon="👨‍⚕️"
+              />
+            ))}
+          </div>
         </motion.div>
 
+        {/* Date and Time */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.5 }}
+          className="space-y-3"
         >
-          <label className="flex flex-col items-end gap-2.5">
-            <span className="text-sm font-medium text-muted">تاریخ و زمان</span>
-            <div className="grid gap-3 rounded-2xl border border-white/15 bg-white/20 p-4 text-right shadow-inner dark:border-white/10 dark:bg-white/10">
-              <input
-                type="date"
-                className="w-full rounded-xl border border-white/20 bg-white/60 px-4 py-2.5 text-right text-base text-foreground shadow-inner transition-all duration-300 focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-white/15"
-              />
-              <input
-                type="time"
-                className="w-full rounded-xl border border-white/20 bg-white/60 px-4 py-2.5 text-right text-base text-foreground shadow-inner transition-all duration-300 focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-white/15"
-              />
-            </div>
-          </label>
+          <h3 className="text-sm font-semibold text-foreground">تاریخ و زمان</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <BookingInput type="date" label="تاریخ" />
+            <BookingInput type="time" label="زمان" />
+          </div>
         </motion.div>
       </form>
 
