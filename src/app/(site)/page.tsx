@@ -30,8 +30,10 @@ const HeroPage = () => {
         transition={{ duration: prefersReducedMotion ? 0 : 0.7, ease: 'easeOut' }}
         className="glass relative overflow-hidden px-8 pb-12 pt-16 text-right sm:px-12 lg:px-16"
       >
-        <div className="absolute inset-x-0 -top-24 h-48 bg-gradient-to-b from-accent/40 via-transparent to-transparent" aria-hidden />
-        <div className="absolute -right-20 top-10 h-48 w-48 rounded-full bg-accent/25 blur-3xl" aria-hidden />
+        <div className="pointer-events-none absolute inset-x-0 -top-24 h-48 bg-gradient-to-b from-accent/40 via-transparent to-transparent -z-10" aria-hidden />
+        <div className="pointer-events-none absolute -right-20 top-10 h-48 w-48 rounded-full bg-accent/25 blur-3xl -z-10" aria-hidden />
+        <div className="pointer-events-none absolute -left-32 bottom-0 h-64 w-64 rounded-full bg-white/40 blur-[120px] opacity-70 -z-10 dark:bg-white/10" aria-hidden />
+        <div className="pointer-events-none absolute left-12 top-1/2 h-48 w-48 -translate-y-1/2 rounded-full bg-accent-strong/30 blur-3xl opacity-80 -z-10 dark:bg-accent-strong/45" aria-hidden />
         <div className="flex flex-col items-end gap-6">
           <span className="rounded-full border border-white/25 bg-white/20 px-4 py-1 text-sm text-muted shadow-inner dark:bg-white/10">
             سایان نوبت — cyannobat
@@ -53,7 +55,8 @@ const HeroPage = () => {
         </div>
       </motion.section>
 
-      <section id="steps" className="grid gap-6 text-right md:grid-cols-3">
+      <section id="steps" className="relative grid gap-6 text-right md:grid-cols-3">
+        <div className="pointer-events-none absolute inset-x-0 -top-16 hidden h-40 rounded-[3rem] bg-white/15 blur-3xl opacity-50 -z-10 dark:bg-white/10 md:block" aria-hidden />
         {steps.map((step, index) => (
           <motion.div
             key={step.title}
@@ -79,7 +82,9 @@ const HeroPage = () => {
         transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: 'easeOut' }}
         className="glass relative overflow-hidden px-8 py-10 text-right sm:px-12"
       >
-        <div className="absolute left-0 top-0 h-32 w-32 -translate-x-12 -translate-y-12 rounded-full bg-accent-strong/20 blur-3xl" aria-hidden />
+        <div className="pointer-events-none absolute left-0 top-0 h-32 w-32 -translate-x-12 -translate-y-12 rounded-full bg-accent-strong/20 blur-3xl -z-10" aria-hidden />
+        <div className="pointer-events-none absolute -right-24 bottom-0 h-64 w-64 rounded-full bg-white/35 blur-[120px] opacity-70 -z-10 dark:bg-white/10" aria-hidden />
+        <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-white/60 to-transparent opacity-60 -z-10 dark:via-white/15" aria-hidden />
         <div className="flex flex-col items-end gap-3">
           <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">مدیریت هوشمند نوبت‌دهی</h2>
           <p className="max-w-2xl text-balance text-base leading-8 text-muted">
