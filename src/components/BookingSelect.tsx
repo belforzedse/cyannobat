@@ -1,4 +1,5 @@
 import type { SelectHTMLAttributes } from 'react';
+import { useId } from 'react';
 import clsx from 'clsx';
 
 interface BookingSelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
@@ -8,10 +9,28 @@ interface BookingSelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   options: Array<{ value: string; label: string }>;
 }
 
-const BookingSelect = ({ label, error, helper, options, className, ...props }: BookingSelectProps) => {
+const BookingSelect = ({ label, error, helper, options, className, id, name, ...props }: BookingSelectProps) => {
+  const generatedId = useId();
+  const fieldId = id ?? name ?? generatedId;
+  const helperId = helper && !error ? `${fieldId}-helper` : undefined;
+  const errorId = error ? `${fieldId}-error` : undefined;
+  const {
+    ['aria-describedby']: ariaDescribedBy,
+    defaultValue,
+    value,
+    ...restProps
+  } = props;
+  const describedBy = [ariaDescribedBy, helperId, errorId].filter(Boolean).join(' ') || undefined;
+  const selectValueProps =
+    value !== undefined ? { value } : { defaultValue: defaultValue ?? '' };
+
   return (
     <div className="flex flex-col gap-2">
-      {label && <label className="text-sm font-medium text-foreground text-right">{label}</label>}
+      {label && (
+        <label htmlFor={fieldId} className="text-sm font-medium text-foreground text-right">
+          {label}
+        </label>
+      )}
       <div className="relative">
         <select
           className={clsx(
@@ -27,9 +46,14 @@ const BookingSelect = ({ label, error, helper, options, className, ...props }: B
             error && 'border-red-400/60 focus:ring-red-400/50',
             className,
           )}
-          {...props}
+          id={fieldId}
+          name={name}
+          aria-describedby={describedBy}
+          aria-invalid={error ? 'true' : undefined}
+          {...selectValueProps}
+          {...restProps}
         >
-          <option value="" disabled selected>
+          <option value="" disabled>
             {label ? 'انتخاب کنید' : 'Select...'}
           </option>
           {options.map((opt) => (
@@ -49,8 +73,16 @@ const BookingSelect = ({ label, error, helper, options, className, ...props }: B
           </svg>
         </div>
       </div>
-      {helper && !error && <p className="text-xs text-muted text-right">{helper}</p>}
-      {error && <p className="text-xs text-red-400/90 text-right">{error}</p>}
+      {helper && !error && (
+        <p id={helperId} className="text-xs text-muted text-right">
+          {helper}
+        </p>
+      )}
+      {error && (
+        <p id={errorId} className="text-xs text-red-400/90 text-right">
+          {error}
+        </p>
+      )}
     </div>
   );
 };
