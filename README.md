@@ -34,3 +34,49 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Booking API smoke tests
+
+The custom booking endpoints under `/api/availability`, `/api/hold`, and `/api/book` can be exercised with `curl` once Redis and Payload are running (via `pnpm dev` or Docker Compose). Replace the placeholder IDs before running the commands below.
+
+1. **Confirm a slot is free**
+
+   ```bash
+   curl "http://localhost:3000/api/availability?serviceId=<SERVICE_ID>&slot=2025-01-15T15:00:00.000Z"
+   ```
+
+   The JSON response should contain `{ "available": true }` and an empty `reasons` array for an unused slot.
+
+2. **Place a five-minute hold**
+
+   ```bash
+   curl -X POST http://localhost:3000/api/hold \
+     -H 'content-type: application/json' \
+     -d '{
+       "serviceId": "<SERVICE_ID>",
+       "slot": "2025-01-15T15:00:00.000Z",
+       "customerId": "<USER_ID>",
+       "ttlSeconds": 300
+     }'
+   ```
+
+   The response includes a `hold` object with the remaining TTL. Running the availability check again should now return `available: false` with the `ON_HOLD` reason present.
+
+3. **Verify hold expiry**
+
+   Wait five minutes (or use a smaller `ttlSeconds` while testing) and call the availability endpoint once more. After expiration the hold is gone and the slot becomes available again.
+
+4. **Complete a booking while the hold is active**
+
+   ```bash
+   curl -X POST http://localhost:3000/api/book \
+     -H 'content-type: application/json' \
+     -d '{
+       "serviceId": "<SERVICE_ID>",
+       "slot": "2025-01-15T15:00:00.000Z",
+       "clientId": "<USER_ID>",
+       "providerId": "<PROVIDER_ID>"
+     }'
+   ```
+
+   A successful response (HTTP 201) includes a summarized `appointment`. Subsequent availability checks report the `ALREADY_BOOKED` reason because the hold is cleared during appointment creation.
