@@ -16,6 +16,17 @@ import { Users } from './collections/Users'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+const connectionString = process.env.DATABASE_URI || ''
+
+export const payloadPostgresAdapter = postgresAdapter({
+  pool: {
+    connectionString,
+  },
+})
+
+export const payloadDrizzle = payloadPostgresAdapter.drizzle
+export const payloadDbPool = payloadPostgresAdapter.pool
+
 export default buildConfig({
   admin: {
     user: Users.slug,
@@ -29,11 +40,7 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  db: postgresAdapter({
-    pool: {
-      connectionString: process.env.DATABASE_URI || '',
-    },
-  }),
+  db: payloadPostgresAdapter,
   sharp,
   plugins: [
     payloadCloudPlugin(),

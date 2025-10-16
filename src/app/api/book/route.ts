@@ -1,27 +1,11 @@
-import { z } from 'zod'
-import configPromise from '@payload-config'
+import type { ZodIssue } from 'zod'
+import { sql } from 'drizzle-orm'
+import configPromise, { payloadDrizzle } from '@payload-config'
 import { bookingHold } from '@/lib/redis'
+import { bookingRequestSchema } from '@/lib/schemas/booking'
 import { getPayload } from 'payload'
 
-const requestSchema = z
-  .object({
-    serviceId: z.string({ required_error: 'serviceId is required' }).min(1, 'serviceId is required'),
-    slot: z
-      .string({ required_error: 'slot is required' })
-      .datetime({ message: 'slot must be an ISO 8601 date string' }),
-    clientId: z.string({ required_error: 'clientId is required' }).min(1, 'clientId is required'),
-    providerId: z.string().min(1).optional(),
-    status: z
-      .enum(['pending', 'confirmed', 'in_progress', 'completed', 'cancelled', 'no_show'])
-      .optional()
-      .default('confirmed'),
-    timeZone: z.string().optional().default('UTC'),
-    clientNotes: z.string().max(2000).optional(),
-    metadata: z.record(z.unknown()).optional(),
-  })
-  .strict()
-
-const buildValidationErrorResponse = (issues: z.ZodIssue[]): Response =>
+const buildValidationErrorResponse = (issues: ZodIssue[]): Response =>
   Response.json(
     {
       message: 'Invalid request',
@@ -124,7 +108,7 @@ export const POST = async (request: Request): Promise<Response> => {
       { status: 400 },
     )
   }
-  const parsed = requestSchema.safeParse(rawBody)
+  const parsed = bookingRequestSchema.safeParse(rawBody)
 
   if (!parsed.success) {
     return buildValidationErrorResponse(parsed.error.issues)
@@ -170,19 +154,11 @@ export const POST = async (request: Request): Promise<Response> => {
   }
 
   try {
-    const existingAppointment = await payload.find({
-      collection: 'appointments',
-      where: {
-        and: [
-          { service: { equals: serviceId } },
-          { 'schedule.start': { equals: normalizedSlot } },
-        ],
-      },
-      depth: 0,
-      limit: 1,
-    })
+    const existingAppointment = await payloadDrizzle.execute(
+      sql`select 1 from "appointments" where "service" = ${serviceId} and ("schedule"->>'start') = ${normalizedSlot} limit 1`,
+    )
 
-    if (existingAppointment.docs.length > 0) {
+    if (Array.isArray(existingAppointment?.rows) && existingAppointment.rows.length > 0) {
       return Response.json(
         {
           message: 'Unable to confirm booking',
