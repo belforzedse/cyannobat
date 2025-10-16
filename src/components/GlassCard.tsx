@@ -6,24 +6,23 @@ interface GlassCardProps {
   description?: string;
   children?: ReactNode;
   className?: string;
-  accent?: boolean;
 }
 
-const GlassCard = ({ title, description, children, className, accent = false }: GlassCardProps) => {
+const GlassCard = ({ title, description, children, className }: GlassCardProps) => {
   return (
     <article
       className={clsx(
-        'glass group relative overflow-hidden p-6 text-right transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-accent/20',
-        accent && 'before:absolute before:inset-x-12 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-accent before:via-accent-strong before:to-accent/60',
+        'glass group relative overflow-hidden p-6 text-right transition-all duration-500 ease-out hover:-translate-y-3 hover:shadow-2xl',
         className,
       )}
     >
       <div className="relative z-10 flex flex-col gap-3">
-        {title ? <h3 className="text-lg font-semibold tracking-tight text-foreground">{title}</h3> : null}
+        {title ? <h3 className="bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-lg font-bold tracking-tight text-transparent">{title}</h3> : null}
         {description ? <p className="leading-relaxed text-sm text-muted/90">{description}</p> : null}
         {children}
       </div>
-      <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-white/10 via-transparent to-accent/10 opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100" />
+      <div className="pointer-events-none absolute -right-24 top-1/2 h-56 w-56 -translate-y-1/2 rounded-full bg-accent/30 blur-3xl opacity-0 transition-opacity duration-700 ease-out group-hover:opacity-70" aria-hidden />
+      <div className="pointer-events-none absolute -bottom-28 left-10 h-48 w-48 rounded-full bg-white/20 blur-[120px] opacity-0 transition-opacity duration-700 ease-out group-hover:opacity-50 dark:bg-white/5" aria-hidden />
     </article>
   );
 };
