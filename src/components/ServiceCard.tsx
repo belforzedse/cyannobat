@@ -1,12 +1,12 @@
-import type { ReactNode } from 'react';
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import clsx from 'clsx';
 
-interface ServiceCardProps {
+interface ServiceCardProps
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className' | 'children'> {
   icon?: ReactNode;
   title: string;
   description?: string;
   badge?: string;
-  onClick?: () => void;
   isSelected?: boolean;
   className?: string;
 }
@@ -16,13 +16,15 @@ const ServiceCard = ({
   title,
   description,
   badge,
-  onClick,
   isSelected = false,
   className,
+  type = 'button',
+  ...buttonProps
 }: ServiceCardProps) => {
   return (
     <button
-      onClick={onClick}
+      type={type}
+      {...buttonProps}
       className={clsx(
         'group relative flex flex-col gap-3 rounded-2xl border-2 p-5 text-right transition-all duration-300',
         'hover:shadow-lg hover:shadow-accent/20',
