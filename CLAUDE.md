@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Next.js 15 application integrated with PayloadCMS 3.x, using PostgreSQL as the database and Redis for caching. The project combines a headless CMS backend with a Next.js frontend, all in a monolithic architecture.
+This is a Next.js 15 application integrated with PayloadCMS 3.x, using PostgreSQL as the database and Redis for caching. The project combines a headless CMS backend with a Next.js frontend in a monolithic architecture. It includes a glassmorphic UI with Persian language support (RTL) and light/dark theme capabilities.
 
 ## Development Commands
 
@@ -20,6 +20,9 @@ npm run start
 
 # Run ESLint
 npm run lint
+
+# Type checking
+npm run typecheck
 ```
 
 ## Docker Environment
@@ -33,6 +36,8 @@ Start services:
 ```bash
 docker-compose up -d
 ```
+
+CI pipeline (GitHub Actions) runs: `pnpm lint` → `pnpm typecheck` → `pnpm build`
 
 ## Architecture
 
@@ -52,10 +57,12 @@ The application uses Next.js App Router with three distinct route groups:
    - Shows welcome message and links to admin panel
    - Located at `src/app/(frontend)/page.tsx`
 
-3. **`(site)` Route Group** - Alternative Frontend
-   - Contains a standard Next.js page with Tailwind styling
-   - Uses Geist fonts
-   - Located at `src/app/(site)/page.tsx`
+3. **`(site)` Route Group** - Main Booking Frontend
+   - Primary user-facing application with booking functionality
+   - Uses glassmorphic design system with Peyda font
+   - Fixed right sidebar (GNOME-style), top header navigation
+   - Located at `src/app/(site)/`
+   - Layout: `src/app/(site)/layout.tsx` (Header + Sidebar + Content)
 
 ### PayloadCMS Configuration
 
@@ -119,9 +126,55 @@ const headers = await getHeaders()
 const { user } = await payload.auth({ headers })
 ```
 
+## UI & Design System
+
+### Glassmorphic Components
+The `.glass` class in `styles/globals.css` provides:
+- Backdrop blur with glassmorphic effect
+- Gradient borders and inset shadows
+- Hover states with accent color highlights
+- Dark/light theme support via CSS custom properties
+
+Component utilities:
+- `.glass` - Standard rounded glass container (2rem border-radius)
+- `.glass-pill` - Fully rounded glass button/container (9999px border-radius)
+- `.btn-primary` - Accent gradient button with glow effects
+- `.btn-secondary` - Glass variant button
+
+### Font System
+- **Primary font**: Peyda (Persian-optimized)
+  - Files: `public/fonts/peyda-{regular,medium,bold}.woff2`
+  - Loaded via `@font-face` in `styles/globals.css`
+  - `font-display: swap` for performance
+- RTL layout: Set via `html dir="rtl"` in root layout
+
+### Theme System
+- Uses `next-themes` with `ThemeProvider` wrapper
+- CSS variables for dynamic theming: `--bg`, `--fg`, `--accent`, `--accent-strong`, etc.
+- Light mode: `:root` selector
+- Dark mode: `[data-theme='dark']` selector
+- Toggle component: `ThemeToggle.tsx`
+
+### Layout Components
+- **Header** (`src/components/Header.tsx`): Sticky navigation bar with theme toggle
+- **Sidebar** (`src/components/Sidebar.tsx`): Fixed right sidebar (GNOME-style) with glassmorphic styling
+- **Main Layout** (`src/app/(site)/layout.tsx`): Combines Header + Sidebar + responsive content area
+
+## Booking API
+
+Custom REST endpoints for appointment management:
+- `GET /api/availability` - Check slot availability
+- `POST /api/hold` - Place 5-minute hold on a slot
+- `POST /api/book` - Complete a booking
+
+Uses Redis for hold management with configurable TTL.
+
 ## Important Notes
 
 - Auto-generated Payload files (marked with "THIS FILE WAS GENERATED AUTOMATICALLY") should never be manually edited
 - The project uses `import.meta.url` (ESM) - avoid CommonJS patterns
 - Sharp is required for image processing and must be installed as a dependency
 - Admin panel routing is handled by Payload's catch-all `[[...segments]]` route
+- When adding UI components, follow the glassmorphic design system (use `.glass` and `.glass-pill` classes)
+- Ensure RTL compatibility when working with text and layout—test with Persian content
+- Tailwind config includes custom color tokens; use `accent`, `accent-strong`, etc. instead of arbitrary colors
