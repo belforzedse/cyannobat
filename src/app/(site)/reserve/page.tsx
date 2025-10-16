@@ -106,8 +106,8 @@ const BookingPage = () => {
         >
           <h3 className="text-sm font-semibold text-foreground">تاریخ و زمان</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <BookingInput type="date" label="تاریخ" />
-            <BookingInput type="time" label="زمان" />
+            <BookingInput id="booking-date" name="booking-date" type="date" label="تاریخ" />
+            <BookingInput id="booking-time" name="booking-time" type="time" label="زمان" />
           </div>
         </motion.div>
       </form>
