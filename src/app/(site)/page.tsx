@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import GlassCard from '@/components/GlassCard';
+import { BOOKING_PATH } from '@/lib/routes';
 
 const steps = [
   {
@@ -77,7 +78,7 @@ const HeroPage = () => {
             className="flex flex-row-reverse flex-wrap items-center justify-end gap-4 pt-4"
           >
             <Link
-              href="/reserve"
+              href={BOOKING_PATH}
               className="btn-primary"
             >
               رزرو نوبت
