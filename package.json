@@ -13,6 +13,7 @@
     "@payloadcms/next": "^3.59.1",
     "@payloadcms/richtext-lexical": "^3.59.1",
     "graphql": "^16.11.0",
+    "ioredis": "^5.8.1",
     "next": "15.5.5",
     "payload": "^3.59.1",
     "react": "19.1.0",
