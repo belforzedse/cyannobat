@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
+import { BOOKING_PATH } from '@/lib/routes';
 
 const Header = () => {
   const prefersReducedMotion = useReducedMotion();
@@ -37,7 +38,7 @@ const Header = () => {
       </div>
       <div className="flex items-center gap-3">
         <Link
-          href="/reserve"
+          href={BOOKING_PATH}
           className="glass-pill hidden px-5 py-2 text-sm font-medium text-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:inline-flex"
         >
           رزرو نوبت
