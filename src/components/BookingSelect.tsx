@@ -16,13 +16,21 @@ const BookingSelect = ({ label, error, helper, options, className, id, name, ...
   const errorId = error ? `${fieldId}-error` : undefined;
   const {
     ['aria-describedby']: ariaDescribedBy,
-    defaultValue,
-    value,
+    value: rawValue,
+    onChange,
     ...restProps
   } = props;
   const describedBy = [ariaDescribedBy, helperId, errorId].filter(Boolean).join(' ') || undefined;
+  const normalizedValue = (rawValue as string | undefined) ?? '';
   const selectValueProps =
-    value !== undefined ? { value } : { defaultValue: defaultValue ?? '' };
+    rawValue !== undefined
+      ? { value: normalizedValue }
+      : { defaultValue: normalizedValue };
+  const forwardedProps = {
+    ...restProps,
+    ...(onChange ? { onChange } : {}),
+  };
+  const showPlaceholder = normalizedValue === '';
 
   return (
     <div className="flex flex-col gap-2">
@@ -50,12 +58,14 @@ const BookingSelect = ({ label, error, helper, options, className, id, name, ...
           name={name}
           aria-describedby={describedBy}
           aria-invalid={error ? 'true' : undefined}
+          {...forwardedProps}
           {...selectValueProps}
-          {...restProps}
         >
-          <option value="" disabled>
-            {label ? 'انتخاب کنید' : 'Select...'}
-          </option>
+          {showPlaceholder && (
+            <option value="" disabled>
+              {label ? 'انتخاب کنید' : 'Select...'}
+            </option>
+          )}
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
