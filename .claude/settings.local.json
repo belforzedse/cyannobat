@@ -5,7 +5,10 @@
       "Bash(npm run build:*)",
       "Bash(npx tsc:*)",
       "Bash(npm install:*)",
-      "Bash(pnpm add:*)"
+      "Bash(pnpm add:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nResolve merge conflicts and complete UI enhancements\n\n- Keep improved UI styling for buttons and cards\n- Resolved all merge conflicts from parallel work\n- GlassCard now has better hover effects with shadow-accent\n- Page animations with staggered entrance and gradient text\n- Form inputs with smooth transitions\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []

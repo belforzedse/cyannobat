@@ -21,7 +21,7 @@ const config = {
         '4xl': '2rem',
       },
       boxShadow: {
-        glass: '0 10px 30px rgba(0,0,0,0.15)',
+        glass: '0 30px 80px -35px rgba(15, 23, 42, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45)',
       },
       backdropBlur: {
         glass: '20px',
