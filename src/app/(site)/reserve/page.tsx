@@ -54,7 +54,7 @@ const BookingPage = () => {
           className="space-y-3"
         >
           <h3 className="text-sm font-semibold text-foreground">انتخاب خدمت</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[
               { value: 'general', label: 'مشاوره عمومی' },
               { value: 'cardio', label: 'ویزیت تخصص قلب' },
@@ -79,7 +79,7 @@ const BookingPage = () => {
           className="space-y-3"
         >
           <h3 className="text-sm font-semibold text-foreground">انتخاب پزشک</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[
               { value: 'nasrin', label: 'دکتر نسرین حاتمی', badge: '۱۵ سال تجربه' },
               { value: 'omid', label: 'دکتر امید فرهی', badge: 'متخصص' },
