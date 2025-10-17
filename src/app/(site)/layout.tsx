@@ -9,9 +9,7 @@ const SiteLayout = ({ children }: { children: ReactNode }) => {
 
       {/* Main Content Area */}
       <div className="flex min-h-screen flex-1 flex-col">
-        <div className="lg:pr-24 xl:pr-32">
-          <Header />
-        </div>
+        <Header />
         <div
           className="pointer-events-none absolute -left-24 top-24 hidden h-[28rem] w-[28rem] -translate-y-12 rounded-full bg-accent/25 blur-3xl sm:block -z-10 dark:bg-accent/30"
           aria-hidden
