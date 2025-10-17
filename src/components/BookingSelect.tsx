@@ -16,19 +16,18 @@ const BookingSelect = ({ label, error, helper, options, className, id, name, ...
   const errorId = error ? `${fieldId}-error` : undefined;
   const {
     ['aria-describedby']: ariaDescribedBy,
-    value: rawValue,
+    value,
     onChange,
     ...restProps
   } = props;
   const describedBy = [ariaDescribedBy, helperId, errorId].filter(Boolean).join(' ') || undefined;
-  const normalizedValue = (rawValue as string | undefined) ?? '';
-  const selectValueProps =
-    rawValue !== undefined
-      ? { value: normalizedValue }
-      : { defaultValue: normalizedValue };
+  const normalizedValue = (value ?? '') as string;
   const forwardedProps = {
     ...restProps,
     ...(onChange ? { onChange } : {}),
+    ...(value !== undefined
+      ? { value: normalizedValue }
+      : { defaultValue: normalizedValue }),
   };
   const showPlaceholder = normalizedValue === '';
 
@@ -59,7 +58,6 @@ const BookingSelect = ({ label, error, helper, options, className, id, name, ...
           aria-describedby={describedBy}
           aria-invalid={error ? 'true' : undefined}
           {...forwardedProps}
-          {...selectValueProps}
         >
           {showPlaceholder && (
             <option value="" disabled>
