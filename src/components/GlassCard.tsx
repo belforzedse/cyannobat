@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from 'framer-motion';
 import clsx from 'clsx';
 
 interface GlassCardProps {
@@ -7,10 +7,9 @@ interface GlassCardProps {
   description?: string;
   children?: ReactNode;
   className?: string;
-  ambient?: boolean;
 }
 
-const GlassCard = ({ title, description, children, className, ambient = false }: GlassCardProps) => {
+const GlassCard = ({ title, description, children, className }: GlassCardProps) => {
   const shouldReduceMotion = useReducedMotion();
   const allowMotion = !shouldReduceMotion;
 
@@ -22,30 +21,6 @@ const GlassCard = ({ title, description, children, className, ambient = false }:
         className,
       )}
     >
-      {ambient ? (
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-br from-accent/35 via-white/20 to-transparent opacity-40 blur-2xl mix-blend-screen"
-          initial={allowMotion ? { opacity: 0.2, scale: 0.95 } : { opacity: 0.35, scale: 1 }}
-          animate={
-            allowMotion
-              ? {
-                  opacity: [0.35, 0.55, 0.35],
-                  scale: [0.98, 1.04, 0.98],
-                }
-              : { opacity: 0.35, scale: 1 }
-          }
-          transition={
-            allowMotion
-              ? {
-                  duration: 10,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }
-              : undefined
-          }
-        />
-      ) : null}
       <div className="relative z-10 flex flex-col gap-3">
         {title ? <h3 className="bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-lg font-bold tracking-tight text-transparent">{title}</h3> : null}
         {description ? <p className="leading-relaxed text-sm text-muted">{description}</p> : null}

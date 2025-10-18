@@ -106,28 +106,6 @@ body::after {
   z-index: -2;
 }
 
-@keyframes glassShimmer {
-  0% {
-    background-position: center, -160% 0;
-    opacity: 0.55;
-  }
-
-  30% {
-    background-position: center, -20% 0;
-    opacity: 0.9;
-  }
-
-  55% {
-    background-position: center, 120% 0;
-    opacity: 0.65;
-  }
-
-  100% {
-    background-position: center, 120% 0;
-    opacity: 0.55;
-  }
-}
-
 @layer base {
   * {
     @apply border-border;
@@ -169,12 +147,7 @@ body::after {
     border-radius: inherit;
     border: 1px solid rgba(255, 255, 255, 0.5);
     pointer-events: none;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
-      linear-gradient(120deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.55) 35%, rgba(255, 255, 255, 0) 70%);
-    background-size: 100% 100%, 220% 180%;
-    background-position: center, -160% 0;
-    animation: glassShimmer 12s ease-in-out infinite;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
   }
 
   .glass::after {
@@ -203,10 +176,6 @@ body::after {
 
     .glass:hover::after {
       opacity: 0;
-    }
-
-    .glass::before {
-      animation: none;
     }
   }
 
@@ -248,11 +217,7 @@ body::after {
 
   [data-theme='dark'] .glass::before {
     border-color: rgba(255, 255, 255, 0.2);
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
-      linear-gradient(120deg, rgba(159, 221, 231, 0) 0%, rgba(159, 221, 231, 0.45) 35%, rgba(159, 221, 231, 0) 70%);
-    background-size: 100% 100%, 220% 180%;
-    background-position: center, -160% 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
   }
 
   .btn-primary {
