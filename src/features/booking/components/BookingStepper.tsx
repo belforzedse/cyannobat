@@ -6,7 +6,7 @@ import { type ProgressStepWithStatus } from '../types';
 
 type BookingStepperProps = {
   steps: ProgressStepWithStatus[];
-  prefersReducedMotion: boolean;
+  prefersReducedMotion: boolean | null;
 };
 
 const BookingStepper = ({ steps, prefersReducedMotion }: BookingStepperProps) => (

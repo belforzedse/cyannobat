@@ -2,23 +2,24 @@ import type { Access, CollectionConfig } from 'payload'
 
 // Allow creating first user without authentication
 const isFirstUserCreation: Access = async ({ req }) => {
-  // Try to count existing users
-  try {
-    const users = await req.payload.countGlobal({
-      collection: 'users',
-    }).catch(() => 0)
-
-    // If no users exist, allow unauthenticated access
-    if (users === 0 || !users) {
-      return true
-    }
-  } catch {
-    // If there's an error querying, assume it's the first user
+  // If user is already authenticated, allow access
+  if (req.user) {
     return true
   }
 
-  // Otherwise, require authentication
-  return !!req.user
+  // If not authenticated, check if this could be the first user
+  try {
+    const result = await req.payload.count({
+      collection: 'users',
+    })
+
+    // If no users exist, allow unauthenticated access to create first user
+    return result.totalDocs === 0
+  } catch {
+    // If there's an error (e.g., table doesn't exist yet), allow creation
+    // This handles the initial setup case
+    return true
+  }
 }
 
 export const Users: CollectionConfig = {

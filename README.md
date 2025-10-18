@@ -11,6 +11,19 @@ cp .env.example .env
 
 Ensure the credentials match your local PostgreSQL and Redis instances (the defaults assume the Docker Compose services).
 
+## Database migrations
+
+When running locally (`NODE_ENV=development`), Payload automatically pushes the schema defined in `src/collections/*` to PostgreSQL on startup so the `users`, `appointments`, and other tables are created for you. You can toggle this behaviour explicitly by setting `PAYLOAD_DB_PUSH=true|false` in your `.env`.
+
+For production deployments, generate tracked migrations and apply them during your release pipeline:
+
+```bash
+pnpm payload migrate:create -- --name <migration-name>
+pnpm payload migrate
+```
+
+The generated files live under `src/payload-migrations` and should be committed along with the changes to the collections. If you disable `PAYLOAD_DB_PUSH`, make sure migrations run before starting the app (the production Docker entrypoint skips them unless you set `PAYLOAD_RUN_MIGRATIONS=true`, so wire that into your deployment pipeline when needed).
+
 ## Getting Started
 
 First, run the development server:

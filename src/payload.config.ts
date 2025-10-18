@@ -19,11 +19,23 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 const connectionString = process.env.DATABASE_URI || ''
+const projectRoot = process.cwd()
+const migrationsDir = path.resolve(
+  projectRoot,
+  process.env.PAYLOAD_DB_MIGRATIONS_DIR || 'src/payload-migrations',
+)
+const shouldPushSchema =
+  process.env.PAYLOAD_DB_PUSH !== undefined
+    ? process.env.PAYLOAD_DB_PUSH === 'true'
+    : process.env.NODE_ENV !== 'production'
 
 export const payloadPostgresAdapter = postgresAdapter({
   pool: {
     connectionString,
   },
+  migrationDir: migrationsDir,
+  // Automatically push schema changes based on env configuration
+  push: shouldPushSchema,
 })
 
 // Create a direct connection for Drizzle ORM usage

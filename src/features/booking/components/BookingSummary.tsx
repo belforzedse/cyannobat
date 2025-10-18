@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { type CustomerInfo } from '../types';
 
 type BookingSummaryProps = {
-  prefersReducedMotion: boolean;
+  prefersReducedMotion: boolean | null;
   isContinueDisabled: boolean;
   formattedDate: string;
   formattedTime: string;
