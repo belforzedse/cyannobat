@@ -14,7 +14,14 @@
       "Bash(curl -s http://localhost:3000/admin/create-first-user)",
       "Bash(docker-compose exec -T web pnpm payload migrate)",
       "Bash(curl -s http://localhost:3000/admin/login)",
-      "Bash(curl -s -X POST http://localhost:3000/api/users )"
+      "Bash(curl -s -X POST http://localhost:3000/api/users )",
+      "WebSearch",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:www.donnywals.com)",
+      "Bash(npm install @formkit/auto-animate)",
+      "WebFetch(domain:www.reactbits.dev)",
+      "Bash(npm run dev)",
+      "Bash(npm run typecheck)"
     ],
     "deny": [],
     "ask": []

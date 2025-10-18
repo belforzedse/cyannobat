@@ -3,20 +3,27 @@
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import GlassCard from '@/components/GlassCard';
+import GlassButton from '@/components/GlassButton';
+import GlassIcon from '@/components/GlassIcon';
+import { Calendar, Search, Clock } from 'lucide-react';
 import { BOOKING_PATH } from '@/lib/routes';
+import { liquidSpring, liquidContainer, liquidEntrance, glassMorph } from '@/lib/animations';
 
 const steps = [
   {
     title: 'انتخاب خدمت',
     description: 'از میان خدمات تخصصی و بسته‌های سفارشی‌شده، بهترین گزینه را برای نیاز خود برگزینید.',
+    icon: Search,
   },
   {
     title: 'انتخاب پزشک',
     description: 'پزشک مورد اعتماد خود را بر اساس تخصص، امتیاز بیماران و تجربه حرفه‌ای انتخاب کنید.',
+    icon: Calendar,
   },
   {
     title: 'تاریخ و زمان',
     description: 'زمان دلخواه را رزرو کنید و یادآورها را در لحظه دریافت نمایید.',
+    icon: Clock,
   },
 ];
 
@@ -26,15 +33,11 @@ const HeroPage = () => {
   return (
     <div className="flex flex-col gap-16 pb-12">
       <motion.section
-        initial={{
-          opacity: prefersReducedMotion ? 1 : 0,
-          y: prefersReducedMotion ? 0 : 20,
-        }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          duration: prefersReducedMotion ? 0 : 0.7,
-          ease: "easeOut",
-        }}
+        initial={prefersReducedMotion ? 'initial' : 'hidden'}
+        animate={prefersReducedMotion ? undefined : 'visible'}
+        whileHover={prefersReducedMotion ? undefined : 'hover'}
+        variants={!prefersReducedMotion ? { ...liquidEntrance, ...glassMorph } : undefined}
+        transition={liquidSpring}
         className="glass relative overflow-hidden px-8 pb-16 pt-20 text-right sm:px-12 lg:px-20"
       >
         <div
@@ -74,51 +77,45 @@ const HeroPage = () => {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
+            transition={{ delay: 0.5, ...liquidSpring }}
             className="flex flex-row-reverse flex-wrap items-center justify-end gap-4 pt-4"
           >
-            <Link
-              href={BOOKING_PATH}
-              className="btn-primary"
-            >
-              رزرو نوبت
+            <Link href={BOOKING_PATH}>
+              <GlassButton variant="primary" size="md">
+                رزرو نوبت
+              </GlassButton>
             </Link>
-            <Link href="#steps" className="btn-secondary">
-              مشاهده مراحل
+            <Link href="#steps">
+              <GlassButton variant="secondary" size="md">
+                مشاهده مراحل
+              </GlassButton>
             </Link>
           </motion.div>
         </div>
       </motion.section>
 
-      <section id="steps" className="grid gap-6 text-right md:grid-cols-3">
+      <motion.section
+        id="steps"
+        initial={prefersReducedMotion ? undefined : 'hidden'}
+        whileInView={prefersReducedMotion ? undefined : 'visible'}
+        viewport={{ once: true, amount: 0.2 }}
+        variants={liquidContainer}
+        className="grid gap-6 text-right md:grid-cols-3"
+      >
         {steps.map((step, index) => (
-          <motion.div
-            key={step.title}
-            initial={{
-              opacity: prefersReducedMotion ? 1 : 0,
-              y: prefersReducedMotion ? 0 : 24,
-            }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{
-              delay: prefersReducedMotion ? 0 : index * 0.1,
-              duration: prefersReducedMotion ? 0 : 0.5,
-              ease: "easeOut",
-            }}
-          >
-            <GlassCard
-              title={step.title}
-              description={step.description}
-              className="h-full"
-            >
-              <div className="mt-4 flex items-center justify-end gap-2 text-sm text-accent">
-                <span className="font-semibold">۰{index + 1}</span>
-                <span>گام</span>
+          <motion.div key={step.title} variants={liquidEntrance}>
+            <GlassCard title={step.title} description={step.description} className="h-full">
+              <div className="mt-4 flex items-center justify-between">
+                <GlassIcon icon={step.icon} size="sm" label={step.title} />
+                <div className="flex items-center gap-2 text-sm text-accent">
+                  <span className="font-semibold">۰{index + 1}</span>
+                  <span>گام</span>
+                </div>
               </div>
             </GlassCard>
           </motion.div>
         ))}
-      </section>
+      </motion.section>
 
       <motion.section
         initial={{
