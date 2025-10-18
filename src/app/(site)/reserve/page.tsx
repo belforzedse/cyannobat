@@ -156,7 +156,7 @@ const BookingPage = () => {
           initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: prefersReducedMotion ? 0 : 0.1, duration: prefersReducedMotion ? 0 : 0.45 }}
-          className="rounded-full border border-white/25 bg-white/20 px-4 py-1.5 text-xs font-medium text-muted backdrop-blur-sm dark:border-white/15 dark:bg-white/10"
+          className="rounded-full border border-white/25 bg-white/20 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm dark:border-white/15 dark:bg-white/10"
         >
           آغاز رزرو آنلاین
         </motion.span>
@@ -172,7 +172,7 @@ const BookingPage = () => {
           initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: prefersReducedMotion ? 0 : 0.3, duration: prefersReducedMotion ? 0 : 0.5 }}
-          className="max-w-2xl text-balance leading-relaxed text-muted"
+          className="max-w-2xl text-balance leading-relaxed text-muted-foreground"
         >
           لطفاً اطلاعات مورد نیاز را تکمیل کنید تا گام‌های بعدی برای هماهنگی نوبت در اختیار شما قرار گیرد. می‌توانید در هر لحظه
           انتخاب‌های خود را ویرایش کنید.
@@ -195,7 +195,7 @@ const BookingPage = () => {
               step.status === 'current' &&
                 'border-white/30 bg-white/45 text-foreground shadow-[0_12px_28px_-20px_rgba(31,38,135,0.25)] dark:border-white/18 dark:bg-white/15',
               step.status === 'upcoming' &&
-                'border-white/20 bg-white/25 text-muted dark:border-white/12 dark:bg-white/8 dark:text-muted',
+                'border-white/20 bg-white/25 text-muted-foreground dark:border-white/12 dark:bg-white/8 dark:text-muted-foreground',
             )}
             aria-current={step.status === 'current' ? 'step' : undefined}
           >
@@ -205,7 +205,7 @@ const BookingPage = () => {
                   'flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]',
                   step.status === 'complete' && 'bg-gradient-to-br from-accent to-accent/80 text-slate-900',
                   step.status === 'current' && 'bg-gradient-to-br from-white/85 to-white/65 text-foreground',
-                  step.status === 'upcoming' && 'bg-white/40 text-muted dark:bg-white/10',
+                  step.status === 'upcoming' && 'bg-white/40 text-muted-foreground dark:bg-white/10',
                 )}
               >
                 ۰{step.index + 1}
@@ -221,7 +221,7 @@ const BookingPage = () => {
                 transition={{ duration: prefersReducedMotion ? 0 : 0.25 }}
                 className={clsx(
                   'flex flex-row-reverse items-center gap-1 text-[11px] font-medium',
-                  step.status === 'complete' ? 'text-accent' : 'text-muted',
+                  step.status === 'complete' ? 'text-accent' : 'text-muted-foreground',
                 )}
               >
                 {step.status === 'complete' ? (
@@ -258,7 +258,7 @@ const BookingPage = () => {
         >
           <div className="flex flex-col items-end gap-2 text-right">
             <h3 className="text-sm font-semibold text-foreground">انتخاب خدمت</h3>
-            <p className="text-xs leading-6 text-muted">
+            <p className="text-xs leading-6 text-muted-foreground">
               نوع خدمتی که نیاز دارید را انتخاب کنید تا پیشنهادهای دقیق‌تری دریافت کنید.
             </p>
           </div>
@@ -295,7 +295,7 @@ const BookingPage = () => {
         >
           <div className="flex flex-col items-end gap-2 text-right">
             <h3 className="text-sm font-semibold text-foreground">انتخاب پزشک</h3>
-            <p className="text-xs leading-6 text-muted">پزشک مورد اعتماد خود را برای ادامه مسیر درمان برگزینید.</p>
+            <p className="text-xs leading-6 text-muted-foreground">پزشک مورد اعتماد خود را برای ادامه مسیر درمان برگزینید.</p>
           </div>
           <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
             {doctorOptions.map((doctor, index) => (
@@ -330,7 +330,7 @@ const BookingPage = () => {
         >
           <div className="flex flex-col items-end gap-2 text-right">
             <h3 className="text-sm font-semibold text-foreground">تاریخ و زمان</h3>
-            <p className="text-xs leading-6 text-muted">روز و ساعت دلخواه را انتخاب کنید تا یادآورها را دریافت نمایید.</p>
+            <p className="text-xs leading-6 text-muted-foreground">روز و ساعت دلخواه را انتخاب کنید تا یادآورها را دریافت نمایید.</p>
           </div>
           <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <BookingInput
@@ -364,7 +364,7 @@ const BookingPage = () => {
         <div className="flex flex-col items-end gap-3 text-right sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col items-end gap-1">
             <span className="text-sm font-semibold text-foreground">خلاصه انتخاب شما</span>
-            <span className="text-xs text-muted">در صورت نیاز می‌توانید هر بخش را دوباره ویرایش کنید.</span>
+            <span className="text-xs text-muted-foreground">در صورت نیاز می‌توانید هر بخش را دوباره ویرایش کنید.</span>
           </div>
           <AnimatePresence mode="wait">
             <motion.span
@@ -376,7 +376,7 @@ const BookingPage = () => {
               className={clsx(
                 'inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium',
                 isContinueDisabled
-                  ? 'border border-white/20 text-muted'
+                  ? 'border border-white/20 text-muted-foreground'
                   : 'border border-accent/50 bg-accent/15 text-accent',
               )}
             >
@@ -396,13 +396,13 @@ const BookingPage = () => {
         </div>
         <dl className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
           <div className="flex flex-col items-end gap-1">
-            <dt className="text-xs font-medium text-muted">خدمت انتخابی</dt>
+            <dt className="text-xs font-medium text-muted-foreground">خدمت انتخابی</dt>
             <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
               {selectedServiceDetails?.label ?? 'انتخاب نشده'}
             </dd>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <dt className="text-xs font-medium text-muted">پزشک منتخب</dt>
+            <dt className="text-xs font-medium text-muted-foreground">پزشک منتخب</dt>
             <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
               {selectedDoctorDetails
                 ? `${selectedDoctorDetails.label}${selectedDoctorDetails.badge ? ' — ' + selectedDoctorDetails.badge : ''}`
@@ -410,13 +410,13 @@ const BookingPage = () => {
             </dd>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <dt className="text-xs font-medium text-muted">تاریخ</dt>
+            <dt className="text-xs font-medium text-muted-foreground">تاریخ</dt>
             <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
               {formattedDate}
             </dd>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <dt className="text-xs font-medium text-muted">ساعت</dt>
+            <dt className="text-xs font-medium text-muted-foreground">ساعت</dt>
             <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
               {formattedTime}
             </dd>

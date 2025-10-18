@@ -26,7 +26,8 @@
 :root {
   --bg: 250 252 255;
   --fg: 20 24 28;
-  --muted: 106 116 126;
+  --muted: 231 234 238;
+  --muted-foreground: 101 108 123;
   --card: 255 255 255;
   --border: 201 205 209;
   --accent: 159 221 231;
@@ -39,7 +40,8 @@
 [data-theme='dark'] {
   --bg: 15 18 25;
   --fg: 230 236 242;
-  --muted: 150 160 172;
+  --muted: 39 47 63;
+  --muted-foreground: 173 180 194;
   --card: 25 30 40;
   --border: 60 70 85;
   --accent: 159 221 231;
@@ -134,8 +136,8 @@ body::after {
     --primary-foreground: 60 9.1% 97.8%;
     --secondary: 60 4.8% 95.9%;
     --secondary-foreground: 24 9.8% 10%;
-    --muted: 60 4.8% 95.9%;
-    --muted-foreground: 25 5.3% 44.7%;
+    --muted: 220 16% 92%;
+    --muted-foreground: 220 10% 44%;
     --accent: 60 4.8% 95.9%;
     --accent-foreground: 24 9.8% 10%;
     --destructive: 0 84.2% 60.2%;
@@ -161,8 +163,8 @@ body::after {
     --primary-foreground: 24 9.8% 10%;
     --secondary: 12 6.5% 15.1%;
     --secondary-foreground: 60 9.1% 97.8%;
-    --muted: 12 6.5% 15.1%;
-    --muted-foreground: 24 5.4% 63.9%;
+    --muted: 220 23% 20%;
+    --muted-foreground: 220 15% 72%;
     --accent: 12 6.5% 15.1%;
     --accent-foreground: 60 9.1% 97.8%;
     --destructive: 0 62.8% 30.6%;

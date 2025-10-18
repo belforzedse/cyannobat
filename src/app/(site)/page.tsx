@@ -53,7 +53,7 @@ const HeroPage = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="rounded-full border border-white/25 bg-white/20 px-4 py-1.5 text-xs font-medium text-muted shadow-inner backdrop-blur-sm dark:bg-white/10"
+            className="rounded-full border border-white/25 bg-white/20 px-4 py-1.5 text-xs font-medium text-muted-foreground shadow-inner backdrop-blur-sm dark:bg-white/10"
           >
             سایان نوبت — cyannobat
           </motion.span>
@@ -69,7 +69,7 @@ const HeroPage = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
-            className="max-w-2xl text-balance text-base leading-relaxed text-muted sm:text-lg"
+            className="max-w-2xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg"
           >
             رزرو نوبت سریع، ساده و شفاف؛ تجربه‌ای الهام‌گرفته از دقت و ظرافت
             طراحی اپل برای مدیریت درمان شما.
@@ -138,7 +138,7 @@ const HeroPage = () => {
           <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">
             مدیریت هوشمند نوبت‌دهی
           </h2>
-          <p className="max-w-2xl text-balance text-base leading-8 text-muted">
+          <p className="max-w-2xl text-balance text-base leading-8 text-muted-foreground">
             با داشبورد مدیریتی، گزارش‌های لحظه‌ای و ادغام‌پذیری با سامانه‌های
             درمانی، تیم شما هر لحظه بر عملکرد مطب و کلینیک نظارت خواهد داشت.
           </p>
