@@ -165,6 +165,20 @@ body::after {
     opacity: 1;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .glass {
+      transition: none;
+    }
+
+    .glass::after {
+      transition: none;
+    }
+
+    .glass:hover::after {
+      opacity: 0;
+    }
+  }
+
   .glass-pill {
     position: relative;
     border-radius: 9999px;
