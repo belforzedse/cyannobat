@@ -22,7 +22,9 @@
       "WebFetch(domain:www.reactbits.dev)",
       "Bash(npm run dev)",
       "Bash(npm run typecheck)",
-      "Bash(curl -s http://localhost:300)"
+      "Bash(curl -s http://localhost:300)",
+      "Bash(git log -1 e8623a0 --format=fuller)",
+      "Bash(git revert -m 1 e8623a0 --no-edit)"
     ],
     "deny": [],
     "ask": []
