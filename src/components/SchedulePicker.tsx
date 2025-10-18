@@ -1,14 +1,14 @@
 'use client';
 
 import clsx from 'clsx';
-import type { AvailabilityDay, AvailabilitySlot } from '@/data/mockAvailability';
+import type { DeliveryDay, DeliveryWindowSlot } from '@/data/mockDeliveryWindows';
 
 type SchedulePickerProps = {
-  availability?: AvailabilityDay[];
-  selectedDay?: string | null;
+  days?: DeliveryDay[];
+  selectedDate?: string | null;
   selectedSlotId?: string | null;
-  onSelectDay?: (day: AvailabilityDay) => void;
-  onSelectSlot?: (slot: AvailabilitySlot, day: AvailabilityDay) => void;
+  onSelectDate?: (day: DeliveryDay) => void;
+  onSelectSlot?: (slot: DeliveryWindowSlot, day: DeliveryDay) => void;
   isLoading?: boolean;
   placeholderMessage?: string;
   emptyMessage?: string;
@@ -17,7 +17,7 @@ type SchedulePickerProps = {
 const formatDayHeading = (date: string) => {
   try {
     const dateInstance = new Date(`${date}T00:00:00`);
-    const weekday = new Intl.DateTimeFormat('fa-IR', { weekday: 'long' }).format(dateInstance);
+    const weekday = new Intl.DateTimeFormat('fa-IR', { weekday: 'short' }).format(dateInstance);
     const label = new Intl.DateTimeFormat('fa-IR', { month: 'long', day: 'numeric' }).format(dateInstance);
     return { weekday, label };
   } catch {
@@ -44,13 +44,13 @@ const formatTime = (time: string) => {
   }
 };
 
-const formatSlotLabel = (slot: AvailabilitySlot) => `${formatTime(slot.start)} تا ${formatTime(slot.end)}`;
+const formatSlotLabel = (slot: DeliveryWindowSlot) => slot.label ?? `${formatTime(slot.start)} تا ${formatTime(slot.end)}`;
 
 const SchedulePicker = ({
-  availability,
-  selectedDay,
+  days,
+  selectedDate,
   selectedSlotId,
-  onSelectDay,
+  onSelectDate,
   onSelectSlot,
   isLoading = false,
   placeholderMessage,
@@ -58,110 +58,135 @@ const SchedulePicker = ({
 }: SchedulePickerProps) => {
   if (isLoading) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div
-            key={index}
-            className="h-44 rounded-2xl border border-white/15 bg-white/30 p-4 backdrop-blur-sm animate-pulse dark:border-white/10 dark:bg-white/5"
-          >
-            <div className="h-6 w-2/3 rounded-full bg-white/60 dark:bg-white/10" />
-            <div className="mt-6 space-y-2">
-              <div className="h-8 rounded-xl bg-white/50 dark:bg-white/10" />
-              <div className="h-8 rounded-xl bg-white/40 dark:bg-white/10" />
-              <div className="h-8 rounded-xl bg-white/30 dark:bg-white/5" />
-            </div>
-          </div>
-        ))}
+      <div className="space-y-6">
+        <div className="flex gap-3 overflow-hidden">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-20 w-36 animate-pulse rounded-full border border-white/15 bg-white/30 backdrop-blur-sm dark:border-white/10 dark:bg-white/5"
+            />
+          ))}
+        </div>
+        <div className="space-y-3">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-20 animate-pulse rounded-2xl border border-white/15 bg-white/30 backdrop-blur-sm dark:border-white/10 dark:bg-white/5"
+            />
+          ))}
+        </div>
       </div>
     );
   }
 
-  if (!availability) {
+  if (!days) {
     return (
       <div className="rounded-2xl border border-dashed border-white/30 bg-white/30 p-6 text-sm text-muted-foreground dark:border-white/10 dark:bg-white/5">
-        {placeholderMessage ?? 'برای مشاهده زمان‌های آزاد، ابتدا خدمت و پزشک را انتخاب کنید.'}
+        {placeholderMessage ?? 'برای مشاهده بازه‌های تحویل، ابتدا یک تاریخ را انتخاب کنید.'}
       </div>
     );
   }
 
-  if (availability.length === 0) {
+  if (days.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-white/30 bg-white/30 p-6 text-sm text-muted-foreground dark:border-white/10 dark:bg-white/5">
-        {emptyMessage ?? 'در حال حاضر زمان آزادی برای این ترکیب وجود ندارد.'}
+        {emptyMessage ?? 'هیچ بازه تحویلی در دسترس نیست.'}
       </div>
     );
   }
+
+  const activeDay = selectedDate ? days.find((day) => day.date === selectedDate) : undefined;
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {availability.map((day) => {
-        const isActiveDay = selectedDay === day.date;
-        const { weekday, label } = formatDayHeading(day.date);
+    <div className="space-y-6">
+      <div className="flex snap-x gap-3 overflow-x-auto pb-2">
+        {days.map((day) => {
+          const isActive = activeDay?.date === day.date;
+          const { weekday, label } = formatDayHeading(day.date);
 
-        return (
-          <div
-            key={day.date}
-            className={clsx(
-              'flex h-full flex-col gap-3 rounded-2xl border p-4 transition-all duration-300',
-              'border-white/20 bg-white/45 shadow-[0_18px_40px_-30px_rgba(31,38,135,0.35)] backdrop-blur-sm',
-              'dark:border-white/12 dark:bg-white/10',
-              isActiveDay && 'border-accent/60 bg-accent/15 shadow-[0_24px_45px_-30px_rgba(88,175,192,0.5)] dark:border-accent/40 dark:bg-accent/10'
-            )}
-          >
+          return (
             <button
               type="button"
+              key={day.date}
               className={clsx(
-                'flex flex-col items-end gap-1 rounded-xl border px-3 py-2 text-right transition-colors duration-200',
-                'border-white/30 bg-white/55 hover:border-accent/50 hover:bg-white/70',
-                'dark:border-white/10 dark:bg-white/10 dark:hover:border-accent/40 dark:hover:bg-white/15',
-                isActiveDay && 'border-accent/60 bg-accent/20 text-accent'
+                'relative flex min-w-[8.5rem] snap-center flex-col items-end gap-1 rounded-full border px-4 py-3 text-right transition-all duration-200',
+                'border-white/25 bg-white/45 hover:border-accent/60 hover:bg-white/70',
+                'dark:border-white/12 dark:bg-white/10 dark:hover:border-accent/50 dark:hover:bg-white/20',
+                isActive && 'border-accent/70 bg-accent/20 text-accent shadow-[0_20px_45px_-30px_rgba(88,175,192,0.6)] dark:text-accent-foreground'
               )}
-              onClick={() => onSelectDay?.(day)}
-              aria-pressed={isActiveDay}
+              onClick={() => onSelectDate?.(day)}
+              aria-pressed={isActive}
             >
               <span className="text-xs font-semibold text-muted-foreground">{weekday || '—'}</span>
               <span className="text-sm font-bold text-foreground">{label}</span>
-              {day.note && <span className="text-[11px] text-accent-strong/80">{day.note}</span>}
-            </button>
-
-            <div className="flex flex-col gap-2">
-              {day.slots.length === 0 ? (
-                <span className="rounded-xl border border-dashed border-white/30 px-3 py-2 text-xs text-muted-foreground dark:border-white/15">
-                  زمان خالی برای این روز موجود نیست.
+              {day.shippingLabel && <span className="text-[11px] text-muted-foreground">{day.shippingLabel}</span>}
+              {day.badge && (
+                <span className="absolute left-4 top-3 rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-accent-foreground">
+                  {day.badge}
                 </span>
-              ) : (
-                <div className="grid grid-cols-2 gap-2">
-                  {day.slots.map((slot) => {
-                    const slotId = slot.id;
-                    const isSelected = isActiveDay && selectedSlotId === slotId;
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {activeDay ? (
+        <div className="space-y-4">
+          {activeDay.note && (
+            <div className="rounded-2xl border border-white/20 bg-white/40 p-4 text-xs text-muted-foreground dark:border-white/12 dark:bg-white/10">
+              {activeDay.note}
+            </div>
+          )}
+
+          {activeDay.groups.length > 0 ? (
+            activeDay.groups.map((group) => (
+              <div
+                key={`${activeDay.date}-${group.label}`}
+                className="rounded-2xl border border-white/20 bg-white/45 shadow-[0_18px_40px_-30px_rgba(31,38,135,0.35)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10"
+              >
+                <div className="flex flex-col gap-1 border-b border-white/15 px-4 py-3 text-right dark:border-white/10">
+                  <span className="text-sm font-semibold text-foreground">{group.label}</span>
+                  {group.note && <span className="text-xs text-muted-foreground">{group.note}</span>}
+                </div>
+                <div className="flex flex-col gap-2 p-4">
+                  {group.windows.map((slot) => {
+                    const isSelected = activeDay.date === selectedDate && selectedSlotId === slot.id;
 
                     return (
                       <button
                         type="button"
-                        key={slotId}
+                        key={slot.id}
                         className={clsx(
-                          'flex flex-col items-end gap-1 rounded-xl border px-3 py-2 text-right text-xs font-medium transition-all duration-200',
-                          'border-white/25 bg-white/55 hover:border-accent/50 hover:bg-white/75',
-                          'dark:border-white/12 dark:bg-white/12 dark:hover:border-accent/40 dark:hover:bg-white/20',
+                          'flex flex-col items-end gap-1 rounded-xl border px-3 py-2 text-right text-sm transition-all duration-200',
+                          'border-white/25 bg-white/55 hover:border-accent/60 hover:bg-white/75',
+                          'dark:border-white/12 dark:bg-white/12 dark:hover:border-accent/50 dark:hover:bg-white/20',
                           isSelected && 'border-accent/70 bg-accent/20 text-accent shadow-[0_16px_36px_-28px_rgba(88,175,192,0.6)]'
                         )}
                         onClick={() => {
-                          onSelectDay?.(day);
-                          onSelectSlot?.(slot, day);
+                          onSelectDate?.(activeDay);
+                          onSelectSlot?.(slot, activeDay);
                         }}
                         aria-pressed={isSelected}
                       >
-                        <span>{formatSlotLabel(slot)}</span>
-                        {slot.kind === 'virtual' && <span className="text-[10px] text-accent-strong/80">مشاوره آنلاین</span>}
+                        <span className="font-medium">{formatSlotLabel(slot)}</span>
+                        {slot.description && <span className="text-xs text-muted-foreground">{slot.description}</span>}
                       </button>
                     );
                   })}
                 </div>
-              )}
+              </div>
+            ))
+          ) : (
+            <div className="rounded-2xl border border-dashed border-white/25 bg-white/40 p-6 text-center text-sm text-muted-foreground dark:border-white/12 dark:bg-white/10">
+              {emptyMessage ?? 'برای این روز بازه‌ای تعریف نشده است.'}
             </div>
-          </div>
-        );
-      })}
+          )}
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-dashed border-white/30 bg-white/30 p-6 text-sm text-muted-foreground dark:border-white/10 dark:bg-white/5">
+          {placeholderMessage ?? 'برای مشاهده بازه‌های تحویل، یکی از تاریخ‌ها را انتخاب کنید.'}
+        </div>
+      )}
     </div>
   );
 };
