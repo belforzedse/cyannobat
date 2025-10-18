@@ -130,8 +130,8 @@ const Sidebar = () => {
     <nav
       aria-label="پیمایش اصلی و اقدامات سریع"
       className={clsx(
-        'glass fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-xl items-center gap-2 rounded-3xl px-3 py-2 shadow-lg backdrop-blur',
-        'lg:inset-auto lg:right-4 lg:top-24 lg:h-[calc(100vh-144px)] lg:w-24 lg:max-w-none lg:flex-col lg:items-center lg:justify-between lg:gap-8 lg:px-4 lg:py-6'
+        "glass fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-xl items-center gap-2 rounded-3xl px-3 py-2 shadow-lg backdrop-blur",
+        "lg:inset-auto lg:right-4 lg:top-[105px] lg:h-[calc(100vh-150px)] lg:w-24 lg:max-w-none lg:flex-col lg:items-center lg:justify-between lg:gap-8 lg:px-4 lg:py-6"
       )}
     >
       <ul className="flex w-full items-center justify-between gap-1 lg:hidden">

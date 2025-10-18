@@ -16,16 +16,13 @@ const Header = () => {
       }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: "easeOut" }}
-      className="glass rounded-3xl sticky top-4 z-30 flex items-center justify-between px-6 py-3 text-right mx-4 lg:mr-28 xl:mr-32 2xl:mr-36"
+      className="glass rounded-3xl sticky top-4 z-30 flex items-center justify-between px-6 py-4 text-right mx-4 lg:mr-[122px] xl:mr-[122px] 2xl:mr-[122px]"
     >
       <div
         className="pointer-events-none absolute inset-0 rounded-2rem bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-30 -z-10 dark:via-white/10"
         aria-hidden
       />
       <div className="flex items-center gap-2">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-white/65 via-accent/35 to-accent-strong/50 text-foreground shadow-inner backdrop-blur-xl dark:from-white/15 dark:via-accent/25 dark:to-accent-strong/45">
-          <span className="text-lg font-bold">س</span>
-        </div>
         <div className="flex flex-col">
           <Link
             href="/"

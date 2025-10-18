@@ -1,10 +1,12 @@
 import type { ReactNode } from 'react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
+import Logo from '@/components/Logo';
 
 const SiteLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="relative flex min-h-screen w-full">
+      <Logo />
       <Sidebar />
 
       {/* Main Content Area */}
