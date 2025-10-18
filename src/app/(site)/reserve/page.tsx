@@ -1,85 +1,24 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import clsx from 'clsx';
-import ServiceCard from '@/components/ServiceCard';
 import SchedulePicker from '@/components/SchedulePicker';
-import {
-  mockAvailability,
-  type AvailabilityDay,
-  type AvailabilitySlot,
-  type DoctorId,
-  type ServiceId,
-} from '@/data/mockAvailability';
-
-type ServiceOption = {
-  value: ServiceId;
-  label: string;
-  description: string;
-  icon: string;
-  badge?: string;
-};
-
-type DoctorOption = {
-  value: DoctorId;
-  label: string;
-  description: string;
-  icon: string;
-  badge?: string;
-};
-
-const serviceOptions: ServiceOption[] = [
-  {
-    value: 'general',
-    label: 'مشاوره عمومی',
-    description: 'پاسخ به پرسش‌های روزمره و دریافت راهنمایی دقیق از تیم متخصص.',
-    icon: '💬',
-    badge: 'پیشنهاد ما',
-  },
-  {
-    value: 'cardio',
-    label: 'ویزیت تخصص قلب',
-    description: 'ارزیابی دقیق قلب و تدوین برنامه درمانی متناسب با شرایط شما.',
-    icon: '❤️',
-  },
-  {
-    value: 'checkup',
-    label: 'چکاپ دوره‌ای',
-    description: 'بررسی کامل وضعیت سلامتی و ارائه گزارش شخصی‌سازی شده.',
-    icon: '🩺',
-    badge: 'پرطرفدار',
-  },
-];
-
-const doctorOptions: DoctorOption[] = [
-  {
-    value: 'nasrin',
-    label: 'دکتر نسرین حاتمی',
-    description: 'فوق تخصص قلب و عروق، مدرس دانشگاه علوم پزشکی تهران.',
-    icon: '👩‍⚕️',
-    badge: '۱۵ سال تجربه',
-  },
-  {
-    value: 'omid',
-    label: 'دکتر امید فرهی',
-    description: 'متخصص داخلی با تمرکز بر سبک زندگی و پیشگیری.',
-    icon: '👨‍⚕️',
-    badge: 'محبوب بیماران',
-  },
-  {
-    value: 'leila',
-    label: 'دکتر لیلا محمدی',
-    description: 'متخصص تغذیه و دیابت، همراه بیمار در مسیر درمان.',
-    icon: '👩‍⚕️',
-  },
-];
+import BookingInput from '@/components/BookingInput';
+import { mockAvailability, type AvailabilityDay, type AvailabilitySlot } from '@/data/mockAvailability';
 
 const progressSteps = [
-  { key: 'service', label: 'انتخاب خدمت' },
-  { key: 'doctor', label: 'انتخاب پزشک' },
-  { key: 'schedule', label: 'زمان‌بندی' },
+  { key: 'dateTime', label: 'انتخاب تاریخ و زمان' },
+  { key: 'reason', label: 'دلیل مراجعه' },
+  { key: 'customer', label: 'اطلاعات تماس' },
+] as const;
+
+const reasonOptions = [
+  { value: 'follow_up', label: 'پیگیری روند درمان' },
+  { value: 'new_symptom', label: 'بروز علائم جدید' },
+  { value: 'checkup', label: 'چکاپ و پیشگیری' },
+  { value: 'second_opinion', label: 'دریافت نظر دوم' },
 ] as const;
 
 type StepStatus = 'complete' | 'current' | 'upcoming';
@@ -129,65 +68,51 @@ type SelectedSchedule = {
 
 const BookingPage = () => {
   const prefersReducedMotion = useReducedMotion();
-  const [selectedService, setSelectedService] = useState<ServiceId | ''>('');
-  const [selectedDoctor, setSelectedDoctor] = useState<DoctorId | ''>('');
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedSchedule, setSelectedSchedule] = useState<SelectedSchedule | null>(null);
-
-  const selectedServiceDetails = serviceOptions.find((service) => service.value === selectedService);
-  const selectedDoctorDetails = doctorOptions.find((doctor) => doctor.value === selectedDoctor);
-  const isScheduleComplete = Boolean(selectedSchedule);
+  const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
+  const [additionalReason, setAdditionalReason] = useState('');
+  const [customerInfo, setCustomerInfo] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+  });
+  const [customerNotes, setCustomerNotes] = useState('');
 
   const availabilityForSelection = useMemo(() => {
-    if (!selectedService || !selectedDoctor) {
-      return undefined;
-    }
+    const merged = new Map<string, AvailabilityDay>();
 
-    return mockAvailability[selectedService][selectedDoctor];
-  }, [selectedDoctor, selectedService]);
+    Object.values(mockAvailability).forEach((serviceAvailability) => {
+      Object.values(serviceAvailability).forEach((doctorAvailability) => {
+        doctorAvailability.forEach((day) => {
+          const existingDay = merged.get(day.date);
+          if (!existingDay) {
+            merged.set(day.date, {
+              date: day.date,
+              slots: [...day.slots],
+              note: day.note,
+            });
+            return;
+          }
 
-  useEffect(() => {
-    setSelectedDoctor('');
-    setSelectedDay(null);
-    setSelectedSchedule(null);
-  }, [selectedService]);
+          const combinedSlots = [...existingDay.slots];
+          day.slots.forEach((slot) => {
+            if (!combinedSlots.some((existingSlot) => existingSlot.id === slot.id)) {
+              combinedSlots.push(slot);
+            }
+          });
 
-  useEffect(() => {
-    setSelectedDay(null);
-    setSelectedSchedule(null);
-  }, [selectedDoctor]);
-
-  useEffect(() => {
-    if (!availabilityForSelection || availabilityForSelection.length === 0) {
-      setSelectedDay(null);
-      setSelectedSchedule(null);
-      return;
-    }
-
-    setSelectedDay((currentDay) => {
-      if (!currentDay) return currentDay;
-      const exists = availabilityForSelection.some((day) => day.date === currentDay);
-      return exists ? currentDay : null;
+          merged.set(day.date, {
+            date: day.date,
+            slots: combinedSlots.sort((a, b) => a.start.localeCompare(b.start)),
+            note: existingDay.note ?? day.note,
+          });
+        });
+      });
     });
 
-    setSelectedSchedule((currentSchedule) => {
-      if (!currentSchedule) return currentSchedule;
-      const dayMatch = availabilityForSelection.find((day) => day.date === currentSchedule.day.date);
-      if (!dayMatch) {
-        return null;
-      }
-      const slotMatch = dayMatch.slots.find((slot) => slot.id === currentSchedule.slot.id);
-      return slotMatch ? currentSchedule : null;
-    });
-  }, [availabilityForSelection]);
-
-  const handleServiceSelect = (service: ServiceId) => {
-    setSelectedService(service);
-  };
-
-  const handleDoctorSelect = (doctor: DoctorId) => {
-    setSelectedDoctor(doctor);
-  };
+    return Array.from(merged.values()).sort((a, b) => a.date.localeCompare(b.date));
+  }, []);
 
   const handleDaySelect = (day: AvailabilityDay) => {
     setSelectedDay(day.date);
@@ -204,21 +129,42 @@ const BookingPage = () => {
     setSelectedSchedule({ day, slot });
   };
 
+  const handleReasonToggle = (value: string) => {
+    setSelectedReasons((prev) => {
+      if (prev.includes(value)) {
+        return prev.filter((reason) => reason !== value);
+      }
+      return [...prev, value];
+    });
+  };
+
+  const handleCustomerChange = (field: keyof typeof customerInfo, value: string) => {
+    setCustomerInfo((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const selectedReasonLabels = selectedReasons
+    .map((reason) => reasonOptions.find((option) => option.value === reason)?.label ?? reason)
+    .filter((label): label is string => Boolean(label));
+
+  const isScheduleComplete = Boolean(selectedSchedule);
+  const isReasonComplete = selectedReasons.length > 0 || additionalReason.trim().length > 0;
+  const isCustomerComplete = Object.values(customerInfo).every((value) => value.trim().length > 0);
+
   const activeIndex = progressSteps.findIndex((step) => {
-    if (step.key === 'service') return !selectedServiceDetails;
-    if (step.key === 'doctor') return !selectedDoctorDetails;
-    return !isScheduleComplete;
+    if (step.key === 'dateTime') return !isScheduleComplete;
+    if (step.key === 'reason') return !isReasonComplete;
+    return !isCustomerComplete;
   });
 
   const resolvedActiveIndex = activeIndex === -1 ? progressSteps.length - 1 : activeIndex;
 
   const stepsWithStatus = progressSteps.map((step, index) => {
     const complete =
-      step.key === 'service'
-        ? Boolean(selectedServiceDetails)
-        : step.key === 'doctor'
-          ? Boolean(selectedDoctorDetails)
-          : isScheduleComplete;
+      step.key === 'dateTime'
+        ? isScheduleComplete
+        : step.key === 'reason'
+          ? isReasonComplete
+          : isCustomerComplete;
 
     const status: StepStatus = complete ? 'complete' : index === resolvedActiveIndex ? 'current' : 'upcoming';
 
@@ -229,13 +175,16 @@ const BookingPage = () => {
     ? formatDateLabel(selectedSchedule.day.date)
     : formatDateLabel(selectedDay);
   const formattedTime = formatTimeRange(selectedSchedule?.slot ?? null);
-  const isContinueDisabled = !selectedServiceDetails || !selectedDoctorDetails || !selectedSchedule;
+  const isContinueDisabled = !isScheduleComplete || !isReasonComplete || !isCustomerComplete;
 
-  const placeholderMessage = !selectedServiceDetails
-    ? 'ابتدا خدمت مورد نظر را انتخاب کنید تا زمان‌های خالی نمایش داده شود.'
-    : !selectedDoctorDetails
-      ? 'برای مشاهده زمان‌های موجود، پزشک را انتخاب کنید.'
-      : undefined;
+  const reasonSummary = isReasonComplete
+    ? [
+        ...selectedReasonLabels,
+        additionalReason.trim() ? `توضیحات: ${additionalReason.trim()}` : null,
+      ].filter((value): value is string => Boolean(value))
+    : [];
+
+  const placeholderMessage = 'برای مشاهده زمان‌های خالی، ابتدا تاریخ مورد نظر را انتخاب کنید.';
 
   return (
     <motion.section
@@ -363,78 +312,6 @@ const BookingPage = () => {
           className="rounded-3xl border border-white/25 bg-white/45 p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10"
         >
           <div className="flex flex-col items-end gap-2 text-right">
-            <h3 className="text-sm font-semibold text-foreground">انتخاب خدمت</h3>
-            <p className="text-xs leading-6 text-muted-foreground">
-              نوع خدمتی که نیاز دارید را انتخاب کنید تا پیشنهادهای دقیق‌تری دریافت کنید.
-            </p>
-          </div>
-          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {serviceOptions.map((service, index) => (
-              <motion.div
-                key={service.value}
-                initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: prefersReducedMotion ? 0 : 0.05 * index,
-                  duration: prefersReducedMotion ? 0 : 0.4,
-                  ease: 'easeOut',
-                }}
-              >
-                <ServiceCard
-                  title={service.label}
-                  description={service.description}
-                  badge={service.badge}
-                  icon={service.icon}
-                  isSelected={selectedService === service.value}
-                  onClick={() => handleServiceSelect(service.value)}
-                />
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: prefersReducedMotion ? 0 : 0.45, duration: prefersReducedMotion ? 0 : 0.45 }}
-          className="rounded-3xl border border-white/25 bg-white/45 p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10"
-        >
-          <div className="flex flex-col items-end gap-2 text-right">
-            <h3 className="text-sm font-semibold text-foreground">انتخاب پزشک</h3>
-            <p className="text-xs leading-6 text-muted-foreground">پزشک مورد اعتماد خود را برای ادامه مسیر درمان برگزینید.</p>
-          </div>
-          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {doctorOptions.map((doctor, index) => (
-              <motion.div
-                key={doctor.value}
-                initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: prefersReducedMotion ? 0 : 0.05 * index,
-                  duration: prefersReducedMotion ? 0 : 0.4,
-                  ease: 'easeOut',
-                }}
-              >
-                <ServiceCard
-                  title={doctor.label}
-                  description={doctor.description}
-                  badge={doctor.badge}
-                  icon={doctor.icon}
-                  isSelected={selectedDoctor === doctor.value}
-                  onClick={() => handleDoctorSelect(doctor.value)}
-                />
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: prefersReducedMotion ? 0 : 0.5, duration: prefersReducedMotion ? 0 : 0.45 }}
-          className="rounded-3xl border border-white/25 bg-white/45 p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10"
-        >
-          <div className="flex flex-col items-end gap-2 text-right">
             <h3 className="text-sm font-semibold text-foreground">تاریخ و زمان</h3>
             <p className="text-xs leading-6 text-muted-foreground">روز و ساعت دلخواه را انتخاب کنید تا یادآورها را دریافت نمایید.</p>
           </div>
@@ -446,7 +323,123 @@ const BookingPage = () => {
               onSelectDay={handleDaySelect}
               onSelectSlot={handleSlotSelect}
               placeholderMessage={placeholderMessage}
-              emptyMessage="در حال حاضر زمانی برای این ترکیب موجود نیست. لطفاً بعداً دوباره بررسی کنید."
+              emptyMessage="در حال حاضر زمانی در دسترس نیست. لطفاً بعداً دوباره بررسی کنید."
+            />
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: prefersReducedMotion ? 0 : 0.45, duration: prefersReducedMotion ? 0 : 0.45 }}
+          className="rounded-3xl border border-white/25 bg-white/45 p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10"
+        >
+          <div className="flex flex-col items-end gap-2 text-right">
+            <h3 className="text-sm font-semibold text-foreground">دلیل مراجعه</h3>
+            <p className="text-xs leading-6 text-muted-foreground">
+              یکی از گزینه‌های زیر را انتخاب کنید یا توضیح کوتاهی درباره‌ی نیاز خود بنویسید.
+            </p>
+          </div>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            {reasonOptions.map((reason, index) => {
+              const isSelected = selectedReasons.includes(reason.value);
+              return (
+                <motion.button
+                  type="button"
+                  key={reason.value}
+                  onClick={() => handleReasonToggle(reason.value)}
+                  initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    delay: prefersReducedMotion ? 0 : 0.05 * index,
+                    duration: prefersReducedMotion ? 0 : 0.35,
+                    ease: 'easeOut',
+                  }}
+                  className={clsx(
+                    'flex w-full flex-row-reverse items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-right shadow-sm transition-all duration-200',
+                    'hover:border-accent/60 hover:bg-accent/10 dark:hover:border-accent/50',
+                    isSelected
+                      ? 'border-accent/70 bg-accent/20 text-foreground shadow-[0_12px_28px_-22px_rgba(88,175,192,0.75)] dark:border-accent/60'
+                      : 'border-white/25 bg-white/45 text-muted-foreground dark:border-white/15 dark:bg-white/10',
+                  )}
+                >
+                  <span className="text-sm font-medium">{reason.label}</span>
+                  <span
+                    className={clsx(
+                      'flex h-7 w-7 items-center justify-center rounded-full border text-xs font-semibold transition-colors',
+                      isSelected
+                        ? 'border-accent/70 bg-accent text-slate-900'
+                        : 'border-white/30 bg-white/40 text-muted-foreground dark:border-white/20 dark:bg-white/15',
+                    )}
+                    aria-hidden
+                  >
+                    {isSelected ? '✓' : '۰'}
+                  </span>
+                </motion.button>
+              );
+            })}
+          </div>
+          <div className="mt-6 flex flex-col gap-2">
+            <label htmlFor="additional-reason" className="text-sm font-medium text-foreground text-right">
+              توضیحات تکمیلی
+            </label>
+            <textarea
+              id="additional-reason"
+              value={additionalReason}
+              onChange={(event) => setAdditionalReason(event.target.value)}
+              className="min-h-[120px] w-full rounded-xl border border-white/20 bg-white/50 px-4 py-3 text-right text-sm text-foreground placeholder:text-muted-foreground transition-colors duration-200 hover:border-white/30 hover:bg-white/60 focus:border-accent focus:bg-white/70 focus:outline-none focus:ring-2 focus:ring-accent/40 dark:border-white/12 dark:bg-white/10 dark:hover:border-white/20 dark:hover:bg-white/15 dark:focus:border-accent/50 dark:focus:bg-white/20"
+              placeholder="در صورت نیاز جزئیات بیشتری را بنویسید"
+            />
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: prefersReducedMotion ? 0 : 0.5, duration: prefersReducedMotion ? 0 : 0.45 }}
+          className="rounded-3xl border border-white/25 bg-white/45 p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10"
+        >
+          <div className="flex flex-col items-end gap-2 text-right">
+            <h3 className="text-sm font-semibold text-foreground">اطلاعات تماس</h3>
+            <p className="text-xs leading-6 text-muted-foreground">
+              لطفاً راه‌های ارتباطی خود را وارد کنید تا هماهنگی‌ها سریع‌تر انجام شود.
+            </p>
+          </div>
+          <div className="mt-5 grid gap-4 sm:grid-cols-3">
+            <BookingInput
+              label="نام و نام خانوادگی"
+              name="fullName"
+              value={customerInfo.fullName}
+              onChange={(event) => handleCustomerChange('fullName', event.target.value)}
+              placeholder="مثلاً سارا محمدی"
+            />
+            <BookingInput
+              label="ایمیل"
+              type="email"
+              name="email"
+              value={customerInfo.email}
+              onChange={(event) => handleCustomerChange('email', event.target.value)}
+              placeholder="you@example.com"
+            />
+            <BookingInput
+              label="شماره تماس"
+              type="tel"
+              name="phone"
+              value={customerInfo.phone}
+              onChange={(event) => handleCustomerChange('phone', event.target.value)}
+              placeholder="0912 xxx xxxx"
+            />
+          </div>
+          <div className="mt-5">
+            <label htmlFor="customer-notes" className="text-sm font-medium text-foreground text-right">
+              یادداشت برای تیم پشتیبانی
+            </label>
+            <textarea
+              id="customer-notes"
+              value={customerNotes}
+              onChange={(event) => setCustomerNotes(event.target.value)}
+              className="mt-2 min-h-[100px] w-full rounded-xl border border-white/20 bg-white/50 px-4 py-3 text-right text-sm text-foreground placeholder:text-muted-foreground transition-colors duration-200 hover:border-white/30 hover:bg-white/60 focus:border-accent focus:bg-white/70 focus:outline-none focus:ring-2 focus:ring-accent/40 dark:border-white/12 dark:bg-white/10 dark:hover:border-white/20 dark:hover:bg-white/15 dark:focus:border-accent/50 dark:focus:bg-white/20"
+              placeholder="اگر نکته‌ای لازم است پیش از نوبت بدانیم اینجا بنویسید"
             />
           </div>
         </motion.div>
@@ -493,20 +486,6 @@ const BookingPage = () => {
         </div>
         <dl className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
           <div className="flex flex-col items-end gap-1">
-            <dt className="text-xs font-medium text-muted-foreground">خدمت انتخابی</dt>
-            <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
-              {selectedServiceDetails?.label ?? 'انتخاب نشده'}
-            </dd>
-          </div>
-          <div className="flex flex-col items-end gap-1">
-            <dt className="text-xs font-medium text-muted-foreground">پزشک منتخب</dt>
-            <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
-              {selectedDoctorDetails
-                ? `${selectedDoctorDetails.label}${selectedDoctorDetails.badge ? ' — ' + selectedDoctorDetails.badge : ''}`
-                : 'انتخاب نشده'}
-            </dd>
-          </div>
-          <div className="flex flex-col items-end gap-1">
             <dt className="text-xs font-medium text-muted-foreground">تاریخ</dt>
             <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
               {formattedDate}
@@ -516,6 +495,26 @@ const BookingPage = () => {
             <dt className="text-xs font-medium text-muted-foreground">ساعت</dt>
             <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
               {formattedTime}
+            </dd>
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            <dt className="text-xs font-medium text-muted-foreground">دلیل مراجعه</dt>
+            <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
+              {reasonSummary.length > 0 ? reasonSummary.join('، ') : 'انتخاب نشده'}
+            </dd>
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            <dt className="text-xs font-medium text-muted-foreground">اطلاعات تماس</dt>
+            <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
+              {isCustomerComplete
+                ? `${customerInfo.fullName} — ${customerInfo.email} — ${customerInfo.phone}`
+                : 'تکمیل نشده'}
+            </dd>
+          </div>
+          <div className="flex flex-col items-end gap-1 sm:col-span-2">
+            <dt className="text-xs font-medium text-muted-foreground">یادداشت</dt>
+            <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
+              {customerNotes.trim() ? customerNotes.trim() : 'بدون یادداشت'}
             </dd>
           </div>
         </dl>
