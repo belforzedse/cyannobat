@@ -43,22 +43,22 @@ const GlassButton = ({
       transition={liquidSpring}
       className={clsx(
         'relative inline-flex items-center justify-center rounded-full font-semibold',
-        'border backdrop-blur-lg backdrop-saturate-150',
+        'border backdrop-blur-md',
         'transition-all duration-300 ease-out',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2',
         sizeStyles[size],
         isPrimary
           ? [
-              'border-white/18 bg-gradient-to-br from-accent/35 to-accent/25',
+              'border-white/18 bg-gradient-to-br from-accent/30 to-accent/20',
               'text-foreground',
-              'shadow-[0_8px_32px_0_rgba(159,221,231,0.3),inset_0_1px_0_0_rgba(255,255,255,0.4)]',
-              'hover:shadow-[0_12px_40px_0_rgba(159,221,231,0.4),inset_0_1px_0_0_rgba(255,255,255,0.5)]',
+              'shadow-[0_8px_32px_0_rgba(159,221,231,0.25),inset_0_1px_0_0_rgba(255,255,255,0.3)]',
+              'hover:shadow-[0_12px_40px_0_rgba(159,221,231,0.35),inset_0_1px_0_0_rgba(255,255,255,0.4)]',
             ]
           : [
-              'border-white/18 bg-white/25 dark:bg-white/10',
+              'border-white/18 bg-white/20 dark:bg-white/8',
               'text-foreground/90',
-              'shadow-[0_8px_32px_0_rgba(31,38,135,0.2),inset_0_1px_0_0_rgba(255,255,255,0.3)]',
-              'hover:shadow-[0_12px_40px_0_rgba(31,38,135,0.25),inset_0_1px_0_0_rgba(255,255,255,0.4)]',
+              'shadow-[0_8px_32px_0_rgba(31,38,135,0.15),inset_0_1px_0_0_rgba(255,255,255,0.25)]',
+              'hover:shadow-[0_12px_40px_0_rgba(31,38,135,0.2),inset_0_1px_0_0_rgba(255,255,255,0.35)]',
             ],
         className
       )}

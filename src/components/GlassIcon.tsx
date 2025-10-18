@@ -56,11 +56,11 @@ const GlassIcon = ({
         // Glass morphism styling - ReactBits inspired
         'rounded-xl',
         'border border-white/18',
-        'bg-white/30 dark:bg-white/10',
-        'backdrop-filter backdrop-blur-lg backdrop-saturate-150',
+        'bg-white/25 dark:bg-white/8',
+        'backdrop-filter backdrop-blur-md',
         // Professional shadows
-        'shadow-[0_8px_32px_0_rgba(31,38,135,0.18)]',
-        'dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]',
+        'shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]',
+        'dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]',
         // Smooth transitions
         'transition-all duration-300 ease-out',
         sizeClasses[size],
