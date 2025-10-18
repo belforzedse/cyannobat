@@ -30,7 +30,7 @@ const Header = () => {
           >
             سایان نوبت
           </Link>
-          <span className="text-xs text-muted">cyannobat</span>
+          <span className="text-xs text-muted-foreground">cyannobat</span>
         </div>
       </div>
       <div className="flex items-center gap-3">

@@ -43,7 +43,7 @@ const GlassCard = ({ title, description, children, className }: GlassCardProps) 
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.4 }}
-            className="leading-relaxed text-sm text-muted"
+            className="leading-relaxed text-sm text-muted-foreground"
           >
             {description}
           </motion.p>

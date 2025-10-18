@@ -72,7 +72,7 @@ const BookingSelect = ({ label, error, helper, options, className, id, name, ...
         </select>
         <div
           className={clsx(
-            'pointer-events-none absolute top-1/2 -translate-y-1/2 text-muted',
+            'pointer-events-none absolute top-1/2 -translate-y-1/2 text-muted-foreground',
             "[dir='ltr']:right-3 [dir='rtl']:left-3",
           )}
         >
@@ -82,7 +82,7 @@ const BookingSelect = ({ label, error, helper, options, className, id, name, ...
         </div>
       </div>
       {helper && !error && (
-        <p id={helperId} className="text-xs text-muted text-right">
+        <p id={helperId} className="text-xs text-muted-foreground text-right">
           {helper}
         </p>
       )}
