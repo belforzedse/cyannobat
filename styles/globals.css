@@ -240,6 +240,14 @@ body::after {
     transform: translateY(-1px);
   }
 
+  .btn-primary:disabled {
+    cursor: not-allowed;
+    opacity: 0.75;
+    transform: none;
+    box-shadow: none;
+    background: linear-gradient(135deg, rgb(var(--accent) / 0.55), rgb(var(--accent) / 0.35));
+  }
+
   [data-theme='dark'] .btn-primary {
     color: rgb(15, 23, 42);
     box-shadow:
@@ -251,6 +259,11 @@ body::after {
     box-shadow:
       0 12px 40px rgba(159, 221, 231, 0.4),
       inset 0 1px 2px rgba(255, 255, 255, 0.5);
+  }
+
+  [data-theme='dark'] .btn-primary:disabled {
+    box-shadow: none;
+    background: linear-gradient(135deg, rgb(var(--accent) / 0.4), rgb(var(--accent) / 0.22));
   }
 
   .btn-secondary {
@@ -287,6 +300,13 @@ body::after {
     transform: translateY(0);
   }
 
+  .btn-secondary:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+    transform: none;
+    box-shadow: none;
+  }
+
   [data-theme='dark'] .btn-secondary {
     border-color: rgba(255, 255, 255, 0.2);
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.06));
@@ -301,6 +321,12 @@ body::after {
     box-shadow:
       0 8px 28px rgba(159, 221, 231, 0.25),
       inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  }
+
+  [data-theme='dark'] .btn-secondary:disabled {
+    box-shadow: none;
+    border-color: rgba(255, 255, 255, 0.12);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
   }
 }
 
