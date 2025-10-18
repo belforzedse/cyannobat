@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useId } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useId } from 'react';
 import { useTheme } from 'next-themes';
 
 export interface GlassSurfaceProps {
@@ -63,7 +63,7 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   blueOffset = 20,
   xChannel = 'R',
   yChannel = 'G',
-  mixBlendMode = 'difference',
+  mixBlendMode = 'screen',
   className = '',
   style = {}
 }) => {
@@ -88,7 +88,14 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
 
   const isDarkMode = mounted && resolvedTheme === 'dark';
 
-  const generateDisplacementMap = () => {
+  const glowPrimary = isDarkMode
+    ? 'rgba(159, 221, 231, 0.7)'
+    : 'rgba(159, 221, 231, 0.85)';
+  const glowSecondary = isDarkMode
+    ? 'rgba(79, 120, 131, 0.6)'
+    : 'rgba(110, 169, 183, 0.75)';
+
+  const generateDisplacementMap = useCallback(() => {
     const rect = containerRef.current?.getBoundingClientRect();
     const actualWidth = rect?.width || 400;
     const actualHeight = rect?.height || 200;
@@ -99,11 +106,11 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
         <defs>
           <linearGradient id="${redGradId}" x1="100%" y1="0%" x2="0%" y2="0%">
             <stop offset="0%" stop-color="#0000"/>
-            <stop offset="100%" stop-color="red"/>
+            <stop offset="100%" stop-color="${glowPrimary}"/>
           </linearGradient>
           <linearGradient id="${blueGradId}" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stop-color="#0000"/>
-            <stop offset="100%" stop-color="blue"/>
+            <stop offset="100%" stop-color="${glowSecondary}"/>
           </linearGradient>
         </defs>
         <rect x="0" y="0" width="${actualWidth}" height="${actualHeight}" fill="black"></rect>
@@ -114,11 +121,22 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
     `;
 
     return `data:image/svg+xml,${encodeURIComponent(svgContent)}`;
-  };
+  }, [
+    borderRadius,
+    borderWidth,
+    brightness,
+    blur,
+    glowPrimary,
+    glowSecondary,
+    mixBlendMode,
+    opacity,
+    redGradId,
+    blueGradId
+  ]);
 
-  const updateDisplacementMap = () => {
+  const updateDisplacementMap = useCallback(() => {
     feImageRef.current?.setAttribute('href', generateDisplacementMap());
-  };
+  }, [generateDisplacementMap]);
 
   useEffect(() => {
     updateDisplacementMap();
@@ -150,7 +168,9 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
     blueOffset,
     xChannel,
     yChannel,
-    mixBlendMode
+    mixBlendMode,
+    isDarkMode,
+    updateDisplacementMap
   ]);
 
   useEffect(() => {
@@ -165,7 +185,7 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
     return () => {
       resizeObserver.disconnect();
     };
-  }, []);
+  }, [updateDisplacementMap]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -179,11 +199,11 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
     return () => {
       resizeObserver.disconnect();
     };
-  }, []);
+  }, [updateDisplacementMap]);
 
   useEffect(() => {
     setTimeout(updateDisplacementMap, 0);
-  }, [width, height]);
+  }, [width, height, isDarkMode, updateDisplacementMap]);
 
   const supportsSVGFilters = () => {
     const isWebkit = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
