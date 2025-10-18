@@ -1,12 +1,12 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import clsx from 'clsx';
 import SchedulePicker from '@/components/SchedulePicker';
 import BookingInput from '@/components/BookingInput';
-import { mockAvailability, type AvailabilityDay, type AvailabilitySlot } from '@/data/mockAvailability';
+import { mockDeliveryWindows, type DeliveryDay, type DeliveryWindowSlot } from '@/data/mockDeliveryWindows';
 
 const progressSteps = [
   { key: 'dateTime', label: 'انتخاب تاریخ و زمان' },
@@ -35,9 +35,13 @@ const formatDateLabel = (value: string | null) => {
   }
 };
 
-const formatTimeRange = (slot: AvailabilitySlot | null) => {
+const formatTimeRange = (slot: DeliveryWindowSlot | null) => {
   if (!slot) {
     return 'انتخاب نشده';
+  }
+
+  if (slot.label) {
+    return slot.label;
   }
 
   const formatTime = (time: string) => {
@@ -62,13 +66,13 @@ const formatTimeRange = (slot: AvailabilitySlot | null) => {
 };
 
 type SelectedSchedule = {
-  day: AvailabilityDay;
-  slot: AvailabilitySlot;
+  day: DeliveryDay;
+  slot: DeliveryWindowSlot;
 };
 
 const BookingPage = () => {
   const prefersReducedMotion = useReducedMotion();
-  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(mockDeliveryWindows[0]?.date ?? null);
   const [selectedSchedule, setSelectedSchedule] = useState<SelectedSchedule | null>(null);
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
   const [additionalReason, setAdditionalReason] = useState('');
@@ -79,43 +83,10 @@ const BookingPage = () => {
   });
   const [customerNotes, setCustomerNotes] = useState('');
 
-  const availabilityForSelection = useMemo(() => {
-    const merged = new Map<string, AvailabilityDay>();
+  const deliveryDays = mockDeliveryWindows;
 
-    Object.values(mockAvailability).forEach((serviceAvailability) => {
-      Object.values(serviceAvailability).forEach((doctorAvailability) => {
-        doctorAvailability.forEach((day) => {
-          const existingDay = merged.get(day.date);
-          if (!existingDay) {
-            merged.set(day.date, {
-              date: day.date,
-              slots: [...day.slots],
-              note: day.note,
-            });
-            return;
-          }
-
-          const combinedSlots = [...existingDay.slots];
-          day.slots.forEach((slot) => {
-            if (!combinedSlots.some((existingSlot) => existingSlot.id === slot.id)) {
-              combinedSlots.push(slot);
-            }
-          });
-
-          merged.set(day.date, {
-            date: day.date,
-            slots: combinedSlots.sort((a, b) => a.start.localeCompare(b.start)),
-            note: existingDay.note ?? day.note,
-          });
-        });
-      });
-    });
-
-    return Array.from(merged.values()).sort((a, b) => a.date.localeCompare(b.date));
-  }, []);
-
-  const handleDaySelect = (day: AvailabilityDay) => {
-    setSelectedDay(day.date);
+  const handleDateSelect = (day: DeliveryDay) => {
+    setSelectedDate(day.date);
     setSelectedSchedule((currentSchedule) => {
       if (currentSchedule && currentSchedule.day.date === day.date) {
         return currentSchedule;
@@ -124,8 +95,8 @@ const BookingPage = () => {
     });
   };
 
-  const handleSlotSelect = (slot: AvailabilitySlot, day: AvailabilityDay) => {
-    setSelectedDay(day.date);
+  const handleSlotSelect = (slot: DeliveryWindowSlot, day: DeliveryDay) => {
+    setSelectedDate(day.date);
     setSelectedSchedule({ day, slot });
   };
 
@@ -173,7 +144,7 @@ const BookingPage = () => {
 
   const formattedDate = selectedSchedule
     ? formatDateLabel(selectedSchedule.day.date)
-    : formatDateLabel(selectedDay);
+    : formatDateLabel(selectedDate);
   const formattedTime = formatTimeRange(selectedSchedule?.slot ?? null);
   const isContinueDisabled = !isScheduleComplete || !isReasonComplete || !isCustomerComplete;
 
@@ -184,7 +155,7 @@ const BookingPage = () => {
       ].filter((value): value is string => Boolean(value))
     : [];
 
-  const placeholderMessage = 'برای مشاهده زمان‌های خالی، ابتدا تاریخ مورد نظر را انتخاب کنید.';
+  const placeholderMessage = 'برای مشاهده بازه‌های تحویل، یکی از تاریخ‌ها را انتخاب کنید.';
 
   return (
     <motion.section
@@ -317,13 +288,13 @@ const BookingPage = () => {
           </div>
           <div className="mt-6">
             <SchedulePicker
-              availability={availabilityForSelection}
-              selectedDay={selectedDay}
+              days={deliveryDays}
+              selectedDate={selectedDate}
               selectedSlotId={selectedSchedule?.slot.id ?? null}
-              onSelectDay={handleDaySelect}
+              onSelectDate={handleDateSelect}
               onSelectSlot={handleSlotSelect}
               placeholderMessage={placeholderMessage}
-              emptyMessage="در حال حاضر زمانی در دسترس نیست. لطفاً بعداً دوباره بررسی کنید."
+              emptyMessage="در حال حاضر بازه‌ای برای تحویل موجود نیست. لطفاً بعداً دوباره بررسی کنید."
             />
           </div>
         </motion.div>
