@@ -37,13 +37,53 @@ const HeroPage = () => {
         }}
         className="glass relative overflow-hidden px-8 pb-16 pt-20 text-right sm:px-12 lg:px-20"
       >
-        <div
+        <motion.div
           className="absolute inset-x-0 -top-32 h-64 bg-gradient-to-b from-accent/50 via-transparent to-transparent"
           aria-hidden
+          initial={false}
+          animate={
+            prefersReducedMotion
+              ? { opacity: 1 }
+              : {
+                  y: [-16, 12, -16],
+                  scale: [1, 1.05, 1],
+                  opacity: [0.8, 1, 0.8],
+                }
+          }
+          transition={
+            prefersReducedMotion
+              ? undefined
+              : {
+                  duration: 14,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }
+          }
         />
-        <div
+        <motion.div
           className="absolute -right-32 top-0 h-64 w-64 rounded-full bg-accent/30 blur-3xl"
           aria-hidden
+          initial={false}
+          animate={
+            prefersReducedMotion
+              ? { opacity: 1 }
+              : {
+                  x: [0, -12, 0],
+                  y: [0, 14, 0],
+                  scale: [1, 1.1, 1],
+                  opacity: [0.35, 0.6, 0.35],
+                }
+          }
+          transition={
+            prefersReducedMotion
+              ? undefined
+              : {
+                  duration: 16,
+                  repeat: Infinity,
+                  repeatType: 'mirror',
+                  ease: 'easeInOut',
+                }
+          }
         />
         <div className="flex flex-col items-end gap-8">
           <motion.span
@@ -107,6 +147,7 @@ const HeroPage = () => {
             }}
           >
             <GlassCard
+              ambient
               title={step.title}
               description={step.description}
               className="h-full"
