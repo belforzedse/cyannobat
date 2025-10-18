@@ -191,7 +191,7 @@ const BookingPage = () => {
       initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: 'easeOut' }}
-      className="glass relative flex flex-col gap-12 overflow-hidden px-8 py-12 text-right sm:px-12 lg:px-16"
+      className="glass relative flex flex-col gap-6 overflow-hidden px-4 py-6 text-right sm:gap-12 sm:px-12 sm:py-12 lg:px-16"
     >
       <div
         aria-hidden
@@ -206,7 +206,7 @@ const BookingPage = () => {
         className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent opacity-70 dark:via-white/20"
       />
 
-      <header className="flex flex-col items-end gap-5">
+      <header className="flex flex-col items-end gap-3 sm:gap-5">
         <motion.span
           initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -304,18 +304,13 @@ const BookingPage = () => {
         ))}
       </motion.ul>
 
-      <form className="grid gap-8">
-        <motion.div
-          initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: prefersReducedMotion ? 0 : 0.4, duration: prefersReducedMotion ? 0 : 0.45 }}
-          className="rounded-3xl border border-white/25 bg-white/45 p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10"
-        >
-          <div className="flex flex-col items-end gap-2 text-right">
+      <form className="grid gap-4 sm:gap-6 lg:gap-8">
+        <div className="rounded-2xl sm:rounded-3xl border border-white/25 bg-white/45 p-4 sm:p-5 lg:p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10">
+          <div className="flex flex-col items-end gap-1 sm:gap-2 text-right">
             <h3 className="text-sm font-semibold text-foreground">تاریخ و زمان</h3>
             <p className="text-xs leading-6 text-muted-foreground">روز و ساعت دلخواه را انتخاب کنید تا یادآورها را دریافت نمایید.</p>
           </div>
-          <div className="mt-6">
+          <div className="mt-4 sm:mt-5 lg:mt-6">
             <SchedulePicker
               availability={availabilityForSelection}
               selectedDay={selectedDay}
@@ -326,35 +321,23 @@ const BookingPage = () => {
               emptyMessage="در حال حاضر زمانی در دسترس نیست. لطفاً بعداً دوباره بررسی کنید."
             />
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: prefersReducedMotion ? 0 : 0.45, duration: prefersReducedMotion ? 0 : 0.45 }}
-          className="rounded-3xl border border-white/25 bg-white/45 p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10"
-        >
-          <div className="flex flex-col items-end gap-2 text-right">
+        <div className="rounded-2xl sm:rounded-3xl border border-white/25 bg-white/45 p-4 sm:p-5 lg:p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10">
+          <div className="flex flex-col items-end gap-1 sm:gap-2 text-right">
             <h3 className="text-sm font-semibold text-foreground">دلیل مراجعه</h3>
             <p className="text-xs leading-6 text-muted-foreground">
               یکی از گزینه‌های زیر را انتخاب کنید یا توضیح کوتاهی درباره‌ی نیاز خود بنویسید.
             </p>
           </div>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            {reasonOptions.map((reason, index) => {
+          <div className="mt-3 sm:mt-4 lg:mt-5 grid gap-2 sm:gap-3 sm:grid-cols-2">
+            {reasonOptions.map((reason) => {
               const isSelected = selectedReasons.includes(reason.value);
               return (
-                <motion.button
+                <button
                   type="button"
                   key={reason.value}
                   onClick={() => handleReasonToggle(reason.value)}
-                  initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    delay: prefersReducedMotion ? 0 : 0.05 * index,
-                    duration: prefersReducedMotion ? 0 : 0.35,
-                    ease: 'easeOut',
-                  }}
                   className={clsx(
                     'flex w-full flex-row-reverse items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-right shadow-sm transition-all duration-200',
                     'hover:border-accent/60 hover:bg-accent/10 dark:hover:border-accent/50',
@@ -375,11 +358,11 @@ const BookingPage = () => {
                   >
                     {isSelected ? '✓' : '۰'}
                   </span>
-                </motion.button>
+                </button>
               );
             })}
           </div>
-          <div className="mt-6 flex flex-col gap-2">
+          <div className="mt-4 sm:mt-5 lg:mt-6 flex flex-col gap-2">
             <label htmlFor="additional-reason" className="text-sm font-medium text-foreground text-right">
               توضیحات تکمیلی
             </label>
@@ -391,21 +374,16 @@ const BookingPage = () => {
               placeholder="در صورت نیاز جزئیات بیشتری را بنویسید"
             />
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: prefersReducedMotion ? 0 : 0.5, duration: prefersReducedMotion ? 0 : 0.45 }}
-          className="rounded-3xl border border-white/25 bg-white/45 p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10"
-        >
-          <div className="flex flex-col items-end gap-2 text-right">
+        <div className="rounded-2xl sm:rounded-3xl border border-white/25 bg-white/45 p-4 sm:p-5 lg:p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10">
+          <div className="flex flex-col items-end gap-1 sm:gap-2 text-right">
             <h3 className="text-sm font-semibold text-foreground">اطلاعات تماس</h3>
             <p className="text-xs leading-6 text-muted-foreground">
               لطفاً راه‌های ارتباطی خود را وارد کنید تا هماهنگی‌ها سریع‌تر انجام شود.
             </p>
           </div>
-          <div className="mt-5 grid gap-4 sm:grid-cols-3">
+          <div className="mt-3 sm:mt-4 lg:mt-5 grid gap-3 sm:gap-4 sm:grid-cols-3">
             <BookingInput
               label="نام و نام خانوادگی"
               name="fullName"
@@ -430,7 +408,7 @@ const BookingPage = () => {
               placeholder="0912 xxx xxxx"
             />
           </div>
-          <div className="mt-5">
+          <div className="mt-4 sm:mt-5">
             <label htmlFor="customer-notes" className="text-sm font-medium text-foreground text-right">
               یادداشت برای تیم پشتیبانی
             </label>
@@ -442,15 +420,10 @@ const BookingPage = () => {
               placeholder="اگر نکته‌ای لازم است پیش از نوبت بدانیم اینجا بنویسید"
             />
           </div>
-        </motion.div>
+        </div>
       </form>
 
-      <motion.div
-        initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: prefersReducedMotion ? 0 : 0.55, duration: prefersReducedMotion ? 0 : 0.45 }}
-        className="rounded-3xl border border-white/20 bg-white/35 p-6 shadow-[0_16px_42px_-30px_rgba(31,38,135,0.25)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10"
-      >
+      <div className="rounded-2xl sm:rounded-3xl border border-white/20 bg-white/35 p-4 sm:p-5 lg:p-6 shadow-[0_16px_42px_-30px_rgba(31,38,135,0.25)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10">
         <div className="flex flex-col items-end gap-3 text-right sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col items-end gap-1">
             <span className="text-sm font-semibold text-foreground">خلاصه انتخاب شما</span>
@@ -484,7 +457,7 @@ const BookingPage = () => {
             </motion.span>
           </AnimatePresence>
         </div>
-        <dl className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
+        <dl className="mt-4 sm:mt-5 lg:mt-6 grid gap-2 sm:gap-3 text-sm sm:grid-cols-2">
           <div className="flex flex-col items-end gap-1">
             <dt className="text-xs font-medium text-muted-foreground">تاریخ</dt>
             <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
@@ -518,14 +491,9 @@ const BookingPage = () => {
             </dd>
           </div>
         </dl>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: prefersReducedMotion ? 0 : 0.6, duration: prefersReducedMotion ? 0 : 0.4 }}
-        className="flex flex-wrap items-center justify-end gap-3"
-      >
+      <div className="flex flex-wrap items-center justify-end gap-3">
         <Link href="/" className="btn-secondary">
           بازگشت
         </Link>
@@ -539,7 +507,7 @@ const BookingPage = () => {
         >
           ادامه
         </motion.button>
-      </motion.div>
+      </div>
     </motion.section>
   );
 };
