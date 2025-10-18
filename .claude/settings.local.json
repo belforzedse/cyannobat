@@ -21,7 +21,8 @@
       "Bash(npm install @formkit/auto-animate)",
       "WebFetch(domain:www.reactbits.dev)",
       "Bash(npm run dev)",
-      "Bash(npm run typecheck)"
+      "Bash(npm run typecheck)",
+      "Bash(curl -s http://localhost:300)"
     ],
     "deny": [],
     "ask": []
