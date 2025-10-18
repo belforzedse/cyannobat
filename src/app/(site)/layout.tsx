@@ -24,10 +24,10 @@ const SiteLayout = ({ children }: { children: ReactNode }) => {
           className="pointer-events-none absolute inset-x-8 top-6 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent opacity-60 -z-10 dark:via-white/15"
           aria-hidden
         />
-        <main className="relative mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 pb-32 pt-8 sm:px-10 lg:px-12 lg:pb-16 lg:pr-[7.5rem] xl:pr-[9rem] 2xl:pr-[10.5rem]">
+        <main className="relative flex w-full flex-col gap-12 px-6 pb-32 pt-8 sm:px-10 lg:px-12 lg:pb-16 lg:pr-[7.5rem] xl:pr-[9rem] 2xl:pr-[10.5rem]">
           {children}
         </main>
-        <footer className="relative mx-auto flex w-full max-w-6xl flex-col items-end gap-1 px-6 pb-32 pt-8 text-right text-sm text-muted-foreground sm:px-10 lg:px-12 lg:pb-16 lg:pr-[7.5rem] xl:pr-[9rem] 2xl:pr-[10.5rem]">
+        <footer className="relative flex w-full flex-col items-end gap-1 px-6 pb-32 pt-8 text-right text-sm text-muted-foreground sm:px-10 lg:px-12 lg:pb-16 lg:pr-[7.5rem] xl:pr-[9rem] 2xl:pr-[10.5rem]">
           <span>© {new Date().getFullYear()} سایان نوبت — cyannobat</span>
           <span>همراه شما برای تجربه‌ای متفاوت در رزرو آنلاین.</span>
         </footer>
