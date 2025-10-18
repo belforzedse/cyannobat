@@ -91,7 +91,7 @@ const ServiceCard = ({
             <h3 className="text-lg font-semibold text-foreground transition-colors duration-300 group-hover:text-accent">
               {title}
             </h3>
-            {description ? <p className="text-sm leading-relaxed text-muted/80">{description}</p> : null}
+            {description ? <p className="text-sm leading-relaxed text-muted">{description}</p> : null}
           </div>
         </div>
 
