@@ -32,14 +32,14 @@ const HeroPage = () => {
 
   return (
     <div className="flex flex-col gap-16 pb-12">
-      <div className="flex flex-col gap-12 lg:grid lg:grid-cols-[minmax(260px,360px)_1fr] lg:items-stretch">
+      <div className="flex flex-col gap-12 lg:grid lg:grid-cols-[1fr_minmax(260px,360px)] lg:items-stretch">
         <motion.section
           id="steps"
           initial={prefersReducedMotion ? undefined : 'hidden'}
           whileInView={prefersReducedMotion ? undefined : 'visible'}
           viewport={{ once: true, amount: 0.2 }}
           variants={liquidContainer}
-          className="order-2 space-y-6 text-right lg:order-none lg:space-y-8"
+          className="order-2 space-y-6 text-right lg:order-2 lg:space-y-8"
         >
           {steps.map((step, index) => (
             <motion.div key={step.title} variants={liquidEntrance}>
@@ -62,7 +62,7 @@ const HeroPage = () => {
           whileHover={prefersReducedMotion ? undefined : 'hover'}
           variants={!prefersReducedMotion ? { ...liquidEntrance, ...glassMorph } : undefined}
           transition={liquidSpring}
-          className="glass order-1 relative flex h-full min-h-[420px] flex-col overflow-hidden px-8 pb-16 pt-20 text-right sm:px-12 lg:order-none lg:px-20"
+          className="glass order-1 relative flex h-full min-h-[420px] flex-col overflow-hidden px-8 pb-16 pt-20 text-right sm:px-12 lg:order-1 lg:px-20"
         >
           <div
             className="absolute inset-x-0 -top-32 h-64 bg-gradient-to-b from-accent/50 via-transparent to-transparent"

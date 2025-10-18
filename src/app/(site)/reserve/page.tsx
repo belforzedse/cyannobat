@@ -305,7 +305,7 @@ const BookingPage = () => {
       </motion.ul>
 
       <form className="grid gap-4 sm:gap-6 lg:gap-8">
-        <div className="rounded-2xl sm:rounded-3xl border border-white/25 bg-white/45 p-4 sm:p-5 lg:p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10">
+        <div className="rounded-2xl sm:rounded-3xl border border-white/25 bg-white/45 p-4 sm:p-5 lg:p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/10 dark:bg-black/50">
           <div className="flex flex-col items-end gap-1 sm:gap-2 text-right">
             <h3 className="text-sm font-semibold text-foreground">تاریخ و زمان</h3>
             <p className="text-xs leading-6 text-muted-foreground">روز و ساعت دلخواه را انتخاب کنید تا یادآورها را دریافت نمایید.</p>
@@ -323,7 +323,7 @@ const BookingPage = () => {
           </div>
         </div>
 
-        <div className="rounded-2xl sm:rounded-3xl border border-white/25 bg-white/45 p-4 sm:p-5 lg:p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10">
+        <div className="rounded-2xl sm:rounded-3xl border border-white/25 bg-white/45 p-4 sm:p-5 lg:p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/10 dark:bg-black/50">
           <div className="flex flex-col items-end gap-1 sm:gap-2 text-right">
             <h3 className="text-sm font-semibold text-foreground">دلیل مراجعه</h3>
             <p className="text-xs leading-6 text-muted-foreground">
@@ -340,10 +340,10 @@ const BookingPage = () => {
                   onClick={() => handleReasonToggle(reason.value)}
                   className={clsx(
                     'flex w-full flex-row-reverse items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-right shadow-sm transition-all duration-200',
-                    'hover:border-accent/60 hover:bg-accent/10 dark:hover:border-accent/50',
+                    'hover:border-accent/60 hover:bg-accent/10 dark:hover:border-accent/50 dark:hover:bg-accent/10',
                     isSelected
                       ? 'border-accent/70 bg-accent/20 text-foreground shadow-[0_12px_28px_-22px_rgba(88,175,192,0.75)] dark:border-accent/60'
-                      : 'border-white/25 bg-white/45 text-muted-foreground dark:border-white/15 dark:bg-white/10',
+                      : 'border-white/25 bg-white/45 text-muted-foreground dark:border-white/15 dark:bg-black/40',
                   )}
                 >
                   <span className="text-sm font-medium">{reason.label}</span>
@@ -352,7 +352,7 @@ const BookingPage = () => {
                       'flex h-7 w-7 items-center justify-center rounded-full border text-xs font-semibold transition-colors',
                       isSelected
                         ? 'border-accent/70 bg-accent text-slate-900'
-                        : 'border-white/30 bg-white/40 text-muted-foreground dark:border-white/20 dark:bg-white/15',
+                        : 'border-white/30 bg-white/40 text-muted-foreground dark:border-white/20 dark:bg-black/30',
                     )}
                     aria-hidden
                   >
@@ -376,7 +376,7 @@ const BookingPage = () => {
           </div>
         </div>
 
-        <div className="rounded-2xl sm:rounded-3xl border border-white/25 bg-white/45 p-4 sm:p-5 lg:p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10">
+        <div className="rounded-2xl sm:rounded-3xl border border-white/25 bg-white/45 p-4 sm:p-5 lg:p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/10 dark:bg-black/50">
           <div className="flex flex-col items-end gap-1 sm:gap-2 text-right">
             <h3 className="text-sm font-semibold text-foreground">اطلاعات تماس</h3>
             <p className="text-xs leading-6 text-muted-foreground">
@@ -423,7 +423,7 @@ const BookingPage = () => {
         </div>
       </form>
 
-      <div className="rounded-2xl sm:rounded-3xl border border-white/20 bg-white/35 p-4 sm:p-5 lg:p-6 shadow-[0_16px_42px_-30px_rgba(31,38,135,0.25)] backdrop-blur-sm dark:border-white/12 dark:bg-white/10">
+      <div className="rounded-2xl sm:rounded-3xl border border-white/20 bg-white/35 p-4 sm:p-5 lg:p-6 shadow-[0_16px_42px_-30px_rgba(31,38,135,0.25)] backdrop-blur-sm dark:border-white/10 dark:bg-black/40">
         <div className="flex flex-col items-end gap-3 text-right sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col items-end gap-1">
             <span className="text-sm font-semibold text-foreground">خلاصه انتخاب شما</span>
@@ -460,25 +460,25 @@ const BookingPage = () => {
         <dl className="mt-4 sm:mt-5 lg:mt-6 grid gap-2 sm:gap-3 text-sm sm:grid-cols-2">
           <div className="flex flex-col items-end gap-1">
             <dt className="text-xs font-medium text-muted-foreground">تاریخ</dt>
-            <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
+            <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground backdrop-blur-sm dark:border-white/15 dark:bg-black/40">
               {formattedDate}
             </dd>
           </div>
           <div className="flex flex-col items-end gap-1">
             <dt className="text-xs font-medium text-muted-foreground">ساعت</dt>
-            <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
+            <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground backdrop-blur-sm dark:border-white/15 dark:bg-black/40">
               {formattedTime}
             </dd>
           </div>
           <div className="flex flex-col items-end gap-1">
             <dt className="text-xs font-medium text-muted-foreground">دلیل مراجعه</dt>
-            <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
+            <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground backdrop-blur-sm dark:border-white/15 dark:bg-black/40">
               {reasonSummary.length > 0 ? reasonSummary.join('، ') : 'انتخاب نشده'}
             </dd>
           </div>
           <div className="flex flex-col items-end gap-1">
             <dt className="text-xs font-medium text-muted-foreground">اطلاعات تماس</dt>
-            <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
+            <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground backdrop-blur-sm dark:border-white/15 dark:bg-black/40">
               {isCustomerComplete
                 ? `${customerInfo.fullName} — ${customerInfo.email} — ${customerInfo.phone}`
                 : 'تکمیل نشده'}
@@ -486,7 +486,7 @@ const BookingPage = () => {
           </div>
           <div className="flex flex-col items-end gap-1 sm:col-span-2">
             <dt className="text-xs font-medium text-muted-foreground">یادداشت</dt>
-            <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
+            <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground backdrop-blur-sm dark:border-white/15 dark:bg-black/40">
               {customerNotes.trim() ? customerNotes.trim() : 'بدون یادداشت'}
             </dd>
           </div>

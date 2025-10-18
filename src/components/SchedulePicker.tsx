@@ -62,13 +62,13 @@ const SchedulePicker = ({
         {Array.from({ length: 3 }).map((_, index) => (
           <div
             key={index}
-            className="h-44 rounded-2xl border border-white/15 bg-white/30 p-4 backdrop-blur-sm animate-pulse dark:border-white/10 dark:bg-white/5"
+            className="h-44 rounded-2xl border border-white/15 bg-white/30 p-4 backdrop-blur-sm animate-pulse dark:border-white/10 dark:bg-black/35"
           >
-            <div className="h-6 w-2/3 rounded-full bg-white/60 dark:bg-white/10" />
+            <div className="h-6 w-2/3 rounded-full bg-white/60 dark:bg-black/60" />
             <div className="mt-6 space-y-2">
-              <div className="h-8 rounded-xl bg-white/50 dark:bg-white/10" />
-              <div className="h-8 rounded-xl bg-white/40 dark:bg-white/10" />
-              <div className="h-8 rounded-xl bg-white/30 dark:bg-white/5" />
+              <div className="h-8 rounded-xl bg-white/50 dark:bg-black/50" />
+              <div className="h-8 rounded-xl bg-white/40 dark:bg-black/45" />
+              <div className="h-8 rounded-xl bg-white/30 dark:bg-black/40" />
             </div>
           </div>
         ))}
@@ -78,7 +78,7 @@ const SchedulePicker = ({
 
   if (!availability) {
     return (
-      <div className="rounded-2xl border border-dashed border-white/30 bg-white/30 p-6 text-sm text-muted-foreground dark:border-white/10 dark:bg-white/5">
+      <div className="rounded-2xl border border-dashed border-white/30 bg-white/30 p-6 text-sm text-muted-foreground dark:border-white/15 dark:bg-black/30">
         {placeholderMessage ?? 'برای مشاهده زمان‌های آزاد، ابتدا خدمت و پزشک را انتخاب کنید.'}
       </div>
     );
@@ -86,7 +86,7 @@ const SchedulePicker = ({
 
   if (availability.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-white/30 bg-white/30 p-6 text-sm text-muted-foreground dark:border-white/10 dark:bg-white/5">
+      <div className="rounded-2xl border border-dashed border-white/30 bg-white/30 p-6 text-sm text-muted-foreground dark:border-white/15 dark:bg-black/30">
         {emptyMessage ?? 'در حال حاضر زمان آزادی برای این ترکیب وجود ندارد.'}
       </div>
     );
@@ -104,7 +104,7 @@ const SchedulePicker = ({
             className={clsx(
               'flex h-full flex-col gap-3 rounded-2xl border p-4 transition-all duration-300',
               'border-white/20 bg-white/45 shadow-[0_18px_40px_-30px_rgba(31,38,135,0.35)] backdrop-blur-sm',
-              'dark:border-white/12 dark:bg-white/10',
+              'dark:border-white/10 dark:bg-black/40',
               isActiveDay && 'border-accent/60 bg-accent/15 shadow-[0_24px_45px_-30px_rgba(88,175,192,0.5)] dark:border-accent/40 dark:bg-accent/10'
             )}
           >
@@ -113,7 +113,7 @@ const SchedulePicker = ({
               className={clsx(
                 'flex flex-col items-end gap-1 rounded-xl border px-3 py-2 text-right transition-colors duration-200',
                 'border-white/30 bg-white/55 hover:border-accent/50 hover:bg-white/70',
-                'dark:border-white/10 dark:bg-white/10 dark:hover:border-accent/40 dark:hover:bg-white/15',
+                'dark:border-white/15 dark:bg-black/50 dark:hover:border-accent/40 dark:hover:bg-black/60',
                 isActiveDay && 'border-accent/60 bg-accent/20 text-accent'
               )}
               onClick={() => onSelectDay?.(day)}
@@ -142,7 +142,7 @@ const SchedulePicker = ({
                         className={clsx(
                           'flex flex-col items-end gap-1 rounded-xl border px-3 py-2 text-right text-xs font-medium transition-all duration-200',
                           'border-white/25 bg-white/55 hover:border-accent/50 hover:bg-white/75',
-                          'dark:border-white/12 dark:bg-white/12 dark:hover:border-accent/40 dark:hover:bg-white/20',
+                          'dark:border-white/15 dark:bg-black/45 dark:hover:border-accent/40 dark:hover:bg-black/55',
                           isSelected && 'border-accent/70 bg-accent/20 text-accent shadow-[0_16px_36px_-28px_rgba(88,175,192,0.6)]'
                         )}
                         onClick={() => {
