@@ -16,7 +16,7 @@ const Header = () => {
       }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: "easeOut" }}
-      className="glass rounded-3xl sticky top-4 z-40 flex items-center justify-between px-6 py-3 text-right ml-4"
+      className="glass rounded-3xl sticky top-4 z-30 flex items-center justify-between px-6 py-3 text-right mx-4 lg:mr-28 xl:mr-32 2xl:mr-36"
     >
       <div
         className="pointer-events-none absolute inset-0 rounded-2rem bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-30 -z-10 dark:via-white/10"
