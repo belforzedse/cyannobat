@@ -70,7 +70,6 @@ body {
   position: relative;
   overflow-x: hidden;
   min-height: 100%;
-  margin-right: 6rem;
 }
 
 [data-theme='dark'] body {

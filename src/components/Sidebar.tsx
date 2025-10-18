@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import type { LucideIcon } from 'lucide-react';
 import { CalendarDays, Home, LifeBuoy, ListChecks } from 'lucide-react';
@@ -15,7 +16,7 @@ type NavigationItem = {
   icon: LucideIcon;
   ariaLabel?: string;
   group: NavigationGroup;
-  matches?: (pathname: string) => boolean;
+  matches?: (pathname: string, hash?: string) => boolean;
 };
 
 const navigationItems: NavigationItem[] = [
@@ -24,14 +25,14 @@ const navigationItems: NavigationItem[] = [
     href: '/',
     icon: Home,
     group: 'main',
-    matches: (pathname) => pathname === '/',
+    matches: (pathname, hash) => pathname === '/' && hash !== '#steps',
   },
   {
     label: 'مراحل',
     href: '/#steps',
     icon: ListChecks,
     group: 'main',
-    matches: (pathname) => pathname === '/',
+    matches: (pathname, hash) => pathname === '/' && hash === '#steps',
     ariaLabel: 'مشاهده مراحل کار سایان نوبت',
   },
   {
@@ -52,10 +53,28 @@ const navigationItems: NavigationItem[] = [
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const [activeHash, setActiveHash] = useState('');
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const updateHash = () => {
+      setActiveHash(window.location.hash || '');
+    };
+
+    updateHash();
+    window.addEventListener('hashchange', updateHash);
+
+    return () => {
+      window.removeEventListener('hashchange', updateHash);
+    };
+  }, []);
 
   const renderItem = (item: NavigationItem) => {
     const Icon = item.icon;
-    const isActive = item.matches?.(pathname ?? '') ?? false;
+    const isActive = item.matches?.(pathname ?? '', activeHash) ?? false;
     const baseClasses = clsx(
       'group flex h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-medium transition-all',
       'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
