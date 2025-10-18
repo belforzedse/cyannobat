@@ -396,13 +396,13 @@ const BookingPage = () => {
         </div>
         <dl className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
           <div className="flex flex-col items-end gap-1">
-            <dt className="text-xs font-medium text-muted/80">خدمت انتخابی</dt>
+            <dt className="text-xs font-medium text-muted">خدمت انتخابی</dt>
             <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
               {selectedServiceDetails?.label ?? 'انتخاب نشده'}
             </dd>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <dt className="text-xs font-medium text-muted/80">پزشک منتخب</dt>
+            <dt className="text-xs font-medium text-muted">پزشک منتخب</dt>
             <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
               {selectedDoctorDetails
                 ? `${selectedDoctorDetails.label}${selectedDoctorDetails.badge ? ' — ' + selectedDoctorDetails.badge : ''}`
@@ -410,13 +410,13 @@ const BookingPage = () => {
             </dd>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <dt className="text-xs font-medium text-muted/80">تاریخ</dt>
+            <dt className="text-xs font-medium text-muted">تاریخ</dt>
             <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
               {formattedDate}
             </dd>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <dt className="text-xs font-medium text-muted/80">ساعت</dt>
+            <dt className="text-xs font-medium text-muted">ساعت</dt>
             <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground dark:border-white/12 dark:bg-white/10">
               {formattedTime}
             </dd>

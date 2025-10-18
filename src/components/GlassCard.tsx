@@ -18,7 +18,7 @@ const GlassCard = ({ title, description, children, className }: GlassCardProps) 
     >
       <div className="relative z-10 flex flex-col gap-3">
         {title ? <h3 className="bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-lg font-bold tracking-tight text-transparent">{title}</h3> : null}
-        {description ? <p className="leading-relaxed text-sm text-muted/90">{description}</p> : null}
+        {description ? <p className="leading-relaxed text-sm text-muted">{description}</p> : null}
         {children}
       </div>
       <div className="pointer-events-none absolute -right-24 top-1/2 h-56 w-56 -translate-y-1/2 rounded-full bg-accent/30 blur-3xl opacity-0 transition-opacity duration-700 ease-out group-hover:opacity-70" aria-hidden />
