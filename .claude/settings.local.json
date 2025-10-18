@@ -2,7 +2,19 @@
   "permissions": {
     "allow": [
       "Bash(npm run build)",
-      "Bash(docker-compose up --build)"
+      "Bash(docker-compose up --build)",
+      "Bash(docker-compose down)",
+      "Bash(docker container stop taghechian-postgres-1 taghechian-redis-1 infra-frontend-1)",
+      "Bash(docker-compose ps)",
+      "Bash(docker-compose logs web)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(curl -s http://localhost:3000/admin)",
+      "Bash(curl -s http://localhost:3000/api/payload/config)",
+      "Bash(curl -s http://localhost:3000/api/users)",
+      "Bash(curl -s http://localhost:3000/admin/create-first-user)",
+      "Bash(docker-compose exec -T web pnpm payload migrate)",
+      "Bash(curl -s http://localhost:3000/admin/login)",
+      "Bash(curl -s -X POST http://localhost:3000/api/users )"
     ],
     "deny": [],
     "ask": []
