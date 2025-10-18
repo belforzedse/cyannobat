@@ -26,7 +26,7 @@
 :root {
   --bg: 250 252 255;
   --fg: 20 24 28;
-  --muted: 120 130 140;
+  --muted: 106 116 126;
   --card: 255 255 255;
   --border: 201 205 209;
   --accent: 159 221 231;
@@ -163,6 +163,20 @@ body::after {
 
   .glass:hover::after {
     opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glass {
+      transition: none;
+    }
+
+    .glass::after {
+      transition: none;
+    }
+
+    .glass:hover::after {
+      opacity: 0;
+    }
   }
 
   .glass-pill {

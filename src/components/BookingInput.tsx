@@ -26,7 +26,7 @@ const BookingInput = ({ label, error, helper, className, id, name, ...props }: B
       <input
         className={clsx(
           'w-full rounded-xl border border-white/20 bg-white/50 px-4 py-2.5',
-          'text-right text-base text-foreground placeholder:text-muted/70',
+          'text-right text-base text-foreground placeholder:text-muted',
           'transition-all duration-200',
           'hover:bg-white/60 hover:border-white/30',
           'focus:bg-white/70 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/50',
