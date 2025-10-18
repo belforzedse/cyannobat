@@ -1,14 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import clsx from 'clsx';
-import BookingInput from '@/components/BookingInput';
 import ServiceCard from '@/components/ServiceCard';
+import SchedulePicker from '@/components/SchedulePicker';
+import {
+  mockAvailability,
+  type AvailabilityDay,
+  type AvailabilitySlot,
+  type DoctorId,
+  type ServiceId,
+} from '@/data/mockAvailability';
 
 type ServiceOption = {
-  value: string;
+  value: ServiceId;
   label: string;
   description: string;
   icon: string;
@@ -16,7 +23,7 @@ type ServiceOption = {
 };
 
 type DoctorOption = {
-  value: string;
+  value: DoctorId;
   label: string;
   description: string;
   icon: string;
@@ -77,34 +84,125 @@ const progressSteps = [
 
 type StepStatus = 'complete' | 'current' | 'upcoming';
 
-const getFormattedDate = (value: string) => {
+const formatDateLabel = (value: string | null) => {
   if (!value) {
     return 'انتخاب نشده';
   }
 
-  const [year, month, day] = value.split('-').map((part) => Number.parseInt(part, 10));
-  if (!year || !month || !day) {
-    return 'انتخاب نشده';
-  }
-
-  const date = new Date(year, month - 1, day);
   try {
-    return new Intl.DateTimeFormat('fa-IR', { dateStyle: 'long' }).format(date);
+    return new Intl.DateTimeFormat('fa-IR', { dateStyle: 'long' }).format(new Date(`${value}T00:00:00`));
   } catch {
     return value;
   }
 };
 
+const formatTimeRange = (slot: AvailabilitySlot | null) => {
+  if (!slot) {
+    return 'انتخاب نشده';
+  }
+
+  const formatTime = (time: string) => {
+    const [hour, minute] = time.split(':').map((part) => Number.parseInt(part, 10));
+    if (Number.isNaN(hour) || Number.isNaN(minute)) {
+      return time;
+    }
+
+    try {
+      return new Intl.DateTimeFormat('fa-IR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+        timeZone: 'UTC',
+      }).format(new Date(Date.UTC(2024, 0, 1, hour, minute)));
+    } catch {
+      return time;
+    }
+  };
+
+  return `${formatTime(slot.start)} تا ${formatTime(slot.end)}`;
+};
+
+type SelectedSchedule = {
+  day: AvailabilityDay;
+  slot: AvailabilitySlot;
+};
+
 const BookingPage = () => {
   const prefersReducedMotion = useReducedMotion();
-  const [selectedService, setSelectedService] = useState('');
-  const [selectedDoctor, setSelectedDoctor] = useState('');
-  const [appointmentDate, setAppointmentDate] = useState('');
-  const [appointmentTime, setAppointmentTime] = useState('');
+  const [selectedService, setSelectedService] = useState<ServiceId | ''>('');
+  const [selectedDoctor, setSelectedDoctor] = useState<DoctorId | ''>('');
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [selectedSchedule, setSelectedSchedule] = useState<SelectedSchedule | null>(null);
 
   const selectedServiceDetails = serviceOptions.find((service) => service.value === selectedService);
   const selectedDoctorDetails = doctorOptions.find((doctor) => doctor.value === selectedDoctor);
-  const isScheduleComplete = appointmentDate !== '' && appointmentTime !== '';
+  const isScheduleComplete = Boolean(selectedSchedule);
+
+  const availabilityForSelection = useMemo(() => {
+    if (!selectedService || !selectedDoctor) {
+      return undefined;
+    }
+
+    return mockAvailability[selectedService][selectedDoctor];
+  }, [selectedDoctor, selectedService]);
+
+  useEffect(() => {
+    setSelectedDoctor('');
+    setSelectedDay(null);
+    setSelectedSchedule(null);
+  }, [selectedService]);
+
+  useEffect(() => {
+    setSelectedDay(null);
+    setSelectedSchedule(null);
+  }, [selectedDoctor]);
+
+  useEffect(() => {
+    if (!availabilityForSelection || availabilityForSelection.length === 0) {
+      setSelectedDay(null);
+      setSelectedSchedule(null);
+      return;
+    }
+
+    setSelectedDay((currentDay) => {
+      if (!currentDay) return currentDay;
+      const exists = availabilityForSelection.some((day) => day.date === currentDay);
+      return exists ? currentDay : null;
+    });
+
+    setSelectedSchedule((currentSchedule) => {
+      if (!currentSchedule) return currentSchedule;
+      const dayMatch = availabilityForSelection.find((day) => day.date === currentSchedule.day.date);
+      if (!dayMatch) {
+        return null;
+      }
+      const slotMatch = dayMatch.slots.find((slot) => slot.id === currentSchedule.slot.id);
+      return slotMatch ? currentSchedule : null;
+    });
+  }, [availabilityForSelection]);
+
+  const handleServiceSelect = (service: ServiceId) => {
+    setSelectedService(service);
+  };
+
+  const handleDoctorSelect = (doctor: DoctorId) => {
+    setSelectedDoctor(doctor);
+  };
+
+  const handleDaySelect = (day: AvailabilityDay) => {
+    setSelectedDay(day.date);
+    setSelectedSchedule((currentSchedule) => {
+      if (currentSchedule && currentSchedule.day.date === day.date) {
+        return currentSchedule;
+      }
+      return null;
+    });
+  };
+
+  const handleSlotSelect = (slot: AvailabilitySlot, day: AvailabilityDay) => {
+    setSelectedDay(day.date);
+    setSelectedSchedule({ day, slot });
+  };
 
   const activeIndex = progressSteps.findIndex((step) => {
     if (step.key === 'service') return !selectedServiceDetails;
@@ -127,9 +225,17 @@ const BookingPage = () => {
     return { ...step, status, index };
   });
 
-  const formattedDate = getFormattedDate(appointmentDate);
-  const formattedTime = appointmentTime || 'انتخاب نشده';
-  const isContinueDisabled = stepsWithStatus.some((step) => step.status !== 'complete');
+  const formattedDate = selectedSchedule
+    ? formatDateLabel(selectedSchedule.day.date)
+    : formatDateLabel(selectedDay);
+  const formattedTime = formatTimeRange(selectedSchedule?.slot ?? null);
+  const isContinueDisabled = !selectedServiceDetails || !selectedDoctorDetails || !selectedSchedule;
+
+  const placeholderMessage = !selectedServiceDetails
+    ? 'ابتدا خدمت مورد نظر را انتخاب کنید تا زمان‌های خالی نمایش داده شود.'
+    : !selectedDoctorDetails
+      ? 'برای مشاهده زمان‌های موجود، پزشک را انتخاب کنید.'
+      : undefined;
 
   return (
     <motion.section
@@ -280,7 +386,7 @@ const BookingPage = () => {
                   badge={service.badge}
                   icon={service.icon}
                   isSelected={selectedService === service.value}
-                  onClick={() => setSelectedService(service.value)}
+                  onClick={() => handleServiceSelect(service.value)}
                 />
               </motion.div>
             ))}
@@ -315,7 +421,7 @@ const BookingPage = () => {
                   badge={doctor.badge}
                   icon={doctor.icon}
                   isSelected={selectedDoctor === doctor.value}
-                  onClick={() => setSelectedDoctor(doctor.value)}
+                  onClick={() => handleDoctorSelect(doctor.value)}
                 />
               </motion.div>
             ))}
@@ -332,24 +438,15 @@ const BookingPage = () => {
             <h3 className="text-sm font-semibold text-foreground">تاریخ و زمان</h3>
             <p className="text-xs leading-6 text-muted-foreground">روز و ساعت دلخواه را انتخاب کنید تا یادآورها را دریافت نمایید.</p>
           </div>
-          <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <BookingInput
-              id="booking-date"
-              name="booking-date"
-              type="date"
-              label="تاریخ"
-              value={appointmentDate}
-              onChange={(event) => setAppointmentDate(event.target.value)}
-              helper="روزهای در دسترس برای شما نمایش داده می‌شود."
-            />
-            <BookingInput
-              id="booking-time"
-              name="booking-time"
-              type="time"
-              label="زمان"
-              value={appointmentTime}
-              onChange={(event) => setAppointmentTime(event.target.value)}
-              helper="ساعات خالی مطب با زمان محلی شما همگام شده است."
+          <div className="mt-6">
+            <SchedulePicker
+              availability={availabilityForSelection}
+              selectedDay={selectedDay}
+              selectedSlotId={selectedSchedule?.slot.id ?? null}
+              onSelectDay={handleDaySelect}
+              onSelectSlot={handleSlotSelect}
+              placeholderMessage={placeholderMessage}
+              emptyMessage="در حال حاضر زمانی برای این ترکیب موجود نیست. لطفاً بعداً دوباره بررسی کنید."
             />
           </div>
         </motion.div>
