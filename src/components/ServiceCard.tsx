@@ -5,7 +5,25 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import clsx from 'clsx';
 
 interface ServiceCardProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className' | 'children'> {
+  extends Omit<
+    ButtonHTMLAttributes<HTMLButtonElement>,
+    | 'className'
+    | 'children'
+    | 'onDrag'
+    | 'onDragEnd'
+    | 'onDragStart'
+    | 'onDragCapture'
+    | 'onDragEnter'
+    | 'onDragExit'
+    | 'onDragLeave'
+    | 'onDragOver'
+    | 'onAnimationStart'
+    | 'onAnimationEnd'
+    | 'onAnimationIteration'
+    | 'onAnimationStartCapture'
+    | 'onAnimationEndCapture'
+    | 'onAnimationIterationCapture'
+  > {
   icon?: ReactNode;
   title: string;
   description?: string;
