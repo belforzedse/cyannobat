@@ -1,8 +1,8 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   try {
     const payload = await getPayload({ config })
 
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         status: 'Database already initialized',
       })
-    } catch (err: any) {
+    } catch {
       // Database not initialized, Payload should auto-initialize
       // If we get here, the database is being accessed now
       return NextResponse.json({

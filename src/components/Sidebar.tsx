@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import type { LucideIcon } from 'lucide-react';
 import { CalendarDays, Home, LifeBuoy, ListChecks } from 'lucide-react';
 import { BOOKING_PATH } from '@/lib/routes';
-import { liquidSpring, rippleEffect } from '@/lib/animations';
+import { liquidSpring } from '@/lib/animations';
 
 type NavigationGroup = 'main' | 'actions';
 
