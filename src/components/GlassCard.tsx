@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useReducedMotion } from 'framer-motion';
 import clsx from 'clsx';
 
 interface GlassCardProps {
@@ -9,10 +10,14 @@ interface GlassCardProps {
 }
 
 const GlassCard = ({ title, description, children, className }: GlassCardProps) => {
+  const shouldReduceMotion = useReducedMotion();
+  const allowMotion = !shouldReduceMotion;
+
   return (
     <article
       className={clsx(
-        'glass group relative overflow-hidden p-6 text-right transition-all duration-500 ease-out hover:-translate-y-3 hover:shadow-2xl',
+        'glass relative overflow-hidden p-6 text-right',
+        allowMotion && 'group transition-all duration-500 ease-out hover:-translate-y-3 hover:shadow-2xl',
         className,
       )}
     >
@@ -21,8 +26,20 @@ const GlassCard = ({ title, description, children, className }: GlassCardProps) 
         {description ? <p className="leading-relaxed text-sm text-muted">{description}</p> : null}
         {children}
       </div>
-      <div className="pointer-events-none absolute -right-24 top-1/2 h-56 w-56 -translate-y-1/2 rounded-full bg-accent/30 blur-3xl opacity-0 transition-opacity duration-700 ease-out group-hover:opacity-70" aria-hidden />
-      <div className="pointer-events-none absolute -bottom-28 left-10 h-48 w-48 rounded-full bg-white/20 blur-[120px] opacity-0 transition-opacity duration-700 ease-out group-hover:opacity-50 dark:bg-white/5" aria-hidden />
+      <div
+        className={clsx(
+          'pointer-events-none absolute -right-24 top-1/2 h-56 w-56 -translate-y-1/2 rounded-full bg-accent/30 blur-3xl opacity-0',
+          allowMotion && 'transition-opacity duration-700 ease-out group-hover:opacity-70',
+        )}
+        aria-hidden
+      />
+      <div
+        className={clsx(
+          'pointer-events-none absolute -bottom-28 left-10 h-48 w-48 rounded-full bg-white/20 blur-[120px] opacity-0 dark:bg-white/5',
+          allowMotion && 'transition-opacity duration-700 ease-out group-hover:opacity-50',
+        )}
+        aria-hidden
+      />
     </article>
   );
 };
