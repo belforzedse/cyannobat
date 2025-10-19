@@ -1,14 +1,16 @@
-import type { ReactNode } from 'react';
-import '@styles/globals.css';
+import type { ReactNode } from 'react'
+import '@styles/globals.css'
+
+import { ToastProvider } from '@/components/ui/ToastProvider'
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang='fa' dir='rtl' suppressHydrationWarning>
       <body className='relative min-h-screen overflow-x-hidden bg-background text-foreground'>
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
-  );
-};
+  )
+}
 
-export default RootLayout;
+export default RootLayout
