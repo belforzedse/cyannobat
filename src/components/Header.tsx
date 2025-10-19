@@ -9,8 +9,8 @@ const Header = () => {
     <header
       role="banner"
       className="
-        glass sticky top-4 z-30 mx-4 rounded-3xl px-6 py-4
-        flex items-center justify-between text-right
+        glass sticky top-4 z-30 mx-4 rounded-3xl px-4 py-3 sm:px-6 sm:py-4
+        flex items-center justify-between gap-3 sm:gap-6 text-right
         lg:mr-[122px] xl:mr-[122px] 2xl:mr-[122px]
         animate-fade-in-down
         backdrop-blur-md backdrop-saturate-150
@@ -40,7 +40,7 @@ const Header = () => {
       </Link>
 
       {/* actions */}
-      <nav aria-label="primary" className="flex items-center gap-3">
+      <nav aria-label="primary" className="flex items-center gap-2 sm:gap-3">
         <Link
           href="/account"
           className="
@@ -57,7 +57,8 @@ const Header = () => {
         <Link
           href={BOOKING_PATH}
           className="
-            glass-pill hidden sm:inline-flex px-5 py-2 text-sm font-medium text-foreground
+            glass-pill inline-flex items-center px-3 py-2 text-xs font-medium text-foreground
+            sm:px-5 sm:text-sm
             transition-colors hover:text-foreground
             focus-visible:outline-none focus-visible:ring-2
             focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2
