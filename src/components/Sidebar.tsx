@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState, useRef } from 'react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import clsx from 'clsx';
 import type { LucideIcon } from 'lucide-react';
-import { CalendarDays, Home, LifeBuoy, UserCircle } from 'lucide-react';
+import { CalendarDays, Home, LifeBuoy, Loader2, UserCircle } from 'lucide-react';
 import { BOOKING_PATH } from '@/lib/routes';
 
 type NavigationGroup = 'main' | 'actions';
@@ -16,10 +16,12 @@ type NavigationItem = {
   icon: LucideIcon;
   ariaLabel?: string;
   group: NavigationGroup;
+  disabled?: boolean;
+  iconClassName?: string;
   matches?: (pathname: string, hash?: string) => boolean;
 };
 
-const navigationItems: NavigationItem[] = [
+const baseNavigationItems: NavigationItem[] = [
   {
     label: 'خانه',
     href: '/',
@@ -52,9 +54,22 @@ type SessionState =
       isStaff: boolean;
     };
 
-const SidebarAccountWidget = ({ layout }: { layout: 'mobile' | 'desktop' }) => {
-  const router = useRouter();
+const Sidebar = () => {
+  const pathname = usePathname();
   const [session, setSession] = useState<SessionState>({ status: 'loading' });
+  const [activeHash, setActiveHash] = useState('');
+  const [indicatorStyle, setIndicatorStyle] = useState<{
+    mobile: { left: number; width: number };
+    desktop: { top: number; height: number };
+  }>({
+    mobile: { left: 0, width: 0 },
+    desktop: { top: 0, height: 0 },
+  });
+
+  const mobileItemRefs = useRef<(HTMLElement | null)[]>([]);
+  const desktopItemRefs = useRef<(HTMLElement | null)[]>([]);
+  const mobileNavRef = useRef<HTMLUListElement>(null);
+  const desktopNavRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -112,88 +127,6 @@ const SidebarAccountWidget = ({ layout }: { layout: 'mobile' | 'desktop' }) => {
     };
   }, []);
 
-  const handleLogin = () => {
-    router.push('/login');
-  };
-
-  const containerClassName = clsx('w-full', layout === 'mobile' ? 'mt-4' : undefined);
-  const cardClassName = 'rounded-2xl border border-white/10 bg-white/5 p-4 text-right shadow-sm backdrop-blur-sm';
-  const linkClassName =
-    'rounded-full border border-accent/40 px-3 py-1.5 text-xs font-semibold text-accent transition hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
-
-  if (session.status === 'loading') {
-    return (
-      <div className={clsx(containerClassName, cardClassName, 'animate-pulse')}>
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-white/20" aria-hidden />
-          <div className="flex flex-col gap-2 text-right">
-            <div className="h-3 w-20 rounded-full bg-white/20" aria-hidden />
-            <div className="h-3 w-28 rounded-full bg-white/10" aria-hidden />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (session.status === 'unauthenticated') {
-    return (
-      <div className={containerClassName}>
-        <button
-          type="button"
-          onClick={handleLogin}
-          className="flex w-full flex-col items-end gap-2 rounded-2xl bg-gradient-to-br from-accent to-accent/80 px-4 py-4 text-right text-sm font-semibold text-background shadow-lg transition hover:from-accent/90 hover:to-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
-          <div className="flex w-full items-center justify-between gap-3">
-            <span>ورود یا ثبت‌نام</span>
-            <UserCircle aria-hidden className="h-6 w-6" />
-          </div>
-          <p className="text-xs font-normal text-background/80">برای مدیریت نوبت‌ها وارد حساب خود شوید</p>
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className={clsx(containerClassName, cardClassName)}>
-      <div className="flex items-center gap-3">
-        <UserCircle aria-hidden className="h-10 w-10 text-accent" />
-        <div className="min-w-0 text-right">
-          <p className="truncate text-sm font-semibold text-foreground">{session.user.email}</p>
-          <p className="text-xs text-muted-foreground">
-            {session.isStaff ? 'اعضای کادر درمان' : 'کاربر سایان نوبت'}
-          </p>
-        </div>
-      </div>
-      <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
-        <Link href="/account" className={linkClassName}>
-          حساب کاربری
-        </Link>
-        {session.isStaff ? (
-          <Link href="/staff" className={linkClassName}>
-            پیشخوان کارکنان
-          </Link>
-        ) : null}
-      </div>
-    </div>
-  );
-};
-
-const Sidebar = () => {
-  const pathname = usePathname();
-  const [activeHash, setActiveHash] = useState('');
-  const [indicatorStyle, setIndicatorStyle] = useState<{
-    mobile: { left: number; width: number };
-    desktop: { top: number; height: number };
-  }>({
-    mobile: { left: 0, width: 0 },
-    desktop: { top: 0, height: 0 },
-  });
-
-  const mobileItemRefs = useRef<(HTMLElement | null)[]>([]);
-  const desktopItemRefs = useRef<(HTMLElement | null)[]>([]);
-  const mobileNavRef = useRef<HTMLUListElement>(null);
-  const desktopNavRef = useRef<HTMLUListElement>(null);
-
   useEffect(() => {
     if (typeof window === 'undefined') {
       return;
@@ -210,6 +143,52 @@ const Sidebar = () => {
       window.removeEventListener('hashchange', updateHash);
     };
   }, []);
+
+  const navigationItems: NavigationItem[] = useMemo(() => {
+    const accountMatches = (currentPathname: string) => {
+      if (!currentPathname) {
+        return false;
+      }
+
+      if (session.status !== 'authenticated') {
+        return currentPathname.startsWith('/login');
+      }
+
+      if (session.isStaff) {
+        return currentPathname.startsWith('/staff') || currentPathname.startsWith('/account');
+      }
+
+      return currentPathname.startsWith('/account');
+    };
+
+    const accountNavigationItem: NavigationItem = {
+      label:
+        session.status === 'authenticated'
+          ? session.isStaff
+            ? 'پیشخوان'
+            : 'حساب من'
+          : 'ورود',
+      href:
+        session.status === 'authenticated'
+          ? session.isStaff
+            ? '/staff'
+            : '/account'
+          : '/login',
+      icon: session.status === 'loading' ? Loader2 : UserCircle,
+      iconClassName: session.status === 'loading' ? 'animate-spin' : undefined,
+      ariaLabel:
+        session.status === 'authenticated'
+          ? session.isStaff
+            ? 'مشاهده پیشخوان کادر درمان'
+            : 'مشاهده حساب کاربری'
+          : 'ورود یا ثبت‌نام در سایان نوبت',
+      group: 'actions',
+      disabled: session.status === 'loading',
+      matches: (currentPathname) => accountMatches(currentPathname ?? ''),
+    };
+
+    return [...baseNavigationItems, accountNavigationItem];
+  }, [session]);
 
   // Update indicator position when active item changes
   useEffect(() => {
@@ -266,7 +245,7 @@ const Sidebar = () => {
     // Update on resize
     window.addEventListener('resize', updateIndicatorPosition);
     return () => window.removeEventListener('resize', updateIndicatorPosition);
-  }, [pathname, activeHash]);
+  }, [pathname, activeHash, navigationItems]);
 
   const renderItem = (item: NavigationItem, index: number, isMobile: boolean) => {
     const Icon = item.icon;
@@ -275,7 +254,8 @@ const Sidebar = () => {
       'group flex h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-medium relative',
       'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
       // Only show hover on non-active items - NO transitions for performance
-      !isActive && 'hover:bg-accent/10'
+      !isActive && 'hover:bg-accent/10',
+      item.disabled && 'pointer-events-none opacity-50'
     );
 
     const content = (
@@ -284,12 +264,21 @@ const Sidebar = () => {
           aria-hidden
           className={clsx(
             'h-5 w-5',
-            isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
+            item.iconClassName,
+            item.disabled
+              ? 'text-muted-foreground'
+              : isActive
+                ? 'text-foreground'
+                : 'text-current group-hover:text-foreground'
           )}
         />
         <span className={clsx(
           'text-[11px] leading-4 font-medium',
-          isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
+          item.disabled
+            ? 'text-muted-foreground'
+            : isActive
+              ? 'text-foreground'
+              : 'text-current group-hover:text-foreground'
         )}>
           {item.label}
         </span>
@@ -312,6 +301,7 @@ const Sidebar = () => {
         className={baseClasses}
         aria-label={item.ariaLabel ?? item.label}
         aria-current={isActive ? 'page' : undefined}
+        aria-disabled={item.disabled ? 'true' : undefined}
       >
         {content}
       </Component>
@@ -358,7 +348,6 @@ const Sidebar = () => {
           </li>
         ))}
       </ul>
-      <SidebarAccountWidget layout="mobile" />
 
       {/* Desktop Navigation */}
       <div className="hidden h-full w-full flex-col justify-between lg:flex">
@@ -386,21 +375,18 @@ const Sidebar = () => {
             </li>
           ))}
         </ul>
-        <div className="flex w-full flex-col items-center gap-4">
-          <SidebarAccountWidget layout="desktop" />
-          {desktopActionItems.length > 0 && (
-            <>
-              <div className="h-px w-full bg-white/20" aria-hidden />
-              <ul className="flex w-full flex-col items-center gap-4">
-                {desktopActionItems.map((item, index) => (
-                  <li key={`desktop-action-${item.label}`} className="w-full">
-                    {renderItem(item, desktopMainItems.length + index, false)}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-        </div>
+        {desktopActionItems.length > 0 && (
+          <div className="flex w-full flex-col items-center gap-4">
+            <div className="h-px w-full bg-white/20" aria-hidden />
+            <ul className="flex w-full flex-col items-center gap-4">
+              {desktopActionItems.map((item, index) => (
+                <li key={`desktop-action-${item.label}`} className="w-full">
+                  {renderItem(item, desktopMainItems.length + index, false)}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </nav>
   );
