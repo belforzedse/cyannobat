@@ -42,7 +42,7 @@ export const mockAvailability: Record<ServiceId, Record<DoctorId, AvailabilityDa
       {
         date: '2024-06-02',
         slots: lateMorningSlots('2024-06-02'),
-        note: 'اولویت با مشاوره‌های آنلاین است.',
+        note: 'اولویت با مشاوره‌های آنلاین است؛ لطفاً مدارک شناسایی خود را آماده کنید.',
       },
       {
         date: '2024-06-03',
