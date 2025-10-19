@@ -1,12 +1,16 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { useState, type FormEvent } from 'react'
 
-type StaffLoginFormProps = {
-  redirectTo?: string
+type LoginFormProps = {
+  redirectToStaff?: string
+  redirectToAccount?: string
 }
 
-const StaffLoginForm = ({ redirectTo = '/staff' }: StaffLoginFormProps) => {
+const LoginForm = ({
+  redirectToStaff = '/staff',
+  redirectToAccount = '/account',
+}: LoginFormProps) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -18,7 +22,7 @@ const StaffLoginForm = ({ redirectTo = '/staff' }: StaffLoginFormProps) => {
     setErrorMessage(null)
 
     try {
-      const response = await fetch('/api/staff/login', {
+      const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,7 +35,11 @@ const StaffLoginForm = ({ redirectTo = '/staff' }: StaffLoginFormProps) => {
         throw new Error(result.message ?? 'ورود ناموفق بود.')
       }
 
-      window.location.href = redirectTo
+      const result = (await response.json()) as { user: { roles?: string[] } }
+      const roles = Array.isArray(result.user?.roles) ? result.user.roles : []
+      const isStaff = roles.some((role) => ['admin', 'doctor', 'receptionist'].includes(role))
+
+      window.location.href = isStaff ? redirectToStaff : redirectToAccount
     } catch (error) {
       console.error(error)
       setErrorMessage((error as Error).message ?? 'ورود ناموفق بود.')
@@ -43,19 +51,19 @@ const StaffLoginForm = ({ redirectTo = '/staff' }: StaffLoginFormProps) => {
   return (
     <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4 text-right">
       <label className="flex flex-col gap-2 text-sm text-foreground">
-        ایمیل سازمانی
+        ایمیل
         <input
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           required
           className="rounded-xl border border-white/20 bg-white/50 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40 dark:border-white/10 dark:bg-white/10"
-          placeholder="staff@example.com"
+          placeholder="you@example.com"
         />
       </label>
 
       <label className="flex flex-col gap-2 text-sm text-foreground">
-        رمز عبور موقت
+        رمز عبور
         <input
           type="password"
           value={password}
@@ -81,11 +89,11 @@ const StaffLoginForm = ({ redirectTo = '/staff' }: StaffLoginFormProps) => {
       </button>
 
       <p className="text-xs leading-6 text-muted-foreground">
-        احراز هویت پیامکی به‌زودی جایگزین رمز عبور می‌شود. تا آن زمان، حساب‌های موقتی ایجاد شده با ابزار seed قابل استفاده هستند.
+        احراز هویت پیامکی به‌زودی راه‌اندازی می‌شود. تا آن موقع از حساب‌های موقتی یا رمز عبور خود استفاده کنید.
       </p>
     </form>
   )
 }
 
-export default StaffLoginForm
+export default LoginForm
 

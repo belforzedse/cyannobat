@@ -40,24 +40,27 @@ const run = async () => {
 
     if (existing.docs.length > 0) {
       const target = existing.docs[0]
+      const updateData: Record<string, unknown> = {
+        roles: user.roles,
+      }
       await payload.update({
         collection: 'users',
         id: target.id,
-        data: {
-          roles: user.roles,
-        } as any,
+        data: updateData as never,
         overrideAccess: true,
       })
       continue
     }
 
+    const createData: Record<string, unknown> = {
+      email: user.email,
+      password: user.password,
+      roles: user.roles,
+    }
+
     await payload.create({
       collection: 'users',
-      data: {
-        email: user.email,
-        password: user.password,
-        roles: user.roles,
-      } as any,
+      data: createData as never,
       overrideAccess: true,
     })
   }

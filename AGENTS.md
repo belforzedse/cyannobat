@@ -1,4 +1,4 @@
-﻿# Repository Guidelines
+# Repository Guidelines
 
 ## Project Structure & Module Organization
 - Next.js source lives in src/app; (site) renders the public shell and (payload) bundles the Payload admin and server handlers.
@@ -43,10 +43,12 @@
 
 ## Roles & Seeding
 - User accounts carry a `roles` multi-select (`patient`, `doctor`, `receptionist`, `admin`). Staff checks live in `src/lib/auth.ts`; use `userIsStaff` for doctor/receptionist/admin gates.
-- Seed baseline accounts with `pnpm seed:staff` (honours `PAYLOAD_SECRET`, updates existing emails instead of duplicating). Credentials land at `patient|doctor|reception@example.com` with simple demo passwords—rotate them before shipping.
+- Seed baseline accounts with `pnpm seed:staff` (honours `PAYLOAD_SECRET`, updates existing emails instead of duplicating). Credentials land at `patient|doctor|reception@example.com` with simple demo passwords�rotate them before shipping.
 
-## Staff Dashboard
-- Frontend dashboard lives at `/staff` (redirects to `/staff/login` when no valid staff session). Login endpoint (`/api/staff/login`) currently accepts email/password for dev accounts; swap it for SMS auth later.
-- Dashboard pulls data via server-side Payload lookups and client refreshes hitting `/api/staff/appointments` and `/api/staff/providers`; all routes enforce `userIsStaff` with helpers in `src/lib/api/auth.ts`.
-- Appointment status updates use `PATCH /api/staff/appointments/:id`, which runs with `overrideAccess: true` once staff auth is confirmed—extend this endpoint for future rescheduling or notes.
+## Auth & Dashboards
+- Public login lives at `/login` and posts to `/api/login`. Successful staff accounts redirect to `/staff`, everyone else lands on `/account`.
+- `/account` renders a role-aware dashboard (patients see upcoming bookings, staff get a quick link into the staff console). Both routes rely on the same Payload session cookies.
+- `/staff` still exposes the richer management UI, and requires a staff session via `authenticateStaffRequest`. Logout remains at `/api/staff/logout`.
+- Dashboard APIs (`/api/staff/appointments`, `/api/staff/providers`, `/api/staff/appointments/:id`) all enforce `userIsStaff`.
+
 

@@ -4,7 +4,7 @@ type UserLike = PayloadRequest['user'] & {
   roles?: unknown
 }
 
-const extractRoles = (user: PayloadRequest['user'] | null | undefined): string[] => {
+export const extractRoles = (user: PayloadRequest['user'] | null | undefined): string[] => {
   if (!user) return []
   const potentialRoles = (user as UserLike).roles
   if (!Array.isArray(potentialRoles)) return []
@@ -18,4 +18,3 @@ export const userIsAdmin = (user: PayloadRequest['user'] | null | undefined): bo
 
 export const userIsStaff = (user: PayloadRequest['user'] | null | undefined): boolean =>
   userIsAdmin(user) || userHasRole(user, 'doctor') || userHasRole(user, 'receptionist')
-

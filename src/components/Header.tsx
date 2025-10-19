@@ -1,48 +1,74 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import ThemeToggle from './ThemeToggle';
-import { BOOKING_PATH } from '@/lib/routes';
+import Link from "next/link";
+import ThemeToggle from "./ThemeToggle";
+import { BOOKING_PATH } from "@/lib/routes";
 
 const Header = () => {
   return (
     <header
-      className="glass rounded-3xl sticky top-4 z-30 flex items-center justify-between px-6 py-4 text-right mx-4 lg:mr-[122px] xl:mr-[122px] 2xl:mr-[122px] animate-fade-in-down"
-      style={{
-        backdropFilter: 'blur(10px) saturate(140%)',
-        WebkitBackdropFilter: 'blur(10px) saturate(140%)',
-      }}
+      role="banner"
+      className="
+        glass sticky top-4 z-30 mx-4 rounded-3xl px-6 py-4
+        flex items-center justify-between text-right
+        lg:mr-[122px] xl:mr-[122px] 2xl:mr-[122px]
+        animate-fade-in-down
+        backdrop-blur-md backdrop-saturate-150
+      "
     >
-      {/* Very subtle cyan glow - premium feel */}
+      {/* soft accent glow */}
       <div
-        className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-accent/3 via-transparent to-accent/2 opacity-50 -z-20"
         aria-hidden
+        className="pointer-events-none absolute inset-0 -z-20 rounded-3xl bg-gradient-to-br from-accent/5 via-transparent to-accent/5 opacity-50"
       />
-      {/* Shimmer highlight */}
+      {/* hairline sheen */}
       <div
-        className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-30 -z-10 dark:via-white/6"
         aria-hidden
+        className="
+          pointer-events-none absolute inset-0 -z-10 rounded-3xl
+          bg-gradient-to-r from-transparent via-white/15 to-transparent
+          opacity-30 dark:via-white/10
+        "
       />
-      <div className="flex items-center gap-2">
-        <div className="flex flex-col">
-          <Link
-            href="/"
-            className="text-sm font-semibold tracking-tight text-foreground"
-          >
-            سایان نوبت
-          </Link>
+
+      {/* brand */}
+      <Link href="/" className="flex items-center gap-2 select-none">
+        <div className="flex flex-col text-right leading-tight">
+          <span className="text-sm font-semibold tracking-tight text-foreground">سایان نوبت</span>
           <span className="text-xs text-muted-foreground">cyannobat</span>
         </div>
-      </div>
-      <div className="flex items-center gap-3">
+      </Link>
+
+      {/* actions */}
+      <nav aria-label="primary" className="flex items-center gap-3">
+        <Link
+          href="/account"
+          className="
+            glass-pill hidden sm:inline-flex px-5 py-2 text-sm font-medium text-foreground
+            transition-colors hover:text-foreground
+            focus-visible:outline-none focus-visible:ring-2
+            focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2
+            focus-visible:ring-offset-background
+          "
+        >
+          حساب کاربری
+        </Link>
+
         <Link
           href={BOOKING_PATH}
-          className="glass-pill hidden px-5 py-2 text-sm font-medium text-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:inline-flex"
+          className="
+            glass-pill hidden sm:inline-flex px-5 py-2 text-sm font-medium text-foreground
+            transition-colors hover:text-foreground
+            focus-visible:outline-none focus-visible:ring-2
+            focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2
+            focus-visible:ring-offset-background
+          "
         >
           رزرو نوبت
         </Link>
+
         <ThemeToggle />
-      </div>
+      </nav>
     </header>
   );
 };
