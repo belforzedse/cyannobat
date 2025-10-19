@@ -32,9 +32,9 @@ const formatSelectedSummary = (day: AvailabilityDay | null, slot: AvailabilitySl
     const startLabel = formatter.format(new Date(slot.start))
     const endLabel = formatter.format(new Date(slot.end))
 
-    return `${dateLabel} · ${startLabel} تا ${endLabel} — ${slot.providerName}`
+    return `${dateLabel} · ${startLabel} تا ${endLabel} — ارائه‌دهنده: ${slot.providerName}`
   } catch {
-    return `${day.date} · ${slot.start} تا ${slot.end} — ${slot.providerName}`
+    return `${day.date} · ${slot.start} تا ${slot.end} — ارائه‌دهنده: ${slot.providerName}`
   }
 }
 
@@ -59,10 +59,10 @@ const ScheduleSection = ({
   return (
     <div className={cardClasses}>
       <div className="flex flex-col items-end gap-1 sm:gap-2 text-right">
-        <h3 className="text-sm font-semibold text-foreground">انتخاب تاریخ و ساعت ملاقات</h3>
+        <h3 className="text-sm font-semibold text-foreground">انتخاب تاریخ و زمان خدمت</h3>
         <p className="text-xs leading-6 text-muted-foreground">
-          ابتدا روز مناسب را انتخاب کنید و سپس از میان زمان‌های خالی آن روز، ساعت دقیق نوبت را مشخص کنید. ساعت‌ها برای هر
-          پزشک و خدمت مرتب شده‌اند.
+          ابتدا روز مناسب را انتخاب کنید و سپس از میان زمان‌های خالی آن روز، ساعت دقیق نوبت را مشخص کنید. همراه هر بازه،
+          ارائه‌دهنده هماهنگ‌شده همان خدمت نمایش داده می‌شود.
         </p>
         {selectionSummary ? (
           <span className="rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-[11px] font-semibold text-accent">

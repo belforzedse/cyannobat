@@ -55,7 +55,7 @@ const mapProvider = (doc: ProviderDoc): StaffProvider => {
 
   return {
     id: String(doc.id ?? ''),
-    displayName: doc.displayName ?? 'پزشک',
+    displayName: doc.displayName ?? 'ارائه‌دهنده',
     timeZone: doc?.location?.timeZone ?? 'UTC',
     availability: availability.map((window) => ({
       day: window?.day ?? 'نامشخص',
