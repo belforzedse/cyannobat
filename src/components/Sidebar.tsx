@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
@@ -52,7 +53,13 @@ type SessionState =
       isStaff: boolean;
     };
 
-const SidebarAccountWidget = ({ layout }: { layout: 'mobile' | 'desktop' }) => {
+const SidebarAccountWidget = React.forwardRef<
+  HTMLDivElement,
+  {
+    layout: 'mobile' | 'desktop'
+    isActive?: boolean
+  }
+>(({ layout, isActive = false }, ref) => {
   const router = useRouter();
   const [session, setSession] = useState<SessionState>({ status: 'loading' });
 
@@ -116,67 +123,76 @@ const SidebarAccountWidget = ({ layout }: { layout: 'mobile' | 'desktop' }) => {
     router.push('/login');
   };
 
-  const containerClassName = clsx('w-full', layout === 'mobile' ? 'mt-4' : undefined);
-  const cardClassName = 'rounded-2xl border border-white/10 bg-white/5 p-4 text-right shadow-sm backdrop-blur-sm';
-  const linkClassName =
-    'rounded-full border border-accent/40 px-3 py-1.5 text-xs font-semibold text-accent transition hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
+  const accountHref = session.status === 'authenticated' && session.isStaff ? '/staff' : '/account';
+  const containerClassName = "w-full";
 
-  if (session.status === 'loading') {
+  if (session.status === "loading") {
     return (
-      <div className={clsx(containerClassName, cardClassName, 'animate-pulse')}>
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-white/20" aria-hidden />
-          <div className="flex flex-col gap-2 text-right">
-            <div className="h-3 w-20 rounded-full bg-white/20" aria-hidden />
-            <div className="h-3 w-28 rounded-full bg-white/10" aria-hidden />
-          </div>
+      <div ref={ref} className={containerClassName}>
+        <div className="flex h-14 flex-1 items-center justify-center rounded-2xl bg-white/5 animate-pulse">
+          <div className="h-5 w-5 rounded-full bg-white/20" aria-hidden />
         </div>
       </div>
     );
   }
 
-  if (session.status === 'unauthenticated') {
+  const baseClasses = clsx(
+    'group flex h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-medium relative',
+    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
+    !isActive && 'hover:bg-accent/10'
+  );
+
+  if (session.status === "unauthenticated") {
     return (
-      <div className={containerClassName}>
+      <div ref={ref} className={containerClassName}>
         <button
           type="button"
           onClick={handleLogin}
-          className="flex w-full flex-col items-end gap-2 rounded-2xl bg-gradient-to-br from-accent to-accent/80 px-4 py-4 text-right text-sm font-semibold text-background shadow-lg transition hover:from-accent/90 hover:to-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className={baseClasses}
+          aria-label="ورود یا ثبت‌نام"
         >
-          <div className="flex w-full items-center justify-between gap-3">
-            <span>ورود یا ثبت‌نام</span>
-            <UserCircle aria-hidden className="h-6 w-6" />
+          <div className="relative z-10 flex flex-col items-center justify-center gap-1">
+            <UserCircle aria-hidden className={clsx(
+              'h-5 w-5',
+              isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
+            )} />
+            <span className={clsx(
+              'text-[11px] leading-4 font-medium',
+              isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
+            )}>ورود</span>
           </div>
-          <p className="text-xs font-normal text-background/80">برای مدیریت نوبت‌ها وارد حساب خود شوید</p>
         </button>
       </div>
     );
   }
 
   return (
-    <div className={clsx(containerClassName, cardClassName)}>
-      <div className="flex items-center gap-3">
-        <UserCircle aria-hidden className="h-10 w-10 text-accent" />
-        <div className="min-w-0 text-right">
-          <p className="truncate text-sm font-semibold text-foreground">{session.user.email}</p>
-          <p className="text-xs text-muted-foreground">
-            {session.isStaff ? 'اعضای کادر درمان' : 'کاربر سایان نوبت'}
-          </p>
+    <div ref={ref} className={containerClassName}>
+      <Link
+        href={accountHref}
+        className={baseClasses}
+        aria-label={`حساب کاربری - ${session.user.email}`}
+        aria-current={isActive ? 'page' : undefined}
+      >
+        <div className="relative z-10 flex flex-col items-center justify-center gap-1">
+          <UserCircle aria-hidden className={clsx(
+            'h-5 w-5',
+            isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
+          )} />
+          <span className={clsx(
+            'text-[11px] leading-4 font-medium',
+            isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
+          )}>
+            حساب کاربری
+          </span>
         </div>
-      </div>
-      <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
-        <Link href="/account" className={linkClassName}>
-          حساب کاربری
-        </Link>
-        {session.isStaff ? (
-          <Link href="/staff" className={linkClassName}>
-            پیشخوان کارکنان
-          </Link>
-        ) : null}
-      </div>
+      </Link>
     </div>
   );
-};
+});
+
+SidebarAccountWidget.displayName = 'SidebarAccountWidget';
+
 
 const Sidebar = () => {
   const pathname = usePathname();
@@ -193,6 +209,8 @@ const Sidebar = () => {
   const desktopItemRefs = useRef<(HTMLElement | null)[]>([]);
   const mobileNavRef = useRef<HTMLUListElement>(null);
   const desktopNavRef = useRef<HTMLUListElement>(null);
+  const mobileAccountRef = useRef<HTMLDivElement>(null);
+  const desktopAccountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -214,21 +232,19 @@ const Sidebar = () => {
   // Update indicator position when active item changes
   useEffect(() => {
     const updateIndicatorPosition = () => {
+      // Check if account/staff page is active
+      const isAccountActive = pathname === '/account' || pathname === '/staff';
+
       // Find active item index
       const activeIndex = navigationItems.findIndex(item =>
         item.matches?.(pathname ?? '', activeHash) ?? false
       );
 
-      if (activeIndex === -1) {
-        return;
-      }
-
       // Update mobile indicator
-      const mobileItem = mobileItemRefs.current[activeIndex];
-      const mobileNav = mobileNavRef.current;
-      if (mobileItem && mobileNav) {
-        const navRect = mobileNav.getBoundingClientRect();
-        const itemRect = mobileItem.getBoundingClientRect();
+      if (isAccountActive && mobileAccountRef.current && mobileNavRef.current) {
+        // Account widget is active on mobile
+        const navRect = mobileNavRef.current.getBoundingClientRect();
+        const itemRect = mobileAccountRef.current.getBoundingClientRect();
         setIndicatorStyle(prev => ({
           ...prev,
           mobile: {
@@ -236,9 +252,24 @@ const Sidebar = () => {
             width: itemRect.width,
           },
         }));
+      } else if (activeIndex !== -1) {
+        // Regular nav item is active on mobile
+        const mobileItem = mobileItemRefs.current[activeIndex];
+        const mobileNav = mobileNavRef.current;
+        if (mobileItem && mobileNav) {
+          const navRect = mobileNav.getBoundingClientRect();
+          const itemRect = mobileItem.getBoundingClientRect();
+          setIndicatorStyle(prev => ({
+            ...prev,
+            mobile: {
+              left: itemRect.left - navRect.left,
+              width: itemRect.width,
+            },
+          }));
+        }
       }
 
-      // Update desktop indicator (only main items)
+      // Update desktop indicator (only main items, not actions or account)
       const desktopMainItems = navigationItems.filter(item => item.group === 'main');
       const desktopActiveIndex = desktopMainItems.findIndex(item =>
         item.matches?.(pathname ?? '', activeHash) ?? false
@@ -321,7 +352,8 @@ const Sidebar = () => {
   const desktopMainItems = navigationItems.filter((item) => item.group === 'main');
   const desktopActionItems = navigationItems.filter((item) => item.group === 'actions');
 
-  const hasActiveItem = navigationItems.some(item => item.matches?.(pathname ?? '', activeHash) ?? false);
+  const isAccountActive = pathname === '/account' || pathname === '/staff';
+  const hasActiveItem = navigationItems.some(item => item.matches?.(pathname ?? '', activeHash) ?? false) || isAccountActive;
   const hasActiveMainItem = desktopMainItems.some(item => item.matches?.(pathname ?? '', activeHash) ?? false);
 
   return (
@@ -334,7 +366,7 @@ const Sidebar = () => {
       )}
     >
       {/* Mobile Navigation */}
-      <ul ref={mobileNavRef} className="flex w-full items-center justify-between gap-1 lg:hidden relative">
+      <ul ref={mobileNavRef} className="flex w-full items-center gap-1 lg:hidden relative">
         {/* Morphing active indicator for mobile */}
         {hasActiveItem && indicatorStyle.mobile.width > 0 && (
           <div
@@ -357,8 +389,10 @@ const Sidebar = () => {
             {renderItem(item, index, true)}
           </li>
         ))}
+        <li className="flex-1">
+          <SidebarAccountWidget ref={mobileAccountRef} layout="mobile" isActive={isAccountActive} />
+        </li>
       </ul>
-      <SidebarAccountWidget layout="mobile" />
 
       {/* Desktop Navigation */}
       <div className="hidden h-full w-full flex-col justify-between lg:flex">
@@ -387,7 +421,7 @@ const Sidebar = () => {
           ))}
         </ul>
         <div className="flex w-full flex-col items-center gap-4">
-          <SidebarAccountWidget layout="desktop" />
+          <SidebarAccountWidget ref={desktopAccountRef} layout="desktop" isActive={isAccountActive} />
           {desktopActionItems.length > 0 && (
             <>
               <div className="h-px w-full bg-white/20" aria-hidden />

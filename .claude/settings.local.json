@@ -87,7 +87,12 @@
       "Bash(DATABASE_URI=\"postgres://cyannobat:cyannopass@localhost:5432/cyannobat\" PAYLOAD_SECRET=\"65b36d2e960b7fdc24c7452a\" npx tsx src/scripts/clear-db.ts)",
       "Bash(cat .eslintignore)",
       "Bash(cat next.config.ts)",
-      "Bash(cat eslint.config.mjs)"
+      "Bash(cat eslint.config.mjs)",
+      "Bash(npx tsx src/scripts/reset-password.ts)",
+      "Bash(DATABASE_URI=\"postgresql://cyannobat:cyannopass@localhost:5432/cyannobat\" PAYLOAD_SECRET=\"65b36d2e960b7fdc24c7452a\" npx tsx src/scripts/reset-password.ts)",
+      "Bash(PGPASSWORD=cyannopass psql -h localhost -U cyannobat -d cyannobat -c \"SELECT id, email FROM users LIMIT 10;\")",
+      "Bash(docker-compose exec -T postgres psql -U cyannobat -d cyannobat -c \"SELECT id, email FROM users LIMIT 10;\")",
+      "Bash(docker-compose exec -T postgres psql -U cyannobat -d cyannobat -c \"SELECT id, email FROM users WHERE email LIKE ''%yazdan%'' OR email LIKE ''%naderi%'';\")"
     ],
     "deny": [],
     "ask": []
