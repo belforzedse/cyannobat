@@ -96,6 +96,8 @@ const SchedulePicker = ({
       {availability.map((day) => {
         const isActiveDay = selectedDay === day.date
         const { weekday, label } = formatDayHeading(day.date)
+        const dayLabelParts = [weekday, label].filter(Boolean)
+        const dayDescription = dayLabelParts.length > 0 ? dayLabelParts.join('، ') : day.date
 
         return (
           <div
@@ -117,6 +119,7 @@ const SchedulePicker = ({
               )}
               onClick={() => onSelectDay?.(day)}
               aria-pressed={isActiveDay}
+              aria-label={dayDescription}
             >
               <span className="text-xs font-semibold text-muted-foreground">{weekday || '—'}</span>
               <span className="text-sm font-bold text-foreground">{label}</span>
@@ -133,6 +136,14 @@ const SchedulePicker = ({
                   {day.slots.map((slot) => {
                     const slotId = slot.id
                     const isSelected = isActiveDay && selectedSlotId === slotId
+                    const slotAriaLabelParts = [
+                      dayDescription,
+                      formatSlotLabel(slot),
+                      slot.providerName ? `با ${slot.providerName}` : undefined,
+                      slot.serviceName ? `برای ${slot.serviceName}` : undefined,
+                      slot.kind === 'virtual' ? 'مشاوره آنلاین' : undefined,
+                    ].filter((part): part is string => Boolean(part))
+                    const slotAriaLabel = slotAriaLabelParts.join('، ')
 
                     return (
                       <button
@@ -149,6 +160,7 @@ const SchedulePicker = ({
                           onSelectSlot?.(slot, day)
                         }}
                         aria-pressed={isSelected}
+                        aria-label={slotAriaLabel}
                       >
                         <span className="font-semibold">{formatSlotLabel(slot)}</span>
                         <span className="text-[10px] text-muted-foreground">{slot.providerName}</span>
