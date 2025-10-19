@@ -166,7 +166,7 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
                 type="search"
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="ایمیل بیمار، پزشک یا کد پیگیری"
+                placeholder="ایمیل بیمار، ارائه‌دهنده یا کد پیگیری"
                 className="mt-1 w-full rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground dark:border-white/20 dark:bg-white/10 sm:mr-3 sm:w-64"
               />
             </label>
@@ -191,7 +191,7 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
               <tr>
                 <th className="px-4 py-3">زمان نوبت</th>
                 <th className="px-4 py-3">بیمار</th>
-                <th className="px-4 py-3">پزشک</th>
+                <th className="px-4 py-3">ارائه‌دهنده</th>
                 <th className="px-4 py-3">خدمت</th>
                 <th className="px-4 py-3">کد پیگیری</th>
                 <th className="px-4 py-3">تاریخ ایجاد</th>
@@ -244,7 +244,7 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
 
       <section className="rounded-2xl border border-white/20 bg-white/35 p-4 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/5 sm:p-6">
         <div className="flex flex-col items-end gap-1 text-right">
-          <h2 className="text-lg font-semibold text-foreground">بازه‌های زمانی پزشکان</h2>
+          <h2 className="text-lg font-semibold text-foreground">بازه‌های زمانی ارائه‌دهندگان</h2>
           <p className="text-xs text-muted-foreground">برای تعریف بازه‌های جدید یا ویرایش، به بخش مربوطه در سیستم مدیریت مراجعه کنید.</p>
         </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -276,7 +276,7 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
           ))}
           {providers.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-white/20 bg-white/20 p-6 text-center text-sm text-muted-foreground dark:border-white/10">
-              هنوز پروفایل پزشکی ثبت نشده است.
+              هنوز پروفایل ارائه‌دهنده‌ای ثبت نشده است.
             </div>
           ) : null}
         </div>

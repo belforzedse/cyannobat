@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import GlassCard from '@/components/GlassCard';
 import GlassButton from '@/components/GlassButton';
 import GlassIcon from '@/components/GlassIcon';
-import { Calendar, Search, Clock } from 'lucide-react';
+import { Calendar, Search, CheckCircle2 } from 'lucide-react';
 import { BOOKING_PATH } from '@/lib/routes';
 import { luxuryContainer, luxurySlideFade } from '@/lib/luxuryAnimations';
 
@@ -16,14 +16,14 @@ const steps = [
     icon: Search,
   },
   {
-    title: 'انتخاب پزشک',
-    description: 'پزشک مورد اعتماد خود را بر اساس تخصص، امتیاز بیماران و تجربه حرفه‌ای انتخاب کنید.',
+    title: 'انتخاب تاریخ و زمان',
+    description: 'بازه دلخواه خود را از میان زمان‌های آزاد انتخاب کنید؛ ارائه‌دهنده مناسب با همان بازه هماهنگ است.',
     icon: Calendar,
   },
   {
-    title: 'تاریخ و زمان',
-    description: 'زمان دلخواه را رزرو کنید و یادآورها را در لحظه دریافت نمایید.',
-    icon: Clock,
+    title: 'تایید جزئیات',
+    description: 'اطلاعات تماس و خلاصه نوبت را مرور کنید و پیش از ثبت نهایی، همه چیز را یک‌جا تایید نمایید.',
+    icon: CheckCircle2,
   },
 ];
 

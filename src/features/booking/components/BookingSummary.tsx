@@ -74,7 +74,7 @@ const BookingSummary = ({
         </dd>
       </div>
       <div className="flex flex-col items-end gap-1">
-        <dt className="text-xs font-medium text-muted-foreground">ساعت و پزشک</dt>
+        <dt className="text-xs font-medium text-muted-foreground">زمان انتخابی</dt>
         <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground backdrop-blur-sm dark:border-white/15 dark:bg-black/40">
           {formattedTime}
         </dd>
@@ -86,7 +86,7 @@ const BookingSummary = ({
         </dd>
       </div>
       <div className="flex flex-col items-end gap-1">
-        <dt className="text-xs font-medium text-muted-foreground">پزشک مسئول</dt>
+        <dt className="text-xs font-medium text-muted-foreground">ارائه‌دهنده هماهنگ‌شده</dt>
         <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground backdrop-blur-sm dark:border-white/15 dark:bg-black/40">
           {providerLabel || 'انتخاب نشده'}
         </dd>

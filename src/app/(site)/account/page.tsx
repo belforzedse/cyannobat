@@ -127,7 +127,7 @@ const AccountPage = async () => {
                 >
                   <div className="flex flex-col gap-1 text-xs text-muted-foreground">
                     <span className="text-sm font-semibold text-foreground">{appointment.serviceTitle}</span>
-                    <span>پزشک: {appointment.providerName}</span>
+                    <span>ارائه‌دهنده این بازه: {appointment.providerName}</span>
                     <span>
                       زمان شروع: {new Date(appointment.start).toLocaleString('fa-IR', { hour12: false })}
                     </span>
