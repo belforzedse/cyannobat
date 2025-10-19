@@ -45,7 +45,7 @@ const run = async () => {
         id: target.id,
         data: {
           roles: user.roles,
-        },
+        } as any,
         overrideAccess: true,
       })
       continue
@@ -53,7 +53,11 @@ const run = async () => {
 
     await payload.create({
       collection: 'users',
-      data: user,
+      data: {
+        email: user.email,
+        password: user.password,
+        roles: user.roles,
+      } as any,
       overrideAccess: true,
     })
   }

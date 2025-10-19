@@ -14,9 +14,11 @@ const StaffLoginPage = async () => {
     config: configPromise,
   })
 
+  const headerStore = await headers()
+
   try {
     const { user } = await payload.auth({
-      headers: headers(),
+      headers: headerStore,
     })
 
     if (user && userIsStaff(user)) {
@@ -31,7 +33,8 @@ const StaffLoginPage = async () => {
       <div className="max-w-lg text-right">
         <h1 className="text-3xl font-bold text-foreground sm:text-4xl">ورود کارکنان</h1>
         <p className="mt-3 text-sm leading-7 text-muted-foreground">
-          حساب‌های موقتی بر پایه رمز عبور تنها برای دوره توسعه فعال هستند. در نسخه نهایی، احراز هویت پیامکی به‌صورت خودکار آدرس وارد شده را تایید می‌کند و نیازی به رمز عبور نخواهد بود.
+          حساب‌های موقتی مبتنی بر رمز عبور فقط در دوره توسعه فعال هستند. در نسخه نهایی، احراز هویت پیامکی مالک شماره را
+          تأیید می‌کند و دیگر نیازی به ورود رمز نخواهد بود.
         </p>
       </div>
       <StaffLoginForm />

@@ -70,9 +70,11 @@ const StaffPage = async () => {
     config: configPromise,
   })
 
+  const headerStore = await headers()
+
   const authResult = await payload
     .auth({
-      headers: headers(),
+      headers: headerStore,
     })
     .catch(() => ({ user: null }))
 
@@ -106,9 +108,13 @@ const StaffPage = async () => {
     }),
   ])
 
+  const userRoles = Array.isArray((user as { roles?: unknown }).roles)
+    ? ((user as { roles?: string[] }).roles ?? [])
+    : []
+
   const currentUser: StaffUser = {
     email: user.email ?? 'staff',
-    roles: Array.isArray(user.roles) ? user.roles : [],
+    roles: userRoles,
   }
 
   const appointments = appointmentResult.docs.map(mapAppointment)
@@ -122,4 +128,3 @@ const StaffPage = async () => {
 }
 
 export default StaffPage
-

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import type { Where } from 'payload'
 
 import { authenticateStaffRequest, unauthorizedResponse } from '@/lib/api/auth'
 
@@ -17,17 +18,24 @@ export const GET = async (request: Request) => {
 
   const now = new Date()
 
-  const where: Record<string, unknown> = {
+  const baseWhere: Where = {
     'schedule.start': {
       greater_than_equal: now.toISOString(),
     },
   }
 
-  if (status) {
-    where.status = {
-      equals: status,
-    }
-  }
+  const where: Where = status
+    ? {
+        and: [
+          baseWhere,
+          {
+            status: {
+              equals: status,
+            },
+          },
+        ],
+      }
+    : baseWhere
 
   const appointments = await payload.find({
     collection: 'appointments',

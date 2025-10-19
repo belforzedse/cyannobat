@@ -56,11 +56,15 @@ export const POST = async (request: Request) => {
       )
     }
 
+    const roles = Array.isArray((auth.user as { roles?: unknown }).roles)
+      ? ((auth.user as { roles?: string[] }).roles ?? [])
+      : []
+
     const response = NextResponse.json({
       user: {
         id: auth.user.id,
         email: auth.user.email,
-        roles: auth.user.roles ?? [],
+        roles,
       },
     })
 
@@ -92,7 +96,7 @@ export const POST = async (request: Request) => {
     payload.logger.warn?.('Failed staff login attempt', error)
     return NextResponse.json(
       {
-        message: 'نام کاربری یا رمز عبور اشتباه است.',
+        message: 'ورود ناموفق بود. ایمیل یا رمز عبور را بررسی کنید.',
       },
       { status: 401 },
     )
