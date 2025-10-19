@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useMemo, useState, useTransition } from 'react'
+import { useReducedMotion } from 'framer-motion'
 
 import clsx from 'clsx'
 import { RefreshCw, LogOut } from 'lucide-react'
@@ -42,6 +43,8 @@ const formatDateTime = (iso: string, timeZone: string) => {
 }
 
 const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: StaffDashboardProps) => {
+  const prefersReducedMotion = useReducedMotion()
+  const reduceMotion = Boolean(prefersReducedMotion)
   const [appointments, setAppointments] = useState<StaffAppointment[]>(initialAppointments)
   const [providers] = useState<StaffProvider[]>(initialProviders)
   const [filterStatus, setFilterStatus] = useState<string>('all')
@@ -66,6 +69,43 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
       return true
     })
   }, [appointments, filterStatus, searchTerm])
+
+  const appointmentCount = filteredAppointments.length
+  const providerCount = providers.length
+  const simplifyTableInteractions = reduceMotion || appointmentCount > 18
+  const simplifyProviderInteractions = reduceMotion || providerCount > 6
+
+  const logoutButtonInteractionClasses = reduceMotion
+    ? 'transition-none hover:opacity-95 dark:hover:opacity-90'
+    : simplifyTableInteractions
+      ? 'transition-opacity hover:opacity-90 dark:hover:opacity-90'
+      : 'transition-colors hover:border-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:border-red-400/60 dark:hover:bg-red-500/10 dark:hover:text-red-300'
+
+  const refreshButtonInteractionClasses = reduceMotion
+    ? 'transition-none hover:opacity-95'
+    : simplifyTableInteractions
+      ? 'transition-opacity hover:opacity-90'
+      : 'transition-colors hover:border-accent/60 hover:bg-accent/20'
+
+  const tableRowHoverClasses = reduceMotion
+    ? 'hover:bg-white/20 dark:hover:bg-white/10'
+    : simplifyTableInteractions
+      ? 'transition-opacity hover:bg-white/25 dark:hover:bg-white/10'
+      : 'transition-colors hover:bg-white/30 dark:hover:bg-white/5'
+
+  const statusSelectTransitionClasses = reduceMotion
+    ? 'focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30'
+    : simplifyTableInteractions
+      ? 'transition-opacity focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/35'
+      : 'transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40'
+
+  const providerCardTransitionClasses = reduceMotion
+    ? 'transition-none hover:opacity-95 dark:hover:opacity-90'
+    : simplifyProviderInteractions
+      ? 'transition-opacity hover:opacity-95 dark:hover:opacity-90'
+      : 'transition-all hover:border-accent/50 hover:bg-white/60 dark:hover:border-accent/40'
+
+  const denseInputBackground = reduceMotion ? 'bg-white/55 dark:bg-white/12' : 'bg-white/60 dark:bg-white/10'
 
   const handleRefresh = useCallback(() => {
     startRefreshTransition(async () => {
@@ -133,7 +173,12 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
           <button
             type="button"
             onClick={handleLogout}
-            className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/30 px-4 py-2 text-xs font-semibold text-foreground transition-colors hover:border-red-400 hover:bg-red-50 hover:text-red-600 dark:border-white/15 dark:bg-white/10 dark:hover:border-red-400/60 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+            className={clsx(
+              'inline-flex items-center gap-2 rounded-full border border-white/30 px-4 py-2 text-xs font-semibold text-foreground',
+              'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500/60',
+              reduceMotion ? 'bg-white/35 dark:border-white/15 dark:bg-white/12' : 'bg-white/30 dark:border-white/15 dark:bg-white/10',
+              logoutButtonInteractionClasses,
+            )}
           >
             <LogOut className="h-4 w-4" />
             خروج
@@ -149,7 +194,11 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
               <select
                 value={filterStatus}
                 onChange={(event) => setFilterStatus(event.target.value)}
-                className="mt-1 w-full rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm text-foreground dark:border-white/20 dark:bg-white/10 sm:mr-3 sm:w-40"
+                className={clsx(
+                  'mt-1 w-full rounded-xl border border-white/30 px-3 py-2 text-sm text-foreground sm:mr-3 sm:w-40',
+                  denseInputBackground,
+                  'dark:border-white/20',
+                )}
               >
                 <option value="all">همه وضعیت‌ها</option>
                 {statusOptions.map((status) => (
@@ -167,7 +216,11 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
                 placeholder="ایمیل بیمار، ارائه‌دهنده یا کد پیگیری"
-                className="mt-1 w-full rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground dark:border-white/20 dark:bg-white/10 sm:mr-3 sm:w-64"
+                className={clsx(
+                  'mt-1 w-full rounded-xl border border-white/30 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground sm:mr-3 sm:w-64',
+                  denseInputBackground,
+                  'dark:border-white/20',
+                )}
               />
             </label>
           </div>
@@ -176,7 +229,12 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
             type="button"
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-2 self-end rounded-full border border-accent/40 bg-accent/10 px-4 py-2 text-xs font-semibold text-accent transition-colors hover:border-accent/60 hover:bg-accent/20 disabled:cursor-not-allowed disabled:opacity-60"
+            className={clsx(
+              'inline-flex items-center gap-2 self-end rounded-full border border-accent/40 bg-accent/10 px-4 py-2 text-xs font-semibold text-accent',
+              'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/60',
+              refreshButtonInteractionClasses,
+              'disabled:cursor-not-allowed disabled:opacity-60',
+            )}
           >
             <RefreshCw className={clsx('h-4 w-4', isRefreshing && 'animate-spin')} />
             به‌روزرسانی
@@ -200,7 +258,7 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
             </thead>
             <tbody className="divide-y divide-white/10 text-foreground">
               {filteredAppointments.map((appointment) => (
-                <tr key={appointment.id} className="transition-colors hover:bg-white/30 dark:hover:bg-white/5">
+                <tr key={appointment.id} className={clsx('focus-within:bg-white/20 focus-within:dark:bg-white/10', tableRowHoverClasses)}>
                   <td className="px-4 py-3 text-xs font-medium">
                     {formatDateTime(appointment.start, appointment.timeZone)}
                     <span className="block text-[11px] text-muted-foreground">
@@ -219,7 +277,12 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
                       value={appointment.status}
                       onChange={(event) => handleStatusChange(appointment.id, event.target.value as StaffAppointment['status'])}
                       disabled={updatingId === appointment.id}
-                      className="rounded-full border border-white/25 bg-white/55 px-3 py-1 text-xs font-semibold text-foreground transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40 disabled:cursor-not-allowed disabled:opacity-70 dark:border-white/15 dark:bg-white/10"
+                      className={clsx(
+                        'rounded-full border border-white/25 px-3 py-1 text-xs font-semibold text-foreground disabled:cursor-not-allowed disabled:opacity-70',
+                        reduceMotion ? 'bg-white/50 dark:bg-white/12' : 'bg-white/55 dark:bg-white/10',
+                        'dark:border-white/15',
+                        statusSelectTransitionClasses,
+                      )}
                     >
                       {statusOptions.map((status) => (
                         <option key={status.value} value={status.value}>
@@ -251,7 +314,11 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
           {providers.map((provider) => (
             <div
               key={provider.id}
-              className="rounded-2xl border border-white/25 bg-white/45 p-4 text-xs text-right shadow-sm transition-all hover:border-accent/50 hover:bg-white/60 dark:border-white/15 dark:bg-white/10 dark:hover:border-accent/40"
+              className={clsx(
+                'rounded-2xl border border-white/25 bg-white/45 p-4 text-xs text-right shadow-sm',
+                'dark:border-white/15 dark:bg-white/10',
+                providerCardTransitionClasses,
+              )}
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="text-sm font-semibold text-foreground">{provider.displayName}</span>

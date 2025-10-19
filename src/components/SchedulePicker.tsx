@@ -1,5 +1,7 @@
 'use client'
 
+import { useMemo } from 'react'
+import { useReducedMotion } from 'framer-motion'
 import clsx from 'clsx'
 
 import type { AvailabilityDay, AvailabilitySlot } from '@/features/booking/types'
@@ -55,6 +57,17 @@ const SchedulePicker = ({
   placeholderMessage,
   emptyMessage,
 }: SchedulePickerProps) => {
+  const prefersReducedMotion = useReducedMotion()
+  const totalSlots = useMemo(
+    () =>
+      availability?.reduce((count, day) => {
+        return count + day.slots.length
+      }, 0) ?? 0,
+    [availability],
+  )
+  const hasDenseSchedule = totalSlots > 24
+  const reduceInteractiveMotion = Boolean(prefersReducedMotion) || hasDenseSchedule
+
   if (isLoading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -103,18 +116,30 @@ const SchedulePicker = ({
           <div
             key={day.date}
             className={clsx(
-              'flex h-full flex-col gap-3 rounded-2xl border p-4 transition-all duration-300',
+              'flex h-full flex-col gap-3 rounded-2xl border p-4',
+              reduceInteractiveMotion
+                ? 'transition-opacity duration-200'
+                : 'transition-all duration-300',
               'border-white/20 bg-white/45 shadow-[0_18px_40px_-30px_rgba(31,38,135,0.35)] backdrop-blur-sm',
               'dark:border-white/10 dark:bg-black/40',
-              isActiveDay && 'border-accent/60 bg-accent/15 shadow-[0_24px_45px_-30px_rgba(88,175,192,0.5)] dark:border-accent/40 dark:bg-accent/10',
+              isActiveDay &&
+                'border-accent/60 bg-accent/15 shadow-[0_24px_45px_-30px_rgba(88,175,192,0.5)] dark:border-accent/40 dark:bg-accent/10',
             )}
           >
             <button
               type="button"
               className={clsx(
-                'flex flex-col items-end gap-1 rounded-xl border px-3 py-2 text-right transition-colors duration-200',
-                'border-white/30 bg-white/55 hover:border-accent/50 hover:bg-white/70',
-                'dark:border-white/15 dark:bg-black/50 dark:hover:border-accent/40 dark:hover:bg-black/60',
+                'flex flex-col items-end gap-1 rounded-xl border px-3 py-2 text-right',
+                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/60',
+                reduceInteractiveMotion
+                  ? 'transition-opacity duration-150 hover:opacity-95 focus-visible:opacity-95'
+                  : 'transition-colors duration-200 hover:border-accent/50 hover:bg-white/70',
+                reduceInteractiveMotion
+                  ? 'border-white/30 bg-white/60'
+                  : 'border-white/30 bg-white/55',
+                reduceInteractiveMotion
+                  ? 'dark:border-white/15 dark:bg-black/55 dark:hover:opacity-90'
+                  : 'dark:border-white/15 dark:bg-black/50 dark:hover:border-accent/40 dark:hover:bg-black/60',
                 isActiveDay && 'border-accent/60 bg-accent/20 text-accent',
               )}
               onClick={() => onSelectDay?.(day)}
@@ -150,10 +175,19 @@ const SchedulePicker = ({
                         type="button"
                         key={slotId}
                         className={clsx(
-                          'flex flex-col items-end gap-1 rounded-xl border px-3 py-2 text-right text-xs font-medium transition-all duration-200',
-                          'border-white/25 bg-white/55 hover:border-accent/50 hover:bg-white/75',
-                          'dark:border-white/15 dark:bg-black/45 dark:hover:border-accent/40 dark:hover:bg-black/55',
-                          isSelected && 'border-accent/70 bg-accent/20 text-accent shadow-[0_16px_36px_-28px_rgba(88,175,192,0.6)]',
+                          'flex flex-col items-end gap-1 rounded-xl border px-3 py-2 text-right text-xs font-medium',
+                          'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/60',
+                          reduceInteractiveMotion
+                            ? 'transition-opacity duration-150 hover:opacity-95 focus-visible:opacity-95'
+                            : 'transition-all duration-200 hover:border-accent/50 hover:bg-white/75',
+                          reduceInteractiveMotion
+                            ? 'border-white/25 bg-white/60'
+                            : 'border-white/25 bg-white/55',
+                          reduceInteractiveMotion
+                            ? 'dark:border-white/15 dark:bg-black/50 dark:hover:opacity-90'
+                            : 'dark:border-white/15 dark:bg-black/45 dark:hover:border-accent/40 dark:hover:bg-black/55',
+                          isSelected &&
+                            'border-accent/70 bg-accent/20 text-accent shadow-[0_16px_36px_-28px_rgba(88,175,192,0.6)]',
                         )}
                         onClick={() => {
                           onSelectDay?.(day)
