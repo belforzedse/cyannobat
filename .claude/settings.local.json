@@ -75,7 +75,11 @@
       "Bash(curl -I http://localhost:3001/)",
       "Bash(curl -I http://localhost:3001/api/availability)",
       "Bash(curl -I http://localhost:3001/api/graphql)",
-      "Bash(curl -s http://localhost:3001/)"
+      "Bash(curl -s http://localhost:3001/)",
+      "Bash(npx tsx src/scripts/seed.ts)",
+      "Bash(test -f /d/cyan/cyannobat/.env)",
+      "Bash(docker-compose exec -T web npx tsx src/scripts/seed.ts)",
+      "Bash(DATABASE_URI=\"postgres://cyannobat:cyannopass@localhost:5432/cyannobat\" PAYLOAD_SECRET=\"65b36d2e960b7fdc24c7452a\" npx tsx src/scripts/seed.ts)"
     ],
     "deny": [],
     "ask": []
