@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import clsx from 'clsx';
 import type { LucideIcon } from 'lucide-react';
-import { CalendarDays, Home, LifeBuoy, ListChecks } from 'lucide-react';
+import { CalendarDays, Home, LifeBuoy, UserCircle } from 'lucide-react';
 import { BOOKING_PATH } from '@/lib/routes';
 
 type NavigationGroup = 'main' | 'actions';
@@ -28,14 +28,6 @@ const navigationItems: NavigationItem[] = [
     matches: (pathname, hash) => pathname === '/' && hash !== '#steps',
   },
   {
-    label: 'مراحل',
-    href: '/#steps',
-    icon: ListChecks,
-    group: 'main',
-    matches: (pathname, hash) => pathname === '/' && hash === '#steps',
-    ariaLabel: 'مشاهده مراحل کار سایان نوبت',
-  },
-  {
     label: 'رزرو نوبت',
     href: BOOKING_PATH,
     icon: CalendarDays,
@@ -50,6 +42,141 @@ const navigationItems: NavigationItem[] = [
     ariaLabel: 'ارسال ایمیل به پشتیبانی سایان نوبت',
   },
 ];
+
+type SessionState =
+  | { status: 'loading' }
+  | { status: 'unauthenticated' }
+  | {
+      status: 'authenticated';
+      user: { id: string; email: string; roles: string[] };
+      isStaff: boolean;
+    };
+
+const SidebarAccountWidget = ({ layout }: { layout: 'mobile' | 'desktop' }) => {
+  const router = useRouter();
+  const [session, setSession] = useState<SessionState>({ status: 'loading' });
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchSession = async () => {
+      try {
+        const response = await fetch('/api/account/session', {
+          credentials: 'include',
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch session');
+        }
+
+        const data: {
+          authenticated: boolean;
+          user?: { id: string; email?: string; roles?: unknown };
+          isStaff?: boolean;
+        } = await response.json();
+
+        if (!isMounted) {
+          return;
+        }
+
+        if (data.authenticated && data.user) {
+          const roles = Array.isArray(data.user.roles)
+            ? data.user.roles.filter((role): role is string => typeof role === 'string')
+            : [];
+
+          setSession({
+            status: 'authenticated',
+            user: {
+              id: String(data.user.id),
+              email: data.user.email ?? '',
+              roles,
+            },
+            isStaff: Boolean(data.isStaff),
+          });
+          return;
+        }
+
+        setSession({ status: 'unauthenticated' });
+      } catch {
+        if (isMounted) {
+          setSession({ status: 'unauthenticated' });
+        }
+      }
+    };
+
+    fetchSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleLogin = () => {
+    router.push('/login');
+  };
+
+  const containerClassName = clsx('w-full', layout === 'mobile' ? 'mt-4' : undefined);
+  const cardClassName = 'rounded-2xl border border-white/10 bg-white/5 p-4 text-right shadow-sm backdrop-blur-sm';
+  const linkClassName =
+    'rounded-full border border-accent/40 px-3 py-1.5 text-xs font-semibold text-accent transition hover:border-accent hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
+
+  if (session.status === 'loading') {
+    return (
+      <div className={clsx(containerClassName, cardClassName, 'animate-pulse')}>
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full bg-white/20" aria-hidden />
+          <div className="flex flex-col gap-2 text-right">
+            <div className="h-3 w-20 rounded-full bg-white/20" aria-hidden />
+            <div className="h-3 w-28 rounded-full bg-white/10" aria-hidden />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (session.status === 'unauthenticated') {
+    return (
+      <div className={containerClassName}>
+        <button
+          type="button"
+          onClick={handleLogin}
+          className="flex w-full flex-col items-end gap-2 rounded-2xl bg-gradient-to-br from-accent to-accent/80 px-4 py-4 text-right text-sm font-semibold text-background shadow-lg transition hover:from-accent/90 hover:to-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          <div className="flex w-full items-center justify-between gap-3">
+            <span>ورود یا ثبت‌نام</span>
+            <UserCircle aria-hidden className="h-6 w-6" />
+          </div>
+          <p className="text-xs font-normal text-background/80">برای مدیریت نوبت‌ها وارد حساب خود شوید</p>
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className={clsx(containerClassName, cardClassName)}>
+      <div className="flex items-center gap-3">
+        <UserCircle aria-hidden className="h-10 w-10 text-accent" />
+        <div className="min-w-0 text-right">
+          <p className="truncate text-sm font-semibold text-foreground">{session.user.email}</p>
+          <p className="text-xs text-muted-foreground">
+            {session.isStaff ? 'اعضای کادر درمان' : 'کاربر سایان نوبت'}
+          </p>
+        </div>
+      </div>
+      <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
+        <Link href="/account" className={linkClassName}>
+          حساب کاربری
+        </Link>
+        {session.isStaff ? (
+          <Link href="/staff" className={linkClassName}>
+            پیشخوان کارکنان
+          </Link>
+        ) : null}
+      </div>
+    </div>
+  );
+};
 
 const Sidebar = () => {
   const pathname = usePathname();
@@ -231,6 +358,7 @@ const Sidebar = () => {
           </li>
         ))}
       </ul>
+      <SidebarAccountWidget layout="mobile" />
 
       {/* Desktop Navigation */}
       <div className="hidden h-full w-full flex-col justify-between lg:flex">
@@ -258,18 +386,21 @@ const Sidebar = () => {
             </li>
           ))}
         </ul>
-        {desktopActionItems.length > 0 && (
-          <div className="flex w-full flex-col items-center gap-4">
-            <div className="h-px w-full bg-white/20" aria-hidden />
-            <ul className="flex w-full flex-col items-center gap-4">
-              {desktopActionItems.map((item, index) => (
-                <li key={`desktop-action-${item.label}`} className="w-full">
-                  {renderItem(item, desktopMainItems.length + index, false)}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        <div className="flex w-full flex-col items-center gap-4">
+          <SidebarAccountWidget layout="desktop" />
+          {desktopActionItems.length > 0 && (
+            <>
+              <div className="h-px w-full bg-white/20" aria-hidden />
+              <ul className="flex w-full flex-col items-center gap-4">
+                {desktopActionItems.map((item, index) => (
+                  <li key={`desktop-action-${item.label}`} className="w-full">
+                    {renderItem(item, desktopMainItems.length + index, false)}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
       </div>
     </nav>
   );
