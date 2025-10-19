@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback } from 'react';
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import GlassCard from '@/components/GlassCard';
@@ -29,12 +30,37 @@ const steps = [
 
 const HeroPage = () => {
   const prefersReducedMotion = useReducedMotion();
+  const reduceMotion = Boolean(prefersReducedMotion);
+
+  const configureSlideFade = useCallback(
+    (
+      direction: Parameters<typeof luxurySlideFade>[0],
+      options: Parameters<typeof luxurySlideFade>[1] = {},
+    ) => {
+      if (!reduceMotion) {
+        return luxurySlideFade(direction, options);
+      }
+
+      const { duration = 0.35, delayIn, delayOut } = options ?? {};
+
+      return luxurySlideFade(direction, {
+        ...options,
+        distance: 0,
+        scale: 1,
+        blur: 0,
+        duration: duration > 0.35 ? 0.35 : duration,
+        delayIn: delayIn ?? 0,
+        delayOut: delayOut ?? 0,
+      });
+    },
+    [reduceMotion],
+  );
 
   // Create performance-optimized luxury animations
   // Note: Blur is expensive but used ONLY on initial load, not continuous animations
   // Framer Motion uses GPU acceleration (transform + opacity) for smooth 60fps
 
-  const heroCardVariants = luxurySlideFade('right', {
+  const heroCardVariants = configureSlideFade('right', {
     distance: 32,
     duration: 0.9,
     scale: 0.96,        // Subtle scale (96% vs 95%)
@@ -42,7 +68,7 @@ const HeroPage = () => {
     delayIn: 0.1,
   });
 
-  const badgeVariants = luxurySlideFade('up', {
+  const badgeVariants = configureSlideFade('up', {
     distance: 16,
     duration: 0.8,
     scale: 0.98,
@@ -50,7 +76,7 @@ const HeroPage = () => {
     delayIn: 0.2,
   });
 
-  const titleVariants = luxurySlideFade('up', {
+  const titleVariants = configureSlideFade('up', {
     distance: 24,
     duration: 0.9,
     scale: 0.96,
@@ -58,7 +84,7 @@ const HeroPage = () => {
     delayIn: 0.3,
   });
 
-  const descriptionVariants = luxurySlideFade('up', {
+  const descriptionVariants = configureSlideFade('up', {
     distance: 16,
     duration: 1.0,
     scale: 0.98,
@@ -66,7 +92,7 @@ const HeroPage = () => {
     delayIn: 0.4,
   });
 
-  const buttonsVariants = luxurySlideFade('up', {
+  const buttonsVariants = configureSlideFade('up', {
     distance: 16,
     duration: 1.0,
     scale: 0.98,
@@ -74,7 +100,7 @@ const HeroPage = () => {
     delayIn: 0.5,
   });
 
-  const bottomSectionVariants = luxurySlideFade('up', {
+  const bottomSectionVariants = configureSlideFade('up', {
     distance: 32,
     duration: 1.0,
     scale: 0.96,
@@ -96,19 +122,15 @@ const HeroPage = () => {
           {steps.map((step, index) => (
             <motion.div
               key={step.title}
-              variants={
-                prefersReducedMotion
-                  ? undefined
-                  : luxurySlideFade('right', {
-                      distance: 32,
-                      duration: 0.8,
-                      scale: 0.96,
-                      blur: 0,            // No blur for better performance
-                      delayIn: index * 0.08 + 0.15,
-                    })
-              }
-              initial={prefersReducedMotion ? undefined : 'initial'}
-              animate={prefersReducedMotion ? undefined : 'animate'}
+              variants={configureSlideFade('right', {
+                distance: 32,
+                duration: 0.8,
+                scale: 0.96,
+                blur: 0,            // No blur for better performance
+                delayIn: index * 0.08 + 0.15,
+              })}
+              initial="initial"
+              animate="animate"
             >
               <GlassCard title={step.title} description={step.description} className="h-full">
                 <div className="mt-4 flex items-center justify-between">
@@ -125,9 +147,9 @@ const HeroPage = () => {
 
         {/* Hero Card Section */}
         <motion.section
-          variants={prefersReducedMotion ? undefined : heroCardVariants}
-          initial={prefersReducedMotion ? undefined : 'initial'}
-          animate={prefersReducedMotion ? undefined : 'animate'}
+          variants={heroCardVariants}
+          initial="initial"
+          animate="animate"
           whileHover={
             prefersReducedMotion
               ? undefined
@@ -148,34 +170,34 @@ const HeroPage = () => {
           />
           <div className="flex flex-1 flex-col items-end gap-8">
             <motion.span
-              variants={prefersReducedMotion ? undefined : badgeVariants}
-              initial={prefersReducedMotion ? undefined : 'initial'}
-              animate={prefersReducedMotion ? undefined : 'animate'}
+              variants={badgeVariants}
+              initial="initial"
+              animate="animate"
               className="rounded-full border border-white/25 bg-white/20 px-4 py-1.5 text-xs font-medium text-muted-foreground shadow-inner backdrop-blur-sm dark:bg-white/10"
             >
               سایان نوبت — cyannobat
             </motion.span>
             <motion.h1
-              variants={prefersReducedMotion ? undefined : titleVariants}
-              initial={prefersReducedMotion ? undefined : 'initial'}
-              animate={prefersReducedMotion ? undefined : 'animate'}
+              variants={titleVariants}
+              initial="initial"
+              animate="animate"
               className="max-w-3xl text-balance bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-4xl font-bold leading-tight tracking-tight text-transparent sm:text-5xl lg:text-7xl"
             >
               سایان نوبت
             </motion.h1>
             <motion.p
-              variants={prefersReducedMotion ? undefined : descriptionVariants}
-              initial={prefersReducedMotion ? undefined : 'initial'}
-              animate={prefersReducedMotion ? undefined : 'animate'}
+              variants={descriptionVariants}
+              initial="initial"
+              animate="animate"
               className="max-w-2xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg"
             >
               رزرو نوبت سریع، ساده و شفاف؛ تجربه‌ای الهام‌گرفته از دقت و ظرافت
               طراحی اپل برای مدیریت درمان شما.
             </motion.p>
             <motion.div
-              variants={prefersReducedMotion ? undefined : buttonsVariants}
-              initial={prefersReducedMotion ? undefined : 'initial'}
-              animate={prefersReducedMotion ? undefined : 'animate'}
+              variants={buttonsVariants}
+              initial="initial"
+              animate="animate"
               className="mt-auto flex flex-row-reverse flex-wrap items-center justify-end gap-4 pt-4"
             >
               <Link href={BOOKING_PATH}>
@@ -195,9 +217,9 @@ const HeroPage = () => {
 
       {/* Bottom Management Section */}
       <motion.section
-        variants={prefersReducedMotion ? undefined : bottomSectionVariants}
-        initial={prefersReducedMotion ? undefined : 'initial'}
-        whileInView={prefersReducedMotion ? undefined : 'animate'}
+        variants={bottomSectionVariants}
+        initial="initial"
+        whileInView={reduceMotion ? undefined : 'animate'}
         viewport={{ once: true, amount: 0.3 }}
         className="glass relative overflow-hidden px-8 py-10 text-right sm:px-12"
       >
