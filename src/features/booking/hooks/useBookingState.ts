@@ -1,120 +1,156 @@
-import { useCallback, useMemo, useState } from 'react';
-import { mockAvailability, type AvailabilityDay, type AvailabilitySlot } from '@/data/mockAvailability';
-import { progressSteps, reasonOptions, schedulePlaceholderMessage } from '../constants';
-import { type CustomerInfo, type ProgressStepWithStatus, type SelectedSchedule, type StepStatus } from '../types';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
+import { progressSteps, reasonOptions, schedulePlaceholderMessage } from '../constants'
+import {
+  type AvailabilityCalendarResponse,
+  type AvailabilityDay,
+  type AvailabilitySlot,
+  type CustomerInfo,
+  type ProgressStepWithStatus,
+  type SelectedSchedule,
+  type StepStatus,
+} from '../types'
 
 const formatDateLabel = (value: string | null) => {
   if (!value) {
-    return 'انتخاب نشده';
+    return 'زمانی انتخاب نشده است'
   }
 
   try {
-    return new Intl.DateTimeFormat('fa-IR', { dateStyle: 'long' }).format(new Date(`${value}T00:00:00`));
+    return new Intl.DateTimeFormat('fa-IR', { dateStyle: 'long' }).format(new Date(`${value}T00:00:00Z`))
   } catch {
-    return value;
+    return value
   }
-};
+}
 
 const formatTimeRange = (slot: AvailabilitySlot | null) => {
   if (!slot) {
-    return 'انتخاب نشده';
+    return 'زمانی انتخاب نشده است'
   }
 
-  const formatTime = (time: string) => {
-    const [hour, minute] = time.split(':').map((part) => Number.parseInt(part, 10));
-    if (Number.isNaN(hour) || Number.isNaN(minute)) {
-      return time;
-    }
+  const formatter = new Intl.DateTimeFormat('fa-IR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: slot.timeZone ?? 'UTC',
+  })
 
-    try {
-      return new Intl.DateTimeFormat('fa-IR', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-        timeZone: 'UTC',
-      }).format(new Date(Date.UTC(2024, 0, 1, hour, minute)));
-    } catch {
-      return time;
-    }
-  };
-
-  return `${formatTime(slot.start)} تا ${formatTime(slot.end)}`;
-};
+  try {
+    const start = formatter.format(new Date(slot.start))
+    const end = formatter.format(new Date(slot.end))
+    return `${start} تا ${end} — ${slot.providerName}`
+  } catch {
+    return `${slot.start} تا ${slot.end} — ${slot.providerName}`
+  }
+}
 
 export const useBookingState = () => {
-  const [selectedDay, setSelectedDay] = useState<string | null>(null);
-  const [selectedSchedule, setSelectedSchedule] = useState<SelectedSchedule | null>(null);
-  const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
-  const [additionalReason, setAdditionalReason] = useState('');
+  const [availability, setAvailability] = useState<AvailabilityDay[]>([])
+  const [isAvailabilityLoading, setIsAvailabilityLoading] = useState<boolean>(true)
+  const [availabilityError, setAvailabilityError] = useState<string | null>(null)
+
+  const [selectedDay, setSelectedDay] = useState<string | null>(null)
+  const [selectedSchedule, setSelectedSchedule] = useState<SelectedSchedule | null>(null)
+  const [selectedReasons, setSelectedReasons] = useState<string[]>([])
+  const [additionalReason, setAdditionalReason] = useState('')
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     fullName: '',
     email: '',
     phone: '',
-  });
-  const [customerNotes, setCustomerNotes] = useState('');
+  })
+  const [customerNotes, setCustomerNotes] = useState('')
+  const abortControllerRef = useRef<AbortController | null>(null)
 
-  const availabilityForSelection = useMemo(() => {
-    const merged = new Map<string, AvailabilityDay>();
+  const fetchAvailability = useCallback(async () => {
+    abortControllerRef.current?.abort()
+    const controller = new AbortController()
+    abortControllerRef.current = controller
+    setIsAvailabilityLoading(true)
+    setAvailabilityError(null)
 
-    Object.values(mockAvailability).forEach((serviceAvailability) => {
-      Object.values(serviceAvailability).forEach((doctorAvailability) => {
-        doctorAvailability.forEach((day) => {
-          const existingDay = merged.get(day.date);
-          if (!existingDay) {
-            merged.set(day.date, {
-              date: day.date,
-              slots: [...day.slots],
-              note: day.note,
-            });
-            return;
-          }
+    try {
+      const response = await fetch('/api/availability/calendar?rangeDays=21', {
+        cache: 'no-store',
+        signal: controller.signal,
+      })
 
-          const combinedSlots = [...existingDay.slots];
-          day.slots.forEach((slot) => {
-            if (!combinedSlots.some((existingSlot) => existingSlot.id === slot.id)) {
-              combinedSlots.push(slot);
-            }
-          });
+      if (!response.ok) {
+        throw new Error(`Failed to load availability (${response.status})`)
+      }
 
-          merged.set(day.date, {
-            date: day.date,
-            slots: combinedSlots.sort((a, b) => a.start.localeCompare(b.start)),
-            note: existingDay.note ?? day.note,
-          });
-        });
-      });
-    });
+      const payload = (await response.json()) as AvailabilityCalendarResponse
+      const sortedDays = payload.days
+        .map((day) => ({
+          ...day,
+          slots: [...day.slots].sort((a, b) => a.start.localeCompare(b.start)),
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date))
 
-    return Array.from(merged.values()).sort((a, b) => a.date.localeCompare(b.date));
-  }, []);
+      setAvailability(sortedDays)
+    } catch (error) {
+      if ((error as { name?: string }).name === 'AbortError') {
+        return
+      }
+      setAvailability([])
+      setAvailabilityError('بارگذاری زمان‌های آزاد با مشکل روبه‌رو شد. لطفاً دوباره تلاش کنید.')
+    } finally {
+      setIsAvailabilityLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchAvailability()
+    return () => {
+      abortControllerRef.current?.abort()
+    }
+  }, [fetchAvailability])
+
+  useEffect(() => {
+    if (!selectedSchedule) return
+
+    const nextDay = availability.find((day) => day.date === selectedSchedule.day.date)
+    if (!nextDay) {
+      setSelectedSchedule(null)
+      setSelectedDay(null)
+      return
+    }
+
+    const nextSlot = nextDay.slots.find((slot) => slot.id === selectedSchedule.slot.id)
+    if (!nextSlot) {
+      setSelectedSchedule(null)
+      return
+    }
+
+    setSelectedSchedule({ day: nextDay, slot: nextSlot })
+  }, [availability, selectedSchedule])
 
   const handleDaySelect = useCallback((day: AvailabilityDay) => {
-    setSelectedDay(day.date);
+    setSelectedDay(day.date)
     setSelectedSchedule((currentSchedule) => {
       if (currentSchedule && currentSchedule.day.date === day.date) {
-        return currentSchedule;
+        return currentSchedule
       }
-      return null;
-    });
-  }, []);
+      return null
+    })
+  }, [])
 
   const handleSlotSelect = useCallback((slot: AvailabilitySlot, day: AvailabilityDay) => {
-    setSelectedDay(day.date);
-    setSelectedSchedule({ day, slot });
-  }, []);
+    setSelectedDay(day.date)
+    setSelectedSchedule({ day, slot })
+  }, [])
 
   const handleReasonToggle = useCallback((value: string) => {
     setSelectedReasons((prev) => {
       if (prev.includes(value)) {
-        return prev.filter((reason) => reason !== value);
+        return prev.filter((reason) => reason !== value)
       }
-      return [...prev, value];
-    });
-  }, []);
+      return [...prev, value]
+    })
+  }, [])
 
   const handleCustomerChange = useCallback((field: keyof CustomerInfo, value: string) => {
-    setCustomerInfo((prev) => ({ ...prev, [field]: value }));
-  }, []);
+    setCustomerInfo((prev) => ({ ...prev, [field]: value }))
+  }, [])
 
   const selectedReasonLabels = useMemo(
     () =>
@@ -122,42 +158,45 @@ export const useBookingState = () => {
         .map((reason) => reasonOptions.find((option) => option.value === reason)?.label ?? reason)
         .filter((label): label is string => Boolean(label)),
     [selectedReasons],
-  );
+  )
 
-  const isScheduleComplete = Boolean(selectedSchedule);
-  const isReasonComplete = selectedReasons.length > 0 || additionalReason.trim().length > 0;
-  const isCustomerComplete = Object.values(customerInfo).every((value) => value.trim().length > 0);
+  const isScheduleComplete = Boolean(selectedSchedule)
+  const isReasonComplete = selectedReasons.length > 0 || additionalReason.trim().length > 0
+  const isCustomerComplete = Object.values(customerInfo).every((value) => value.trim().length > 0)
 
   const stepsWithStatus: ProgressStepWithStatus[] = useMemo(() => {
     const activeIndex = progressSteps.findIndex((step) => {
-      if (step.key === 'dateTime') return !isScheduleComplete;
-      if (step.key === 'reason') return !isReasonComplete;
-      return !isCustomerComplete;
-    });
+      if (step.key === 'dateTime') return !isScheduleComplete
+      if (step.key === 'reason') return !isReasonComplete
+      return !isCustomerComplete
+    })
 
-    const resolvedActiveIndex = activeIndex === -1 ? progressSteps.length - 1 : activeIndex;
+    const resolvedActiveIndex = activeIndex === -1 ? progressSteps.length - 1 : activeIndex
 
     return progressSteps.map((step, index) => {
       const complete =
-        step.key === 'dateTime' ? isScheduleComplete : step.key === 'reason' ? isReasonComplete : isCustomerComplete;
+        step.key === 'dateTime' ? isScheduleComplete : step.key === 'reason' ? isReasonComplete : isCustomerComplete
 
-      const status: StepStatus = complete ? 'complete' : index === resolvedActiveIndex ? 'current' : 'upcoming';
+      const status: StepStatus = complete ? 'complete' : index === resolvedActiveIndex ? 'current' : 'upcoming'
 
-      return { ...step, status, index };
-    });
-  }, [isCustomerComplete, isReasonComplete, isScheduleComplete]);
+      return { ...step, status, index }
+    })
+  }, [isCustomerComplete, isReasonComplete, isScheduleComplete])
 
   const formattedDate = useMemo(
     () => (selectedSchedule ? formatDateLabel(selectedSchedule.day.date) : formatDateLabel(selectedDay)),
     [selectedDay, selectedSchedule],
-  );
+  )
 
   const formattedTime = useMemo(
     () => formatTimeRange(selectedSchedule?.slot ?? null),
     [selectedSchedule],
-  );
+  )
 
-  const isContinueDisabled = !isScheduleComplete || !isReasonComplete || !isCustomerComplete;
+  const selectedServiceLabel = selectedSchedule?.slot.serviceName ?? ''
+  const selectedProviderLabel = selectedSchedule?.slot.providerName ?? ''
+
+  const isContinueDisabled = !isScheduleComplete || !isReasonComplete || !isCustomerComplete
 
   const reasonSummary = useMemo(
     () =>
@@ -168,10 +207,15 @@ export const useBookingState = () => {
           ].filter((value): value is string => Boolean(value))
         : [],
     [additionalReason, isReasonComplete, selectedReasonLabels],
-  );
+  )
+
+  const placeholderMessage = availabilityError ?? schedulePlaceholderMessage
 
   return {
-    availabilityForSelection,
+    availabilityForSelection: availability,
+    availabilityLoading: isAvailabilityLoading,
+    availabilityError,
+    refreshAvailability: fetchAvailability,
     selectedDay,
     selectedSchedule,
     handleDaySelect,
@@ -187,9 +231,11 @@ export const useBookingState = () => {
     stepsWithStatus,
     formattedDate,
     formattedTime,
+    selectedServiceLabel,
+    selectedProviderLabel,
     isContinueDisabled,
     isCustomerComplete,
     reasonSummary,
-    schedulePlaceholderMessage,
-  };
-};
+    schedulePlaceholderMessage: placeholderMessage,
+  }
+}

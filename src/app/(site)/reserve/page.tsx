@@ -1,19 +1,23 @@
-'use client';
+'use client'
 
-import { motion, useReducedMotion } from 'framer-motion';
-import Link from 'next/link';
-import BookingStepper from '@/features/booking/components/BookingStepper';
-import ScheduleSection from '@/features/booking/components/ScheduleSection';
-import ReasonsSection from '@/features/booking/components/ReasonsSection';
-import ContactSection from '@/features/booking/components/ContactSection';
-import BookingSummary from '@/features/booking/components/BookingSummary';
-import { reasonOptions } from '@/features/booking/constants';
-import { useBookingState } from '@/features/booking/hooks/useBookingState';
+import { motion, useReducedMotion } from 'framer-motion'
+import Link from 'next/link'
+
+import BookingStepper from '@/features/booking/components/BookingStepper'
+import ScheduleSection from '@/features/booking/components/ScheduleSection'
+import ReasonsSection from '@/features/booking/components/ReasonsSection'
+import ContactSection from '@/features/booking/components/ContactSection'
+import BookingSummary from '@/features/booking/components/BookingSummary'
+import { reasonOptions } from '@/features/booking/constants'
+import { useBookingState } from '@/features/booking/hooks/useBookingState'
 
 const BookingPage = () => {
-  const prefersReducedMotion = useReducedMotion();
+  const prefersReducedMotion = useReducedMotion()
   const {
     availabilityForSelection,
+    availabilityLoading,
+    availabilityError,
+    refreshAvailability,
     selectedDay,
     selectedSchedule,
     handleDaySelect,
@@ -29,11 +33,13 @@ const BookingPage = () => {
     stepsWithStatus,
     formattedDate,
     formattedTime,
+    selectedServiceLabel,
+    selectedProviderLabel,
     isContinueDisabled,
     isCustomerComplete,
     reasonSummary,
     schedulePlaceholderMessage,
-  } = useBookingState();
+  } = useBookingState()
 
   return (
     <motion.section
@@ -62,7 +68,7 @@ const BookingPage = () => {
           transition={{ delay: prefersReducedMotion ? 0 : 0.1, duration: prefersReducedMotion ? 0 : 0.45 }}
           className="rounded-full border border-white/25 bg-white/20 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm dark:border-white/15 dark:bg-white/10"
         >
-          آغاز رزرو آنلاین
+          مسیر رزرو نوبت
         </motion.span>
         <motion.h1
           initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
@@ -70,7 +76,7 @@ const BookingPage = () => {
           transition={{ delay: prefersReducedMotion ? 0 : 0.2, duration: prefersReducedMotion ? 0 : 0.5 }}
           className="bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-4xl font-bold text-transparent sm:text-5xl"
         >
-          رزرو نوبت
+          رزرو سریع وقت ملاقات
         </motion.h1>
         <motion.p
           initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
@@ -78,8 +84,8 @@ const BookingPage = () => {
           transition={{ delay: prefersReducedMotion ? 0 : 0.3, duration: prefersReducedMotion ? 0 : 0.5 }}
           className="max-w-2xl text-balance leading-relaxed text-muted-foreground"
         >
-          لطفاً اطلاعات مورد نیاز را تکمیل کنید تا گام‌های بعدی برای هماهنگی نوبت در اختیار شما قرار گیرد. می‌توانید در هر لحظه
-          انتخاب‌های خود را ویرایش کنید.
+          از میان خدمات فعال و پزشکان در دسترس، زمان مناسب خود را انتخاب کنید، علت مراجعه را بنویسید و اطلاعات تماس را
+          ثبت نمایید. در پایان جزئیات را یک بار دیگر مرور کنید تا نوبت شما به‌صورت خودکار در سامانه ثبت شود.
         </motion.p>
       </header>
 
@@ -93,6 +99,9 @@ const BookingPage = () => {
           onSelectDay={handleDaySelect}
           onSelectSlot={handleSlotSelect}
           placeholderMessage={schedulePlaceholderMessage}
+          isLoading={availabilityLoading}
+          errorMessage={availabilityError}
+          onRetry={refreshAvailability}
         />
 
         <ReasonsSection
@@ -120,6 +129,8 @@ const BookingPage = () => {
         customerInfo={customerInfo}
         customerNotes={customerNotes}
         isCustomerComplete={isCustomerComplete}
+        serviceLabel={selectedServiceLabel}
+        providerLabel={selectedProviderLabel}
       />
 
       <div className="flex flex-wrap items-center justify-end gap-3">
@@ -138,7 +149,7 @@ const BookingPage = () => {
         </motion.button>
       </div>
     </motion.section>
-  );
-};
+  )
+}
 
-export default BookingPage;
+export default BookingPage
