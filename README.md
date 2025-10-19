@@ -11,6 +11,10 @@ cp .env.example .env
 
 Ensure the credentials match your local PostgreSQL and Redis instances (the defaults assume the Docker Compose services).
 
+- `REDIS_URL` takes precedence when defined and can include authentication (e.g. `redis://user:pass@host:port/db`).
+- When `REDIS_URL` is omitted the client falls back to `REDIS_HOST`, `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_PASSWORD`, and `REDIS_DB`.
+- Set `REDIS_TLS=true` if your Redis provider requires TLS (left `false` for the local Docker Compose container).
+
 > **Note:** `DATABASE_URI` must point to a reachable PostgreSQL instance before running `pnpm build` or starting the app. The Payload configuration now throws a descriptive error if the variable is missing to avoid creating an invalid connection pool.
 
 ## Database migrations

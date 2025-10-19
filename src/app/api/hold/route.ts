@@ -1,7 +1,7 @@
 import type { ZodIssue } from 'zod'
 import { sql } from 'drizzle-orm'
 import configPromise, { payloadDrizzle } from '@payload-config'
-import { bookingHold } from '@/lib/redis'
+import { bookingHold, BookingHoldConflictError, BookingHoldStoreError } from '@/lib/redis'
 import { bookingHoldRequestSchema } from '@/lib/schemas/booking'
 import { getPayload } from 'payload'
 
@@ -209,6 +209,16 @@ export const POST = async (request: Request): Promise<Response> => {
     }
   } catch (error) {
     payload.logger.error?.('Failed to read existing booking hold', error)
+    if (error instanceof BookingHoldStoreError) {
+      return Response.json(
+        {
+          message: 'Unable to create booking hold',
+          reasons: ['HOLD_SERVICE_UNAVAILABLE'],
+        },
+        { status: 503 },
+      )
+    }
+
     return Response.json(
       {
         message: 'Unable to create booking hold',
@@ -238,6 +248,28 @@ export const POST = async (request: Request): Promise<Response> => {
     )
   } catch (error) {
     payload.logger.error?.('Failed to create booking hold', error)
+
+    if (error instanceof BookingHoldConflictError) {
+      return Response.json(
+        {
+          message: 'Unable to create booking hold',
+          reasons: ['ALREADY_ON_HOLD'],
+          hold: error.hold ?? undefined,
+        },
+        { status: 409 },
+      )
+    }
+
+    if (error instanceof BookingHoldStoreError) {
+      return Response.json(
+        {
+          message: 'Unable to create booking hold',
+          reasons: ['HOLD_SERVICE_UNAVAILABLE'],
+        },
+        { status: 503 },
+      )
+    }
+
     return Response.json(
       {
         message: 'Unable to create booking hold',

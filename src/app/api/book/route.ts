@@ -1,7 +1,7 @@
 import type { ZodIssue } from 'zod'
 import { sql } from 'drizzle-orm'
 import configPromise, { payloadDrizzle } from '@payload-config'
-import { bookingHold } from '@/lib/redis'
+import { bookingHold, BookingHoldStoreError } from '@/lib/redis'
 import { bookingRequestSchema } from '@/lib/schemas/booking'
 import { getPayload } from 'payload'
 
@@ -182,6 +182,17 @@ export const POST = async (request: Request): Promise<Response> => {
     hold = await bookingHold.get({ serviceId, slot: normalizedSlot })
   } catch (error) {
     payload.logger.error?.('Failed to read booking hold before booking', error)
+
+    if (error instanceof BookingHoldStoreError) {
+      return Response.json(
+        {
+          message: 'Unable to confirm booking',
+          reasons: ['HOLD_SERVICE_UNAVAILABLE'],
+        },
+        { status: 503 },
+      )
+    }
+
     return Response.json(
       {
         message: 'Unable to confirm booking',
@@ -265,7 +276,11 @@ export const POST = async (request: Request): Promise<Response> => {
     try {
       await bookingHold.release({ serviceId, slot: normalizedSlot })
     } catch (error) {
-      payload.logger.warn?.('Appointment created but failed to release hold', error)
+      if (error instanceof BookingHoldStoreError) {
+        payload.logger.warn?.('Appointment created but failed to release hold in Redis', error)
+      } else {
+        payload.logger.warn?.('Appointment created but failed to release hold', error)
+      }
     }
 
     return Response.json(
