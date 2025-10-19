@@ -1,13 +1,23 @@
-import type { ReactNode } from 'react';
-import Header from '@/components/Header';
-import Sidebar from '@/components/Sidebar';
-import Logo from '@/components/Logo';
+import type { ReactNode } from "react";
+import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
+import Logo from "@/components/Logo";
+import ThemeProvider from '@/components/ThemeProvider';
+import '@styles/globals.css';
+
+export const metadata = {
+  title: 'سایان نوبت | cyannobat',
+  description: 'رزرو نوبت سریع، ساده و شفاف',
+};
 
 const SiteLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="relative flex min-h-screen w-full">
-      <Logo />
-      <Sidebar />
+    <html lang="fa" dir="rtl" suppressHydrationWarning>
+      <body className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
+        <ThemeProvider>
+          <div className="relative flex min-h-screen w-full">
+            <Logo />
+            <Sidebar />
 
       {/* Main Content Area */}
       <div className="flex min-h-screen flex-1 flex-col">
@@ -32,7 +42,10 @@ const SiteLayout = ({ children }: { children: ReactNode }) => {
           <span>همراه شما برای تجربه‌ای متفاوت در رزرو آنلاین.</span>
         </footer>
       </div>
-    </div>
+          </div>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 };
 

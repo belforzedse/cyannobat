@@ -1,0 +1,48 @@
+# EditorConfig helps maintain consistent coding styles
+# https://editorconfig.org
+
+# Top-most EditorConfig file
+root = true
+
+# All files
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# JavaScript, TypeScript, JSX, TSX
+[*.{js,mjs,cjs,jsx,ts,tsx}]
+indent_style = space
+indent_size = 2
+max_line_length = 100
+
+# JSON files
+[*.json]
+indent_style = space
+indent_size = 2
+
+# YAML files (Docker Compose, GitHub Actions)
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Markdown files
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Package files
+[package.json]
+indent_style = space
+indent_size = 2
+
+# Config files
+[*.config.{js,mjs,ts}]
+indent_style = space
+indent_size = 2
+
+# Environment files
+[.env*]
+insert_final_newline = true
+trim_trailing_whitespace = true

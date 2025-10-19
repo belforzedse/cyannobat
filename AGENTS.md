@@ -1,26 +1,34 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-The Next.js application lives in `src/app`, with `(site)` handling the public site shell and `(payload)` bundling the Payload admin UI and server functions. API routes belong under `src/app/my-route`. Payload collection definitions reside in `src/collections`, and the generated types map to `src/payload-types.ts`. Static assets stay in `public/`. Use `docker-compose.yml` when you need local Postgres and Redis, and adjust global configuration through `src/payload.config.ts`.
+- Next.js source lives in src/app; (site) renders the public shell and (payload) bundles the Payload admin and server handlers.
+- API routes stay under src/app/<route>/route.ts; Payload collections sit in src/collections with generated types in src/payload-types.ts.
+- Shared styling lives in styles/; client scripts and setup helpers belong in scripts/.
+- Static files (favicons, images, fonts) go in public/; adjust global Payload config through src/payload.config.ts.
 
-## Build, Test & Development Commands
-Install dependencies with `pnpm install`. Common workflows:
-```bash
-pnpm dev                 # run Next.js + Payload in watch mode on :3000
-pnpm build && pnpm start # create a production build, then serve it
-pnpm lint                # run ESLint (next/core-web-vitals flat config)
-docker-compose up --build # boot app + Postgres + Redis stack
-```
-Always run `pnpm lint` before pushing changes.
+## Build, Test, and Development Commands
+- pnpm install — install workspace dependencies.
+- pnpm dev — run Next.js plus Payload locally on http://localhost:3000 with hot reload.
+- pnpm build && pnpm start — create and serve a production build.
+- pnpm lint — run ESLint (Next.js core-web-vitals profile); fix or document any warnings before push.
+- docker-compose up --build — boot the app alongside Postgres and Redis for full-stack testing.
 
 ## Coding Style & Naming Conventions
-TypeScript is enforced (`tsconfig.json` runs strict mode); keep components typed and prefer functional components. Follow the two-space indentation in existing files, favor single quotes in imports, and keep JSX props grouped logically. Path aliases are available via `@/*` and `@payload-config`; prefer them over long relative paths. SCSS customizations for the admin UI belong next to the layout in `(payload)`.
+- TypeScript strict mode is enforced; favor typed functional components and narrow props.
+- Follow two-space indentation and single quotes in imports; group JSX props logically (layout first, behaviour second).
+- Prefer path aliases (@/*, @payload-config) over deep relative imports; colocate SCSS overrides with (payload) layouts.
+- Use ESLint autofix where practical; no automatic formatter is configured, so keep diffs minimal and targeted.
 
 ## Testing Guidelines
-No automated test suite ships with this repo yet. Before opening a PR, run `pnpm lint`, load `http://localhost:3000` for the public site, and verify the admin at `/admin` can authenticate against your database. When introducing tests, co-locate `*.test.ts` files beside the module they cover and document any new scripts in `package.json`.
+- No automated suite ships yet; always run pnpm lint, load the public site, and verify /admin authentication before submitting changes.
+- When adding tests, colocate *.test.ts beside the module, keep test names descriptive, and document any new scripts in package.json.
+- Capture regressions in Payload collections with fixtures or seed scripts under scripts/ when feasible.
 
 ## Commit & Pull Request Guidelines
-Use short, imperative commit subjects (the log currently follows "Initial commit" style) and keep changes scoped. Each PR should describe the intent, list the key changes, mention any configuration updates, and include screenshots or screencasts for UI or admin updates. Link tracking issues where relevant and confirm the lint check passed. Request review once migrations and environment notes are documented.
+- Write short, imperative commit subjects (mirroring the existing "Initial commit" style) and keep each commit scoped.
+- PR descriptions should state intent, list key changes, call out config or environment updates, and attach UI/admin screenshots when relevant.
+- Link tracking issues or tickets, confirm pnpm lint status, and note any required migrations or seed steps before requesting review.
 
-## Environment & Security Notes
-Create a local `.env` with `PAYLOAD_SECRET` and `DATABASE_URI`; never commit secrets. When running with Docker, ensure your local ports 3000, 5432, and 6379 are free. Rotate credentials before sharing review builds, and revoke any leaked Payload secrets immediately.
+## Security & Configuration Tips
+- Create a local .env defining PAYLOAD_SECRET and DATABASE_URI; never commit secrets or temporary credentials.
+- Ensure ports 3000/5432/6379 are free before running Docker; rotate credentials before sharing review builds and revoke any exposed keys immediately.

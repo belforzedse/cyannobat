@@ -80,6 +80,9 @@ Key aspects:
 Defined in `src/collections/`:
 - **Users**: Authentication collection with email as title field
 - **Media**: File upload collection with public read access and required alt text
+- **Providers**: Service providers with relationship to user accounts
+- **Services**: Bookable services with pricing, duration, and provider relationships
+- **Appointments**: Booking records with complex scheduling logic and access control
 
 To add new collections:
 1. Create collection config in `src/collections/`
@@ -91,14 +94,33 @@ To add new collections:
 Required in `.env`:
 - `PAYLOAD_SECRET`: Secret key for Payload authentication
 - `DATABASE_URI`: PostgreSQL connection string (format: `postgresql://user:pass@host:port/db`)
+- `REDIS_URL`: Redis connection URL (currently stubbed in-memory)
+- `REDIS_TLS`: Set to "true" for TLS-enabled Redis instances
+- `PAYLOAD_DB_PUSH`: Set to "true" to auto-push schema changes (dev only)
+- `PAYLOAD_RUN_MIGRATIONS`: Set to "true" to run migrations on startup
+- `NEXT_PUBLIC_APP_URL`: Public URL for client-side code
 
 Docker defaults:
 - DB: `postgresql://cyannobat:cyannopass@postgres:5432/cyannobat`
+- Redis: `redis://localhost:6379`
+
+### Database Migrations
+
+In development (`NODE_ENV=development`), Payload automatically pushes schema changes to PostgreSQL on startup when `PAYLOAD_DB_PUSH=true`.
+
+For production deployments, generate tracked migrations:
+```bash
+pnpm payload migrate:create -- --name <migration-name>
+pnpm payload migrate
+```
+
+Migration files are stored in `src/payload-migrations/` and should be committed to version control.
 
 ### TypeScript Configuration
 
 Path aliases:
 - `@/*` maps to `src/*`
+- `@styles/*` maps to `styles/*`
 - `@payload-config` maps to `src/payload.config.ts`
 
 Target: ES2017 with strict mode enabled
@@ -124,6 +146,19 @@ const payload = await getPayload({ config })
 import { headers as getHeaders } from 'next/headers'
 const headers = await getHeaders()
 const { user } = await payload.auth({ headers })
+```
+
+### Direct Database Access with Drizzle
+
+The project exports `payloadDrizzle` and `payloadDbPool` from `src/payload.config.ts` for direct SQL queries when Payload's ORM is insufficient:
+
+```typescript
+import { payloadDrizzle } from '@payload-config'
+import { sql } from 'drizzle-orm'
+
+const result = await payloadDrizzle.execute(
+  sql`SELECT * FROM appointments WHERE service = ${serviceId}`
+)
 ```
 
 ## UI & Design System
@@ -168,6 +203,39 @@ Custom REST endpoints for appointment management:
 - `POST /api/book` - Complete a booking
 
 Uses Redis for hold management with configurable TTL.
+
+### Redis Implementation Note
+
+The current Redis client (`src/lib/redis.ts`) is an **in-memory stub** for development. It simulates Redis functionality using a JavaScript Map with automatic expiration cleanup. To integrate a real Redis instance:
+
+1. Replace the stub implementation with a real Redis client (e.g., `ioredis`)
+2. Update the `bookingHold` object methods to use Redis commands
+3. Ensure `REDIS_URL` and `REDIS_TLS` environment variables are properly configured
+
+## Collection Hooks & Access Control
+
+### Appointments Collection
+
+The Appointments collection (`src/collections/Appointments.ts`) implements several important patterns:
+
+1. **Before Validate Hook** (`serviceSchedulingHook`):
+   - Auto-generates unique reference codes (format: `APT-{timestamp}-{random}`)
+   - Automatically calculates `schedule.end` from `schedule.start` + service duration
+   - Snapshots service pricing at booking time to preserve historical rates
+   - Auto-assigns provider if service has only one provider configured
+
+2. **After Change Hook** (`releaseBookingHoldAfterCreate`):
+   - Releases Redis holds after appointment creation
+   - Prevents double-booking by clearing the temporary hold
+
+3. **Access Control**:
+   - Read/Update/Delete: Users can only see their own appointments (as client) OR appointments where they are the provider
+   - Admins can see all appointments
+   - Create: Any authenticated user
+
+### Users Collection
+
+Implements special first-user creation logic (`isFirstUserCreation` access control) that allows unauthenticated user creation when the database is empty, enabling initial setup.
 
 ## Important Notes
 
