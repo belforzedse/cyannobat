@@ -152,9 +152,9 @@ body {
     -webkit-backdrop-filter: blur(8px) saturate(1.9);
     /* Elastic spring transition matching Framer Motion */
     transition:
-      all 500ms cubic-bezier(0.34, 1.56, 0.64, 1),
-      backdrop-filter 400ms ease-out;
-    will-change: transform, backdrop-filter;
+      box-shadow 500ms cubic-bezier(0.34, 1.56, 0.64, 1),
+      border-color 400ms ease-out;
+    will-change: box-shadow, border-color;
   }
 
   .glass::before {
@@ -220,7 +220,9 @@ body {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    transition: all 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition:
+      box-shadow 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+      border-color 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .glass-pill:hover {
@@ -252,6 +254,38 @@ body {
   [data-theme='dark'] .glass::before {
     border-color: rgba(255, 255, 255, 0.2);
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+  }
+
+  @media (max-width: 1024px) {
+    .glass,
+    .glass-pill {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.65);
+      box-shadow:
+        0 6px 24px rgba(31, 38, 135, 0.16),
+        inset 0 1px 4px rgba(255, 255, 255, 0.35),
+        inset 0 -1px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    [data-theme='dark'] .glass {
+      background: rgba(25, 30, 40, 0.8);
+      box-shadow:
+        0 6px 24px rgb(var(--shadow-primary)),
+        inset 0 1px 4px rgba(255, 255, 255, 0.18),
+        inset 0 -1px 4px rgba(0, 0, 0, 0.12);
+    }
+
+    .glass-pill {
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    [data-theme='dark'] .glass-pill {
+      background: rgba(25, 30, 40, 0.7);
+    }
   }
 
   .btn-primary {
