@@ -8,6 +8,10 @@ import { RefreshCw, LogOut, Loader2 } from 'lucide-react'
 
 import type { StaffAppointment, StaffProvider, StaffUser } from '@/features/staff/types'
 import { useToast } from '@/components/ui/ToastProvider'
+import {
+  GlobalLoadingOverlayProvider,
+  useGlobalLoadingOverlay,
+} from '@/components/GlobalLoadingOverlayProvider'
 
 type StaffDashboardProps = {
   initialAppointments: StaffAppointment[]
@@ -43,7 +47,7 @@ const formatDateTime = (iso: string, timeZone: string) => {
   }
 }
 
-const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: StaffDashboardProps) => {
+const StaffDashboardContent = ({ initialAppointments, initialProviders, currentUser }: StaffDashboardProps) => {
   const prefersReducedMotion = useReducedMotion()
   const reduceMotion = Boolean(prefersReducedMotion)
   const [appointments, setAppointments] = useState<StaffAppointment[]>(initialAppointments)
@@ -55,6 +59,7 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [failedId, setFailedId] = useState<string | null>(null)
   const { showToast } = useToast()
+  const { setActivity } = useGlobalLoadingOverlay()
 
   const filteredAppointments = useMemo(() => {
     return appointments.filter((appointment) => {
@@ -111,6 +116,7 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
   const denseInputBackground = reduceMotion ? 'bg-white/55 dark:bg-white/12' : 'bg-white/60 dark:bg-white/10'
 
   const handleRefresh = useCallback(() => {
+    setActivity('staff-refresh', true, 'در حال به‌روزرسانی نوبت‌ها...')
     startRefreshTransition(async () => {
       try {
         setErrorMessage(null)
@@ -128,13 +134,16 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
         console.error(error)
         setErrorMessage('به‌روزرسانی فهرست نوبت‌ها با مشکل مواجه شد.')
         showToast({ description: 'به‌روزرسانی فهرست نوبت‌ها با مشکل مواجه شد.', variant: 'error' })
+      } finally {
+        setActivity('staff-refresh', false)
       }
     })
-  }, [showToast])
+  }, [setActivity, showToast])
 
   const handleStatusChange = useCallback(async (appointmentId: string, status: StaffAppointment['status']) => {
     setUpdatingId(appointmentId)
     setErrorMessage(null)
+    setActivity(`staff-status-${appointmentId}`, true, 'در حال ذخیره تغییر وضعیت...')
     try {
       const response = await fetch(`/api/staff/appointments/${appointmentId}`, {
         method: 'PATCH',
@@ -147,7 +156,9 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
         throw new Error(`Failed to update appointment (${response.status})`)
       }
       const result = (await response.json()) as { appointment: StaffAppointment }
-      setAppointments((current) => current.map((appointment) => (appointment.id === appointmentId ? result.appointment : appointment)))
+      setAppointments((current) =>
+        current.map((appointment) => (appointment.id === appointmentId ? result.appointment : appointment)),
+      )
       setFailedId(null)
       showToast({ description: 'وضعیت نوبت با موفقیت ذخیره شد.', variant: 'success' })
     } catch (error) {
@@ -157,8 +168,9 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
       showToast({ description: 'ذخیره وضعیت جدید ممکن نشد.', variant: 'error' })
     } finally {
       setUpdatingId(null)
+      setActivity(`staff-status-${appointmentId}`, false)
     }
-  }, [showToast])
+  }, [setActivity, showToast])
 
   const handleLogout = useCallback(async () => {
     await fetch('/api/staff/logout', {
@@ -251,7 +263,11 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
           </button>
         </div>
 
-        {errorMessage ? <p className="mt-4 rounded-xl border border-red-400/40 bg-red-50 px-4 py-3 text-xs text-red-600 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200">{errorMessage}</p> : null}
+        {errorMessage ? (
+          <p className="mt-4 rounded-xl border border-red-400/40 bg-red-50 px-4 py-3 text-xs text-red-600 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200">
+            {errorMessage}
+          </p>
+        ) : null}
 
         <div className="mt-4 overflow-x-auto">
           <table className="min-w-full divide-y divide-white/20 text-sm text-right">
@@ -353,10 +369,15 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
               <ul className="mt-3 space-y-2">
                 {provider.availability.length > 0 ? (
                   provider.availability.map((window, index) => (
-                    <li key={`${provider.id}-${window.day}-${index}`} className="rounded-xl border border-white/20 bg-white/40 px-3 py-2 text-[11px] text-muted-foreground dark:border-white/15 dark:bg-white/5">
+                    <li
+                      key={`${provider.id}-${window.day}-${index}`}
+                      className="rounded-xl border border-white/20 bg-white/40 px-3 py-2 text-[11px] text-muted-foreground dark:border-white/15 dark:bg-white/5"
+                    >
                       <span className="font-semibold text-foreground">{window.day}</span>
                       <span className="mx-1 text-muted-foreground/60">—</span>
-                      <span>{window.startTime} تا {window.endTime}</span>
+                      <span>
+                        {window.startTime} تا {window.endTime}
+                      </span>
                     </li>
                   ))
                 ) : (
@@ -378,5 +399,10 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
   )
 }
 
-export default StaffDashboard
+const StaffDashboard = (props: StaffDashboardProps) => (
+  <GlobalLoadingOverlayProvider>
+    <StaffDashboardContent {...props} />
+  </GlobalLoadingOverlayProvider>
+)
 
+export default StaffDashboard
