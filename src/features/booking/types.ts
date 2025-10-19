@@ -1,4 +1,4 @@
-export type StepKey = 'dateTime' | 'reason' | 'customer';
+export type StepKey = 'service' | 'dateTime' | 'reason' | 'customer';
 
 export type ProgressStep = {
   key: StepKey;
@@ -10,6 +10,13 @@ export type StepStatus = 'complete' | 'current' | 'upcoming';
 export type ProgressStepWithStatus = ProgressStep & {
   status: StepStatus;
   index: number;
+};
+
+export type ServiceOption = {
+  id: string;
+  title: string;
+  category?: string | null;
+  durationMinutes?: number | null;
 };
 
 export type AvailabilitySlot = {

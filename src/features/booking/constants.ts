@@ -1,6 +1,7 @@
 import { type ReasonOption, type ProgressStep } from './types'
 
 export const progressSteps: readonly ProgressStep[] = [
+  { key: 'service', label: 'انتخاب خدمت' },
   { key: 'dateTime', label: 'انتخاب تاریخ و ساعت' },
   { key: 'reason', label: 'دلیل مراجعه' },
   { key: 'customer', label: 'اطلاعات تماس' },
@@ -14,5 +15,5 @@ export const reasonOptions: readonly ReasonOption[] = [
 ]
 
 export const schedulePlaceholderMessage =
-  'برای نمایش زمان‌های آزاد، ابتدا خدمت دلخواه را انتخاب کنید. ارائه‌دهنده مناسب همراه هر بازه زمانی نمایش داده می‌شود.'
+  'برای نمایش زمان‌های آزاد، ابتدا خدمت مورد نظر را بر اساس مراحل بالا انتخاب کنید.'
 
