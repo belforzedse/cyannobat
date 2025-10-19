@@ -91,8 +91,12 @@ const BookingPageContent = () => {
     if ('errors' in payload && Array.isArray((payload as { errors?: unknown }).errors)) {
       for (const issue of (payload as { errors?: unknown[] }).errors ?? []) {
         if (!issue || typeof issue !== 'object') continue
-        if ('message' in issue && typeof issue.message === 'string') {
-          details.push(issue.message)
+        const message =
+          'message' in issue && typeof (issue as { message?: unknown }).message === 'string'
+            ? (issue as { message?: unknown }).message
+            : null
+        if (message) {
+          details.push(message)
         }
       }
     }

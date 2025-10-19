@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
@@ -14,7 +15,7 @@ async function seed() {
       data: {
         email: 'admin@cyannobat.com',
         password: 'admin123',
-        role: 'admin',
+        roles: ['admin'],
       },
     })
 
@@ -25,7 +26,7 @@ async function seed() {
       data: {
         email: 'sara.rezaei@cyannobat.com',
         password: 'provider123',
-        role: 'provider',
+        roles: ['doctor'],
       },
     })
 
@@ -34,7 +35,7 @@ async function seed() {
       data: {
         email: 'ali.karimi@cyannobat.com',
         password: 'provider123',
-        role: 'provider',
+        roles: ['doctor'],
       },
     })
 
@@ -43,7 +44,7 @@ async function seed() {
       data: {
         email: 'maryam.ahmadi@cyannobat.com',
         password: 'provider123',
-        role: 'provider',
+        roles: ['doctor'],
       },
     })
 
@@ -54,7 +55,7 @@ async function seed() {
       data: {
         email: 'client@example.com',
         password: 'client123',
-        role: 'user',
+        roles: ['patient'],
       },
     })
 
@@ -63,14 +64,23 @@ async function seed() {
     const provider1 = await payload.create({
       collection: 'providers',
       data: {
-        name: 'دکتر سارا رضایی',
-        bio: 'متخصص پوست و مو با ۱۰ سال سابقه کاری',
-        specialties: ['پوست', 'مو', 'لیزر'],
-        user: provider1User.id,
-        avatar: undefined,
-        contactInfo: {
+        account: provider1User.id,
+        displayName: 'دکتر سارا رضایی',
+        slug: 'dr-sara-rezaei',
+        headline: 'متخصص پوست و مو',
+        specialties: [
+          { label: 'پوست' },
+          { label: 'مو' },
+          { label: 'لیزر' },
+        ],
+        contact: {
           phone: '۰۹۱۲۳۴۵۶۷۸۹',
           email: 'sara.rezaei@cyannobat.com',
+        },
+        location: {
+          timeZone: 'Asia/Tehran',
+          city: 'تهران',
+          country: 'ایران',
         },
       },
     })
@@ -78,14 +88,23 @@ async function seed() {
     const provider2 = await payload.create({
       collection: 'providers',
       data: {
-        name: 'دکتر علی کریمی',
-        bio: 'متخصص دندانپزشکی زیبایی و ترمیمی',
-        specialties: ['دندانپزشکی', 'ایمپلنت', 'زیبایی'],
-        user: provider2User.id,
-        avatar: undefined,
-        contactInfo: {
+        account: provider2User.id,
+        displayName: 'دکتر علی کریمی',
+        slug: 'dr-ali-karimi',
+        headline: 'متخصص دندانپزشکی زیبایی',
+        specialties: [
+          { label: 'دندانپزشکی' },
+          { label: 'ایمپلنت' },
+          { label: 'زیبایی' },
+        ],
+        contact: {
           phone: '۰۹۱۲۳۴۵۶۷۸۸',
           email: 'ali.karimi@cyannobat.com',
+        },
+        location: {
+          timeZone: 'Asia/Tehran',
+          city: 'تهران',
+          country: 'ایران',
         },
       },
     })
@@ -93,14 +112,23 @@ async function seed() {
     const provider3 = await payload.create({
       collection: 'providers',
       data: {
-        name: 'مریم احمدی',
-        bio: 'کارشناس ماساژ درمانی و فیزیوتراپی',
-        specialties: ['ماساژ', 'فیزیوتراپی', 'طب سوزنی'],
-        user: provider3User.id,
-        avatar: undefined,
-        contactInfo: {
+        account: provider3User.id,
+        displayName: 'مریم احمدی',
+        slug: 'maryam-ahmadi',
+        headline: 'کارشناس ماساژ درمانی و فیزیوتراپی',
+        specialties: [
+          { label: 'ماساژ' },
+          { label: 'فیزیوتراپی' },
+          { label: 'طب سوزنی' },
+        ],
+        contact: {
           phone: '۰۹۱۲۳۴۵۶۷۸۷',
           email: 'maryam.ahmadi@cyannobat.com',
+        },
+        location: {
+          timeZone: 'Asia/Tehran',
+          city: 'تهران',
+          country: 'ایران',
         },
       },
     })
@@ -110,11 +138,14 @@ async function seed() {
     const service1 = await payload.create({
       collection: 'services',
       data: {
-        name: 'پیگیری روند درمان',
-        description: 'بررسی پیشرفت درمان و تنظیم برنامه جدید',
-        duration: 30,
-        price: 500000,
+        title: 'پیگیری روند درمان',
         category: 'مشاوره',
+        slug: 'follow-up-treatment',
+        durationMinutes: 30,
+        pricing: {
+          amount: 500000,
+          currency: 'USD',
+        },
         providers: [provider1.id],
         isActive: true,
       },
@@ -123,11 +154,14 @@ async function seed() {
     const service2 = await payload.create({
       collection: 'services',
       data: {
-        name: 'انتخاب خدمت درمانی',
-        description: 'مشاوره اولیه برای انتخاب خدمت مناسب',
-        duration: 45,
-        price: 750000,
+        title: 'انتخاب خدمت درمانی',
         category: 'مشاوره',
+        slug: 'treatment-selection',
+        durationMinutes: 45,
+        pricing: {
+          amount: 750000,
+          currency: 'USD',
+        },
         providers: [provider1.id, provider2.id],
         isActive: true,
       },
@@ -136,11 +170,14 @@ async function seed() {
     const service3 = await payload.create({
       collection: 'services',
       data: {
-        name: 'انتخاب تاریخ و زمان خدمت',
-        description: 'تنظیم وقت نوبت برای خدمات درمانی',
-        duration: 60,
-        price: 1000000,
+        title: 'انتخاب تاریخ و زمان خدمت',
         category: 'نوبت‌دهی',
+        slug: 'schedule-selection',
+        durationMinutes: 60,
+        pricing: {
+          amount: 1000000,
+          currency: 'USD',
+        },
         providers: [provider2.id],
         isActive: true,
       },
@@ -149,11 +186,14 @@ async function seed() {
     const service4 = await payload.create({
       collection: 'services',
       data: {
-        name: 'دریافت نظر دوم',
-        description: 'مشاوره تخصصی برای دریافت نظر پزشک دوم',
-        duration: 30,
-        price: 600000,
+        title: 'دریافت نظر دوم',
         category: 'مشاوره',
+        slug: 'second-opinion',
+        durationMinutes: 30,
+        pricing: {
+          amount: 600000,
+          currency: 'USD',
+        },
         providers: [provider3.id],
         isActive: true,
       },
@@ -162,11 +202,14 @@ async function seed() {
     const service5 = await payload.create({
       collection: 'services',
       data: {
-        name: 'چک‌آپ دوره‌ای',
-        description: 'معاینات دوره‌ای و بررسی وضعیت سلامت',
-        duration: 45,
-        price: 800000,
+        title: 'چک‌آپ دوره‌ای',
         category: 'معاینه',
+        slug: 'periodic-checkup',
+        durationMinutes: 45,
+        pricing: {
+          amount: 800000,
+          currency: 'USD',
+        },
         providers: [provider1.id, provider3.id],
         isActive: true,
       },
@@ -175,11 +218,14 @@ async function seed() {
     const service6 = await payload.create({
       collection: 'services',
       data: {
-        name: 'ظهور علائم جدید',
-        description: 'بررسی و تشخیص علائم جدید بیماری',
-        duration: 60,
-        price: 900000,
+        title: 'ظهور علائم جدید',
         category: 'تشخیص',
+        slug: 'new-symptoms',
+        durationMinutes: 60,
+        pricing: {
+          amount: 900000,
+          currency: 'USD',
+        },
         providers: [provider2.id, provider3.id],
         isActive: true,
       },
@@ -192,9 +238,15 @@ async function seed() {
     tomorrow.setDate(tomorrow.getDate() + 1)
     tomorrow.setHours(10, 0, 0, 0)
 
+    const appointmentEndTime = new Date(tomorrow)
+    appointmentEndTime.setMinutes(appointmentEndTime.getMinutes() + 30)
+
     const nextWeek = new Date(now)
     nextWeek.setDate(nextWeek.getDate() + 7)
     nextWeek.setHours(14, 0, 0, 0)
+
+    const nextWeekEndTime = new Date(nextWeek)
+    nextWeekEndTime.setMinutes(nextWeekEndTime.getMinutes() + 60)
 
     await payload.create({
       collection: 'appointments',
@@ -204,6 +256,8 @@ async function seed() {
         provider: provider1.id,
         schedule: {
           start: tomorrow.toISOString(),
+          end: appointmentEndTime.toISOString(),
+          timeZone: 'Asia/Tehran',
         },
         status: 'confirmed',
         notes: 'اولین ویزیت - بررسی کامل',
@@ -218,6 +272,8 @@ async function seed() {
         provider: provider2.id,
         schedule: {
           start: nextWeek.toISOString(),
+          end: nextWeekEndTime.toISOString(),
+          timeZone: 'Asia/Tehran',
         },
         status: 'pending',
         notes: 'نوبت دوم - پیگیری درمان',

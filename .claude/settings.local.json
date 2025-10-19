@@ -79,7 +79,15 @@
       "Bash(npx tsx src/scripts/seed.ts)",
       "Bash(test -f /d/cyan/cyannobat/.env)",
       "Bash(docker-compose exec -T web npx tsx src/scripts/seed.ts)",
-      "Bash(DATABASE_URI=\"postgres://cyannobat:cyannopass@localhost:5432/cyannobat\" PAYLOAD_SECRET=\"65b36d2e960b7fdc24c7452a\" npx tsx src/scripts/seed.ts)"
+      "Bash(DATABASE_URI=\"postgres://cyannobat:cyannopass@localhost:5432/cyannobat\" PAYLOAD_SECRET=\"65b36d2e960b7fdc24c7452a\" npx tsx src/scripts/seed.ts)",
+      "Bash(test -f src/payload-types.ts)",
+      "Bash(npx payload generate:types)",
+      "Bash(DATABASE_URI=\"postgres://cyannobat:cyannopass@localhost:5432/cyannobat\" npx tsx -e \"\nimport { getPayload } from ''payload''\nimport config from ''./src/payload.config.ts''\nconst payload = await getPayload({ config })\nconst users = await payload.find({ collection: ''users'', limit: 10 })\nconsole.log(''Existing users:'', users.docs.length)\nusers.docs.forEach(u => console.log('' -'', u.email))\nprocess.exit(0)\n\")",
+      "Bash(PGPASSWORD=cyannopass psql -h localhost -U cyannobat -d cyannobat -c \"SELECT email FROM users LIMIT 5;\")",
+      "Bash(DATABASE_URI=\"postgres://cyannobat:cyannopass@localhost:5432/cyannobat\" PAYLOAD_SECRET=\"65b36d2e960b7fdc24c7452a\" npx tsx src/scripts/clear-db.ts)",
+      "Bash(cat .eslintignore)",
+      "Bash(cat next.config.ts)",
+      "Bash(cat eslint.config.mjs)"
     ],
     "deny": [],
     "ask": []

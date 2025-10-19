@@ -179,7 +179,7 @@ const bookingHold = {
     }
 
     try {
-      const result = await redis.set(key, JSON.stringify({ record }), 'NX', 'PX', ttlSeconds * 1000)
+      const result = await redis.set(key, JSON.stringify({ record }), 'PX', ttlSeconds * 1000, 'NX')
 
       if (result !== 'OK') {
         const existingHold = await bookingHold.get({ serviceId, slot })
