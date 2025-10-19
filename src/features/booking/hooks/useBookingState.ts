@@ -9,6 +9,7 @@ import {
   type ProgressStepWithStatus,
   type SelectedSchedule,
   type StepStatus,
+  type ServiceOption,
 } from '../types'
 
 const formatDateLabel = (value: string | null) => {
@@ -44,11 +45,26 @@ const formatTimeRange = (slot: AvailabilitySlot | null) => {
   }
 }
 
+type ServicesListResponse = {
+  docs?: Array<{
+    id: string | number
+    title?: string | null
+    category?: string | null
+    durationMinutes?: number | null
+    isActive?: boolean | null
+  }>
+}
+
 export const useBookingState = () => {
+  const [services, setServices] = useState<ServiceOption[]>([])
+  const [isServicesLoading, setIsServicesLoading] = useState<boolean>(true)
+  const [servicesError, setServicesError] = useState<string | null>(null)
+
   const [availability, setAvailability] = useState<AvailabilityDay[]>([])
-  const [isAvailabilityLoading, setIsAvailabilityLoading] = useState<boolean>(true)
+  const [isAvailabilityLoading, setIsAvailabilityLoading] = useState<boolean>(false)
   const [availabilityError, setAvailabilityError] = useState<string | null>(null)
 
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null)
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
   const [selectedSchedule, setSelectedSchedule] = useState<SelectedSchedule | null>(null)
   const [selectedReasons, setSelectedReasons] = useState<string[]>([])
@@ -59,17 +75,78 @@ export const useBookingState = () => {
     phone: '',
   })
   const [customerNotes, setCustomerNotes] = useState('')
-  const abortControllerRef = useRef<AbortController | null>(null)
+  const servicesAbortControllerRef = useRef<AbortController | null>(null)
+  const availabilityAbortControllerRef = useRef<AbortController | null>(null)
+
+  const fetchServices = useCallback(async () => {
+    servicesAbortControllerRef.current?.abort()
+    const controller = new AbortController()
+    servicesAbortControllerRef.current = controller
+    setIsServicesLoading(true)
+    setServicesError(null)
+
+    const params = new URLSearchParams({ limit: '100', depth: '0', sort: 'title' })
+    params.set('where[isActive][equals]', 'true')
+
+    try {
+      const response = await fetch(`/api/services?${params.toString()}`, {
+        cache: 'no-store',
+        signal: controller.signal,
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to load services (${response.status})`)
+      }
+
+      const payload = (await response.json()) as ServicesListResponse
+      const normalized = (payload.docs ?? [])
+        .filter((doc) => doc && (doc.isActive ?? true))
+        .map((doc) => ({
+          id: String(doc.id),
+          title: doc.title?.trim() ? doc.title : 'خدمت بدون عنوان',
+          category: doc.category ?? null,
+          durationMinutes: doc.durationMinutes ?? null,
+        }))
+
+      setServices(normalized)
+    } catch (error) {
+      if ((error as { name?: string }).name === 'AbortError') {
+        return
+      }
+      setServices([])
+      setServicesError('بارگذاری خدمات با مشکل روبه‌رو شد. لطفاً دوباره تلاش کنید.')
+    } finally {
+      setIsServicesLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchServices()
+    return () => {
+      servicesAbortControllerRef.current?.abort()
+    }
+  }, [fetchServices])
 
   const fetchAvailability = useCallback(async () => {
-    abortControllerRef.current?.abort()
+    availabilityAbortControllerRef.current?.abort()
+
+    if (!selectedServiceId) {
+      availabilityAbortControllerRef.current = null
+      setAvailability([])
+      setIsAvailabilityLoading(false)
+      setAvailabilityError(null)
+      return
+    }
+
     const controller = new AbortController()
-    abortControllerRef.current = controller
+    availabilityAbortControllerRef.current = controller
     setIsAvailabilityLoading(true)
     setAvailabilityError(null)
 
+    const params = new URLSearchParams({ rangeDays: '21', serviceId: selectedServiceId })
+
     try {
-      const response = await fetch('/api/availability/calendar?rangeDays=21', {
+      const response = await fetch(`/api/availability/calendar?${params.toString()}`, {
         cache: 'no-store',
         signal: controller.signal,
       })
@@ -96,14 +173,28 @@ export const useBookingState = () => {
     } finally {
       setIsAvailabilityLoading(false)
     }
-  }, [])
+  }, [selectedServiceId])
 
   useEffect(() => {
     fetchAvailability()
     return () => {
-      abortControllerRef.current?.abort()
+      availabilityAbortControllerRef.current?.abort()
     }
   }, [fetchAvailability])
+
+  useEffect(() => {
+    if (!selectedServiceId) {
+      setSelectedDay(null)
+      setSelectedSchedule(null)
+      return
+    }
+
+    if (!services.some((service) => service.id === selectedServiceId)) {
+      setSelectedServiceId(null)
+      setSelectedDay(null)
+      setSelectedSchedule(null)
+    }
+  }, [selectedServiceId, services])
 
   useEffect(() => {
     if (!selectedSchedule) return
@@ -139,6 +230,20 @@ export const useBookingState = () => {
     setSelectedSchedule({ day, slot })
   }, [])
 
+  const handleServiceSelect = useCallback((serviceId: string) => {
+    setSelectedServiceId((prev) => {
+      if (prev === serviceId) {
+        return prev
+      }
+
+      setSelectedDay(null)
+      setSelectedSchedule(null)
+      setAvailability([])
+
+      return serviceId
+    })
+  }, [])
+
   const handleReasonToggle = useCallback((value: string) => {
     setSelectedReasons((prev) => {
       if (prev.includes(value)) {
@@ -160,28 +265,36 @@ export const useBookingState = () => {
     [selectedReasons],
   )
 
+  const selectedService = useMemo(
+    () => services.find((service) => service.id === selectedServiceId) ?? null,
+    [selectedServiceId, services],
+  )
+
+  const isServiceComplete = Boolean(selectedServiceId)
   const isScheduleComplete = Boolean(selectedSchedule)
   const isReasonComplete = selectedReasons.length > 0 || additionalReason.trim().length > 0
   const isCustomerComplete = Object.values(customerInfo).every((value) => value.trim().length > 0)
 
   const stepsWithStatus: ProgressStepWithStatus[] = useMemo(() => {
-    const activeIndex = progressSteps.findIndex((step) => {
-      if (step.key === 'dateTime') return !isScheduleComplete
-      if (step.key === 'reason') return !isReasonComplete
-      return !isCustomerComplete
-    })
+    const completionMap: Record<typeof progressSteps[number]['key'], boolean> = {
+      service: isServiceComplete,
+      dateTime: isScheduleComplete,
+      reason: isReasonComplete,
+      customer: isCustomerComplete,
+    }
+
+    const activeIndex = progressSteps.findIndex((step) => !completionMap[step.key])
 
     const resolvedActiveIndex = activeIndex === -1 ? progressSteps.length - 1 : activeIndex
 
     return progressSteps.map((step, index) => {
-      const complete =
-        step.key === 'dateTime' ? isScheduleComplete : step.key === 'reason' ? isReasonComplete : isCustomerComplete
+      const complete = completionMap[step.key]
 
       const status: StepStatus = complete ? 'complete' : index === resolvedActiveIndex ? 'current' : 'upcoming'
 
       return { ...step, status, index }
     })
-  }, [isCustomerComplete, isReasonComplete, isScheduleComplete])
+  }, [isCustomerComplete, isReasonComplete, isScheduleComplete, isServiceComplete])
 
   const formattedDate = useMemo(
     () => (selectedSchedule ? formatDateLabel(selectedSchedule.day.date) : formatDateLabel(selectedDay)),
@@ -193,10 +306,10 @@ export const useBookingState = () => {
     [selectedSchedule],
   )
 
-  const selectedServiceLabel = selectedSchedule?.slot.serviceName ?? ''
+  const selectedServiceLabel = selectedService?.title ?? selectedSchedule?.slot.serviceName ?? ''
   const selectedProviderLabel = selectedSchedule?.slot.providerName ?? ''
 
-  const isContinueDisabled = !isScheduleComplete || !isReasonComplete || !isCustomerComplete
+  const isContinueDisabled = !isServiceComplete || !isScheduleComplete || !isReasonComplete || !isCustomerComplete
 
   const reasonSummary = useMemo(
     () =>
@@ -212,6 +325,12 @@ export const useBookingState = () => {
   const placeholderMessage = availabilityError ?? schedulePlaceholderMessage
 
   return {
+    services,
+    servicesLoading: isServicesLoading,
+    servicesError,
+    refreshServices: fetchServices,
+    selectedServiceId,
+    handleServiceSelect,
     availabilityForSelection: availability,
     availabilityLoading: isAvailabilityLoading,
     availabilityError,

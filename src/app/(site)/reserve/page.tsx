@@ -8,12 +8,19 @@ import ScheduleSection from '@/features/booking/components/ScheduleSection'
 import ReasonsSection from '@/features/booking/components/ReasonsSection'
 import ContactSection from '@/features/booking/components/ContactSection'
 import BookingSummary from '@/features/booking/components/BookingSummary'
+import ServiceSection from '@/features/booking/components/ServiceSection'
 import { reasonOptions } from '@/features/booking/constants'
 import { useBookingState } from '@/features/booking/hooks/useBookingState'
 
 const BookingPage = () => {
   const prefersReducedMotion = useReducedMotion()
   const {
+    services,
+    servicesLoading,
+    servicesError,
+    refreshServices,
+    selectedServiceId,
+    handleServiceSelect,
     availabilityForSelection,
     availabilityLoading,
     availabilityError,
@@ -92,6 +99,15 @@ const BookingPage = () => {
       <BookingStepper steps={stepsWithStatus} prefersReducedMotion={prefersReducedMotion} />
 
       <form className="grid gap-4 sm:gap-6 lg:gap-8">
+        <ServiceSection
+          services={services}
+          selectedServiceId={selectedServiceId}
+          onSelectService={handleServiceSelect}
+          isLoading={servicesLoading}
+          errorMessage={servicesError}
+          onRetry={refreshServices}
+        />
+
         <ScheduleSection
           availability={availabilityForSelection}
           selectedDay={selectedDay}
