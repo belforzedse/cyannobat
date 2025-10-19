@@ -1,21 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cyannobat Booking Platform
 
-## Environment Setup
+Cyannobat is an appointment booking platform that combines a customer-facing Next.js App Router experience with [Payload CMS](https://payloadcms.com) for content, authentication, and admin tooling. The application exposes real-time availability, booking, and staff management features backed by PostgreSQL and Redis. The Next.js frontend lives in `src/app` while Payload powers the `/admin` interface and API routes served from the same deployment.
 
-Copy the example environment file and adjust the values for your local setup:
+## Project structure
+
+- `src/app` – App Router routes for the marketing site, booking flow, authentication, and staff dashboards.
+- `src/collections` – Payload collections and globals that define the database schema; generated types reside in `src/payload-types.ts`.
+- `src/lib` – Shared business logic (availability generator, auth helpers, utilities).
+- `scripts/` – Seed and administrative scripts (for example, `seed-staff.ts`).
+- `public/` – Static assets served by Next.js.
+- `styles/` – Global Tailwind and custom styling resources.
+
+## Environment configuration
+
+Copy `.env.example` to `.env` and fill in the required values before running any commands:
+
+| Variable | Purpose |
+| --- | --- |
+| `PAYLOAD_SECRET` | Secret used by Payload for JWT and session signing. |
+| `DATABASE_URI` | PostgreSQL connection string (`postgresql://user:pass@host:port/db`). |
+| `PAYLOAD_DB_PUSH` | Allow Payload to push schema changes automatically in development (set to `false` in production). |
+| `PAYLOAD_RUN_MIGRATIONS` | Toggle the automatic `payload migrate` run in containerized environments. |
+| `REDIS_URL` / `REDIS_*` | Redis credentials for caching and booking holds. Prefer `REDIS_URL`; fallback host/port fields are used when it is absent. |
+| `REDIS_TLS` | Enable TLS when required by your Redis provider. |
+| `NEXT_PUBLIC_APP_URL` | Public URL exposed to clients (used when constructing links client-side). |
+
+> **Note:** Redis must be reachable before invoking APIs that create booking holds, and `DATABASE_URI` must point to an accessible PostgreSQL instance or the Payload boot process will exit with an error.
+
+## Installing dependencies
 
 ```bash
-cp .env.example .env
-# then edit .env to set secure secrets and connection strings
+pnpm install
 ```
 
-Ensure the credentials match your local PostgreSQL and Redis instances (the defaults assume the Docker Compose services).
+## Local development
 
-- `REDIS_URL` takes precedence when defined and can include authentication (e.g. `redis://user:pass@host:port/db`).
-- When `REDIS_URL` is omitted the client falls back to `REDIS_HOST`, `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_PASSWORD`, and `REDIS_DB`.
-- Set `REDIS_TLS=true` if your Redis provider requires TLS (left `false` for the local Docker Compose container).
+Start the Next.js + Payload development server (defaults to http://localhost:3000):
 
-> **Note:** `DATABASE_URI` must point to a reachable PostgreSQL instance before running `pnpm build` or starting the app. The Payload configuration now throws a descriptive error if the variable is missing to avoid creating an invalid connection pool.
+```bash
+pnpm dev
+```
+
+Alternatively, run the full stack with PostgreSQL and Redis via Docker Compose:
+
+```bash
+docker-compose up --build
+```
+
+Once running, Payload admin is available at `/admin` and the booking experience at `/`.
+
+## Seeding sample users
+
+Populate demo patient, doctor, and receptionist accounts to exercise staff features:
+
+```bash
+pnpm seed:staff
+```
+
+The script is idempotent—it updates roles on existing emails and prints credentials for quick testing.
+
+## Booking and staff flows
+
+1. Visit `/login` and authenticate with a seeded account.
+2. Patients are redirected to `/account` where they can review upcoming bookings and start new appointments via the booking flow.
+3. Staff (doctor, receptionist, admin roles) are redirected to `/staff`, which surfaces management tools backed by Payload API routes under `src/app/api/staff/*`.
+4. Availability endpoints (`/api/availability`, `/api/hold`, `/api/book`) require Redis to manage slot holds; sample `curl` flows are provided below for smoke testing.
+
+### Booking API smoke tests
+
+```bash
+# Confirm a slot is free
+curl "http://localhost:3000/api/availability?serviceId=<SERVICE_ID>&slot=2025-01-15T15:00:00.000Z"
+
+# Place a five-minute hold
+curl -X POST http://localhost:3000/api/hold \
+  -H 'content-type: application/json' \
+  -d '{
+    "serviceId": "<SERVICE_ID>",
+    "slot": "2025-01-15T15:00:00.000Z",
+    "customerId": "<USER_ID>",
+    "ttlSeconds": 300
+  }'
+
+# Complete a booking while the hold is active
+curl -X POST http://localhost:3000/api/book \
+  -H 'content-type: application/json' \
+  -d '{
+    "serviceId": "<SERVICE_ID>",
+    "slot": "2025-01-15T15:00:00.000Z",
+    "clientId": "<USER_ID>",
+    "providerId": "<PROVIDER_ID>"
+  }'
+```
 
 ## Database migrations
 
@@ -30,25 +106,17 @@ pnpm payload migrate
 
 The generated files live under `src/payload-migrations` and should be committed along with the changes to the collections. The production Docker entrypoint runs `pnpm payload migrate` by default (`PAYLOAD_RUN_MIGRATIONS=true`); set it to `false` only if your deployment pipeline manages migrations separately.
 
-## Getting Started
+## Troubleshooting
 
-First, run the development server:
+- **Redis connection errors:** Ensure the Redis container or external service is running and that the credentials in `.env` match. When using Docker Compose, confirm port `6379` is not blocked on your host. For managed Redis providers, set `REDIS_TLS=true` and include username/password in `REDIS_URL` if required.
+- **Payload fails to start due to missing database:** Verify `DATABASE_URI` is correct and that the database user has permissions to create schemas and tables in development.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Deployment considerations
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Disable automatic schema pushes (`PAYLOAD_DB_PUSH=false`) once migrations are managed through CI/CD.
+- Run `pnpm payload migrate` as part of your release pipeline or container entrypoint (leave `PAYLOAD_RUN_MIGRATIONS=true`).
+- Provision Redis and PostgreSQL with production-grade credentials; update `NEXT_PUBLIC_APP_URL` to your deployed hostname so client redirects and absolute links are correct.
+- Confirm the environment provides filesystem access for Payload file uploads or configure an external storage adapter.
 
 ## Continuous Integration
 
@@ -62,63 +130,8 @@ pnpm build
 
 Run the same commands locally before opening a pull request so the checks pass consistently.
 
-## Learn More
+## Further reading
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-## Booking API smoke tests
-
-The custom booking endpoints under `/api/availability`, `/api/hold`, and `/api/book` can be exercised with `curl` once Redis and Payload are running (via `pnpm dev` or Docker Compose). Replace the placeholder IDs before running the commands below.
-
-1. **Confirm a slot is free**
-
-   ```bash
-   curl "http://localhost:3000/api/availability?serviceId=<SERVICE_ID>&slot=2025-01-15T15:00:00.000Z"
-   ```
-
-   The JSON response should contain `{ "available": true }` and an empty `reasons` array for an unused slot.
-
-2. **Place a five-minute hold**
-
-   ```bash
-   curl -X POST http://localhost:3000/api/hold \
-     -H 'content-type: application/json' \
-     -d '{
-       "serviceId": "<SERVICE_ID>",
-       "slot": "2025-01-15T15:00:00.000Z",
-       "customerId": "<USER_ID>",
-       "ttlSeconds": 300
-     }'
-   ```
-
-   The response includes a `hold` object with the remaining TTL. Running the availability check again should now return `available: false` with the `ON_HOLD` reason present.
-
-3. **Verify hold expiry**
-
-   Wait five minutes (or use a smaller `ttlSeconds` while testing) and call the availability endpoint once more. After expiration the hold is gone and the slot becomes available again.
-
-4. **Complete a booking while the hold is active**
-
-   ```bash
-   curl -X POST http://localhost:3000/api/book \
-     -H 'content-type: application/json' \
-     -d '{
-       "serviceId": "<SERVICE_ID>",
-       "slot": "2025-01-15T15:00:00.000Z",
-       "clientId": "<USER_ID>",
-       "providerId": "<PROVIDER_ID>"
-     }'
-   ```
-
-   A successful response (HTTP 201) includes a summarized `appointment`. Subsequent availability checks report the `ALREADY_BOOKED` reason because the hold is cleared during appointment creation.
+- [Next.js Documentation](https://nextjs.org/docs) – learn about App Router concepts and APIs.
+- [Learn Next.js](https://nextjs.org/learn) – interactive tutorials for the framework.
+- [Payload CMS Documentation](https://payloadcms.com/docs) – collection configs, authentication, and deployment guides.
