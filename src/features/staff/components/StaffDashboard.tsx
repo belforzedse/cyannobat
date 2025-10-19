@@ -1,12 +1,13 @@
 'use client'
 
-import { useCallback, useMemo, useState, useTransition } from 'react'
+import React, { useCallback, useMemo, useState, useTransition } from 'react'
 import { useReducedMotion } from 'framer-motion'
 
 import clsx from 'clsx'
-import { RefreshCw, LogOut } from 'lucide-react'
+import { RefreshCw, LogOut, Loader2 } from 'lucide-react'
 
 import type { StaffAppointment, StaffProvider, StaffUser } from '@/features/staff/types'
+import { useToast } from '@/components/ui/ToastProvider'
 
 type StaffDashboardProps = {
   initialAppointments: StaffAppointment[]
@@ -52,6 +53,8 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
   const [isRefreshing, startRefreshTransition] = useTransition()
   const [updatingId, setUpdatingId] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [failedId, setFailedId] = useState<string | null>(null)
+  const { showToast } = useToast()
 
   const filteredAppointments = useMemo(() => {
     return appointments.filter((appointment) => {
@@ -119,12 +122,15 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
         }
         const result = (await response.json()) as { appointments: StaffAppointment[] }
         setAppointments(result.appointments)
+        setFailedId(null)
+        showToast({ description: 'فهرست نوبت‌ها به‌روزرسانی شد.', variant: 'success' })
       } catch (error) {
         console.error(error)
         setErrorMessage('به‌روزرسانی فهرست نوبت‌ها با مشکل مواجه شد.')
+        showToast({ description: 'به‌روزرسانی فهرست نوبت‌ها با مشکل مواجه شد.', variant: 'error' })
       }
     })
-  }, [])
+  }, [showToast])
 
   const handleStatusChange = useCallback(async (appointmentId: string, status: StaffAppointment['status']) => {
     setUpdatingId(appointmentId)
@@ -142,13 +148,17 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
       }
       const result = (await response.json()) as { appointment: StaffAppointment }
       setAppointments((current) => current.map((appointment) => (appointment.id === appointmentId ? result.appointment : appointment)))
+      setFailedId(null)
+      showToast({ description: 'وضعیت نوبت با موفقیت ذخیره شد.', variant: 'success' })
     } catch (error) {
       console.error(error)
       setErrorMessage('ذخیره وضعیت جدید ممکن نشد.')
+      setFailedId(appointmentId)
+      showToast({ description: 'ذخیره وضعیت جدید ممکن نشد.', variant: 'error' })
     } finally {
       setUpdatingId(null)
     }
-  }, [])
+  }, [showToast])
 
   const handleLogout = useCallback(async () => {
     await fetch('/api/staff/logout', {
@@ -258,7 +268,14 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
             </thead>
             <tbody className="divide-y divide-white/10 text-foreground">
               {filteredAppointments.map((appointment) => (
-                <tr key={appointment.id} className={clsx('focus-within:bg-white/20 focus-within:dark:bg-white/10', tableRowHoverClasses)}>
+                <tr
+                  key={appointment.id}
+                  className={clsx(
+                    'focus-within:bg-white/20 focus-within:dark:bg-white/10',
+                    tableRowHoverClasses,
+                    failedId === appointment.id && 'bg-red-100 dark:bg-red-500/20',
+                  )}
+                >
                   <td className="px-4 py-3 text-xs font-medium">
                     {formatDateTime(appointment.start, appointment.timeZone)}
                     <span className="block text-[11px] text-muted-foreground">
@@ -273,23 +290,32 @@ const StaffDashboard = ({ initialAppointments, initialProviders, currentUser }: 
                     {formatDateTime(appointment.createdAt, appointment.timeZone)}
                   </td>
                   <td className="px-4 py-3">
-                    <select
-                      value={appointment.status}
-                      onChange={(event) => handleStatusChange(appointment.id, event.target.value as StaffAppointment['status'])}
-                      disabled={updatingId === appointment.id}
-                      className={clsx(
-                        'rounded-full border border-white/25 px-3 py-1 text-xs font-semibold text-foreground disabled:cursor-not-allowed disabled:opacity-70',
-                        reduceMotion ? 'bg-white/50 dark:bg-white/12' : 'bg-white/55 dark:bg-white/10',
-                        'dark:border-white/15',
-                        statusSelectTransitionClasses,
-                      )}
-                    >
-                      {statusOptions.map((status) => (
-                        <option key={status.value} value={status.value}>
-                          {status.label}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={appointment.status}
+                        onChange={(event) => handleStatusChange(appointment.id, event.target.value as StaffAppointment['status'])}
+                        disabled={updatingId === appointment.id}
+                        className={clsx(
+                          'rounded-full border border-white/25 px-3 py-1 text-xs font-semibold text-foreground disabled:cursor-not-allowed disabled:opacity-70',
+                          reduceMotion ? 'bg-white/50 dark:bg-white/12' : 'bg-white/55 dark:bg-white/10',
+                          'dark:border-white/15',
+                          statusSelectTransitionClasses,
+                        )}
+                      >
+                        {statusOptions.map((status) => (
+                          <option key={status.value} value={status.value}>
+                            {status.label}
+                          </option>
+                        ))}
+                      </select>
+                      {updatingId === appointment.id ? (
+                        <Loader2
+                          data-testid={`status-spinner-${appointment.id}`}
+                          className="h-4 w-4 animate-spin text-muted-foreground"
+                          aria-hidden="true"
+                        />
+                      ) : null}
+                    </div>
                   </td>
                 </tr>
               ))}
