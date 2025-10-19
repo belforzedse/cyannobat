@@ -269,15 +269,25 @@ const Sidebar = () => {
         }
       }
 
-      // Update desktop indicator (only main items, not actions or account)
+      // Update desktop indicator (main items + account widget)
       const desktopMainItems = navigationItems.filter(item => item.group === 'main');
       const desktopActiveIndex = desktopMainItems.findIndex(item =>
         item.matches?.(pathname ?? '', activeHash) ?? false
       );
 
-      if (desktopActiveIndex !== -1) {
+      const desktopNav = desktopNavRef.current;
+      if (isAccountActive && desktopAccountRef.current && desktopNav) {
+        const navRect = desktopNav.getBoundingClientRect();
+        const accountRect = desktopAccountRef.current.getBoundingClientRect();
+        setIndicatorStyle(prev => ({
+          ...prev,
+          desktop: {
+            top: accountRect.top - navRect.top,
+            height: accountRect.height,
+          },
+        }));
+      } else if (desktopActiveIndex !== -1) {
         const desktopItem = desktopItemRefs.current[desktopActiveIndex];
-        const desktopNav = desktopNavRef.current;
         if (desktopItem && desktopNav) {
           const navRect = desktopNav.getBoundingClientRect();
           const itemRect = desktopItem.getBoundingClientRect();
@@ -289,6 +299,11 @@ const Sidebar = () => {
             },
           }));
         }
+      } else {
+        setIndicatorStyle(prev => ({
+          ...prev,
+          desktop: { top: 0, height: 0 },
+        }));
       }
     };
 
@@ -354,7 +369,7 @@ const Sidebar = () => {
 
   const isAccountActive = pathname === '/account' || pathname === '/staff';
   const hasActiveItem = navigationItems.some(item => item.matches?.(pathname ?? '', activeHash) ?? false) || isAccountActive;
-  const hasActiveMainItem = desktopMainItems.some(item => item.matches?.(pathname ?? '', activeHash) ?? false);
+  const hasActiveMainItem = desktopMainItems.some(item => item.matches?.(pathname ?? '', activeHash) ?? false) || isAccountActive;
 
   return (
     <nav
