@@ -11,6 +11,8 @@ cp .env.example .env
 
 Ensure the credentials match your local PostgreSQL and Redis instances (the defaults assume the Docker Compose services).
 
+> **Note:** `DATABASE_URI` must point to a reachable PostgreSQL instance before running `pnpm build` or starting the app. The Payload configuration now throws a descriptive error if the variable is missing to avoid creating an invalid connection pool.
+
 ## Database migrations
 
 When running locally (`NODE_ENV=development`), Payload automatically pushes the schema defined in `src/collections/*` to PostgreSQL on startup so the `users`, `appointments`, and other tables are created for you. You can toggle this behaviour explicitly by setting `PAYLOAD_DB_PUSH=true|false` in your `.env`.
