@@ -21,6 +21,7 @@
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.44.2",
     "framer-motion": "^11.13.1",
+    "ioredis": "^5.4.1",
     "graphql": "^16.11.0",
     "lucide-react": "^0.460.0",
     "luxon": "^3.5.0",
