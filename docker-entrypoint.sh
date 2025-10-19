@@ -16,7 +16,7 @@ sleep 2
 echo "PostgreSQL is ready!"
 
 # Optionally run Payload migrations before starting the app
-if [ "${PAYLOAD_RUN_MIGRATIONS:-false}" = "true" ]; then
+if [ "${PAYLOAD_RUN_MIGRATIONS:-true}" = "true" ]; then
   echo "Running Payload migrations..."
   pnpm payload migrate -- --config src/payload.config.ts
 else

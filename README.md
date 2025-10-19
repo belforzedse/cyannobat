@@ -22,7 +22,7 @@ pnpm payload migrate:create -- --name <migration-name>
 pnpm payload migrate
 ```
 
-The generated files live under `src/payload-migrations` and should be committed along with the changes to the collections. If you disable `PAYLOAD_DB_PUSH`, make sure migrations run before starting the app (the production Docker entrypoint skips them unless you set `PAYLOAD_RUN_MIGRATIONS=true`, so wire that into your deployment pipeline when needed).
+The generated files live under `src/payload-migrations` and should be committed along with the changes to the collections. The production Docker entrypoint runs `pnpm payload migrate` by default (`PAYLOAD_RUN_MIGRATIONS=true`); set it to `false` only if your deployment pipeline manages migrations separately.
 
 ## Getting Started
 

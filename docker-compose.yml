@@ -47,7 +47,7 @@ services:
     environment:
       - NODE_ENV=production
       - PAYLOAD_DB_PUSH=true
-      - PAYLOAD_RUN_MIGRATIONS=false
+      - PAYLOAD_RUN_MIGRATIONS=true
 
 volumes:
   pg_data:
