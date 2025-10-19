@@ -1,25 +1,26 @@
 'use client';
 
 import Link from 'next/link';
-import { motion, useReducedMotion } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
 import { BOOKING_PATH } from '@/lib/routes';
 
 const Header = () => {
-  const prefersReducedMotion = useReducedMotion();
-
   return (
-    <motion.header
-      initial={{
-        y: prefersReducedMotion ? 0 : -24,
-        opacity: prefersReducedMotion ? 1 : 0,
+    <header
+      className="glass rounded-3xl sticky top-4 z-30 flex items-center justify-between px-6 py-4 text-right mx-4 lg:mr-[122px] xl:mr-[122px] 2xl:mr-[122px] animate-fade-in-down"
+      style={{
+        backdropFilter: 'blur(10px) saturate(140%)',
+        WebkitBackdropFilter: 'blur(10px) saturate(140%)',
       }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: "easeOut" }}
-      className="glass rounded-3xl sticky top-4 z-30 flex items-center justify-between px-6 py-4 text-right mx-4 lg:mr-[122px] xl:mr-[122px] 2xl:mr-[122px]"
     >
+      {/* Very subtle cyan glow - premium feel */}
       <div
-        className="pointer-events-none absolute inset-0 rounded-2rem bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-30 -z-10 dark:via-white/10"
+        className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-accent/3 via-transparent to-accent/2 opacity-50 -z-20"
+        aria-hidden
+      />
+      {/* Shimmer highlight */}
+      <div
+        className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-30 -z-10 dark:via-white/6"
         aria-hidden
       />
       <div className="flex items-center gap-2">
@@ -42,7 +43,7 @@ const Header = () => {
         </Link>
         <ThemeToggle />
       </div>
-    </motion.header>
+    </header>
   );
 };
 

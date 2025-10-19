@@ -1,6 +1,5 @@
 'use client';
 
-import { motion, useReducedMotion } from 'framer-motion';
 import clsx from 'clsx';
 
 interface LiquidBlobProps {
@@ -37,7 +36,7 @@ const variantClasses = {
 
 /**
  * LiquidBlob - Animated liquid glass blob for background decoration
- * Creates a smooth, morphing blob effect with liquid motion
+ * Creates a smooth, morphing blob effect with CSS animations for optimal performance
  */
 const LiquidBlob = ({
   top,
@@ -49,33 +48,23 @@ const LiquidBlob = ({
   speed = 1,
   className,
 }: LiquidBlobProps) => {
-  const shouldReduceMotion = useReducedMotion();
-
-  const animationDuration = (20 / speed);
+  const animationDuration = `${20 / speed}s`;
 
   return (
-    <motion.div
+    <div
       className={clsx(
         'absolute rounded-full blur-3xl pointer-events-none',
         sizeClasses[size],
         variantClasses[variant],
         className
       )}
-      style={{ top, left, right, bottom }}
-      animate={
-        shouldReduceMotion
-          ? {}
-          : {
-              x: [0, 30, -20, 40, 0],
-              y: [0, -40, 30, -20, 0],
-              scale: [1, 1.1, 0.95, 1.05, 1],
-              rotate: [0, 10, -5, 15, 0],
-            }
-      }
-      transition={{
-        duration: animationDuration,
-        repeat: Infinity,
-        ease: 'easeInOut',
+      style={{
+        top,
+        left,
+        right,
+        bottom,
+        animation: `liquid-morph ${animationDuration} ease-in-out infinite`,
+        willChange: 'transform',
       }}
       aria-hidden
     />

@@ -7,7 +7,7 @@ import GlassButton from '@/components/GlassButton';
 import GlassIcon from '@/components/GlassIcon';
 import { Calendar, Search, Clock } from 'lucide-react';
 import { BOOKING_PATH } from '@/lib/routes';
-import { liquidSpring, liquidContainer, liquidEntrance, glassMorph } from '@/lib/animations';
+import { luxuryContainer, luxurySlideFade } from '@/lib/luxuryAnimations';
 
 const steps = [
   {
@@ -30,19 +30,86 @@ const steps = [
 const HeroPage = () => {
   const prefersReducedMotion = useReducedMotion();
 
+  // Create performance-optimized luxury animations
+  // Note: Blur is expensive but used ONLY on initial load, not continuous animations
+  // Framer Motion uses GPU acceleration (transform + opacity) for smooth 60fps
+
+  const heroCardVariants = luxurySlideFade('right', {
+    distance: 32,
+    duration: 0.9,
+    scale: 0.96,        // Subtle scale (96% vs 95%)
+    blur: 0,            // No blur for main card (performance)
+    delayIn: 0.1,
+  });
+
+  const badgeVariants = luxurySlideFade('up', {
+    distance: 16,
+    duration: 0.8,
+    scale: 0.98,
+    blur: 0,            // No blur (performance)
+    delayIn: 0.2,
+  });
+
+  const titleVariants = luxurySlideFade('up', {
+    distance: 24,
+    duration: 0.9,
+    scale: 0.96,
+    blur: 1,            // Minimal blur (1px) for premium feel
+    delayIn: 0.3,
+  });
+
+  const descriptionVariants = luxurySlideFade('up', {
+    distance: 16,
+    duration: 1.0,
+    scale: 0.98,
+    blur: 0,
+    delayIn: 0.4,
+  });
+
+  const buttonsVariants = luxurySlideFade('up', {
+    distance: 16,
+    duration: 1.0,
+    scale: 0.98,
+    blur: 0,
+    delayIn: 0.5,
+  });
+
+  const bottomSectionVariants = luxurySlideFade('up', {
+    distance: 32,
+    duration: 1.0,
+    scale: 0.96,
+    blur: 0,            // No blur for scroll-triggered (performance)
+    delayIn: 0,
+  });
+
   return (
     <div className="flex flex-col gap-16 pb-12">
       <div className="flex flex-col gap-12 lg:grid lg:grid-cols-[1fr_minmax(260px,360px)] lg:items-stretch">
+        {/* Steps Section */}
         <motion.section
           id="steps"
-          initial={prefersReducedMotion ? undefined : 'hidden'}
-          whileInView={prefersReducedMotion ? undefined : 'visible'}
-          viewport={{ once: true, amount: 0.2 }}
-          variants={liquidContainer}
           className="order-2 space-y-6 text-right lg:order-2 lg:space-y-8"
+          variants={prefersReducedMotion ? undefined : luxuryContainer}
+          initial="initial"
+          animate="animate"
         >
           {steps.map((step, index) => (
-            <motion.div key={step.title} variants={liquidEntrance}>
+            <motion.div
+              key={step.title}
+              variants={
+                prefersReducedMotion
+                  ? undefined
+                  : luxurySlideFade('right', {
+                      distance: 32,
+                      duration: 0.8,
+                      scale: 0.96,
+                      blur: 0,            // No blur for better performance
+                      delayIn: index * 0.08 + 0.15,
+                    })
+              }
+              initial={prefersReducedMotion ? undefined : 'initial'}
+              animate={prefersReducedMotion ? undefined : 'animate'}
+            >
               <GlassCard title={step.title} description={step.description} className="h-full">
                 <div className="mt-4 flex items-center justify-between">
                   <GlassIcon icon={step.icon} size="sm" label={step.title} />
@@ -56,13 +123,20 @@ const HeroPage = () => {
           ))}
         </motion.section>
 
+        {/* Hero Card Section */}
         <motion.section
-          initial={prefersReducedMotion ? 'initial' : 'hidden'}
-          animate={prefersReducedMotion ? undefined : 'visible'}
-          whileHover={prefersReducedMotion ? undefined : 'hover'}
-          variants={!prefersReducedMotion ? { ...liquidEntrance, ...glassMorph } : undefined}
-          transition={liquidSpring}
-          className="glass order-1 relative flex h-full min-h-[420px] flex-col overflow-hidden px-8 pb-16 pt-20 text-right sm:px-12 lg:order-1 lg:px-20"
+          variants={prefersReducedMotion ? undefined : heroCardVariants}
+          initial={prefersReducedMotion ? undefined : 'initial'}
+          animate={prefersReducedMotion ? undefined : 'animate'}
+          whileHover={
+            prefersReducedMotion
+              ? undefined
+              : {
+                  y: -4,
+                  transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
+                }
+          }
+          className="glass order-1 relative flex h-full min-h-[420px] flex-col overflow-hidden px-8 pb-16 pt-20 text-right sm:px-12 lg:order-1 lg:px-20 will-change-transform"
         >
           <div
             className="absolute inset-x-0 -top-32 h-64 bg-gradient-to-b from-accent/50 via-transparent to-transparent"
@@ -74,34 +148,34 @@ const HeroPage = () => {
           />
           <div className="flex flex-1 flex-col items-end gap-8">
             <motion.span
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
+              variants={prefersReducedMotion ? undefined : badgeVariants}
+              initial={prefersReducedMotion ? undefined : 'initial'}
+              animate={prefersReducedMotion ? undefined : 'animate'}
               className="rounded-full border border-white/25 bg-white/20 px-4 py-1.5 text-xs font-medium text-muted-foreground shadow-inner backdrop-blur-sm dark:bg-white/10"
             >
               سایان نوبت — cyannobat
             </motion.span>
             <motion.h1
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
+              variants={prefersReducedMotion ? undefined : titleVariants}
+              initial={prefersReducedMotion ? undefined : 'initial'}
+              animate={prefersReducedMotion ? undefined : 'animate'}
               className="max-w-3xl text-balance bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-4xl font-bold leading-tight tracking-tight text-transparent sm:text-5xl lg:text-7xl"
             >
               سایان نوبت
             </motion.h1>
             <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
+              variants={prefersReducedMotion ? undefined : descriptionVariants}
+              initial={prefersReducedMotion ? undefined : 'initial'}
+              animate={prefersReducedMotion ? undefined : 'animate'}
               className="max-w-2xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg"
             >
               رزرو نوبت سریع، ساده و شفاف؛ تجربه‌ای الهام‌گرفته از دقت و ظرافت
               طراحی اپل برای مدیریت درمان شما.
             </motion.p>
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, ...liquidSpring }}
+              variants={prefersReducedMotion ? undefined : buttonsVariants}
+              initial={prefersReducedMotion ? undefined : 'initial'}
+              animate={prefersReducedMotion ? undefined : 'animate'}
               className="mt-auto flex flex-row-reverse flex-wrap items-center justify-end gap-4 pt-4"
             >
               <Link href={BOOKING_PATH}>
@@ -119,17 +193,12 @@ const HeroPage = () => {
         </motion.section>
       </div>
 
+      {/* Bottom Management Section */}
       <motion.section
-        initial={{
-          opacity: prefersReducedMotion ? 1 : 0,
-          y: prefersReducedMotion ? 0 : 24,
-        }}
-        whileInView={{ opacity: 1, y: 0 }}
+        variants={prefersReducedMotion ? undefined : bottomSectionVariants}
+        initial={prefersReducedMotion ? undefined : 'initial'}
+        whileInView={prefersReducedMotion ? undefined : 'animate'}
         viewport={{ once: true, amount: 0.3 }}
-        transition={{
-          duration: prefersReducedMotion ? 0 : 0.6,
-          ease: "easeOut",
-        }}
         className="glass relative overflow-hidden px-8 py-10 text-right sm:px-12"
       >
         <div

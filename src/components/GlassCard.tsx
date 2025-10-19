@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import clsx from 'clsx';
-import { glassMorph, liquidEntrance } from '@/lib/animations';
+import { luxuryPresets } from '@/lib/luxuryAnimations';
 
 interface GlassCardProps {
   title?: string;
@@ -15,38 +15,42 @@ interface GlassCardProps {
 const GlassCard = ({ title, description, children, className }: GlassCardProps) => {
   const shouldReduceMotion = useReducedMotion();
 
+  // Simplified entrance animation only (no hover for performance)
+  const cardVariants = shouldReduceMotion ? undefined : luxuryPresets.whisper('up');
+
   return (
     <motion.article
-      initial={shouldReduceMotion ? 'initial' : 'hidden'}
-      whileInView={shouldReduceMotion ? undefined : 'visible'}
-      whileHover={shouldReduceMotion ? undefined : 'hover'}
-      whileTap={shouldReduceMotion ? undefined : 'tap'}
+      initial={shouldReduceMotion ? undefined : 'initial'}
+      whileInView={shouldReduceMotion ? undefined : 'animate'}
       viewport={{ once: true, margin: '-50px' }}
-      variants={!shouldReduceMotion ? { ...liquidEntrance, ...glassMorph } : undefined}
-      className={clsx('glass relative overflow-hidden p-6 text-right group', className)}
+      variants={cardVariants}
+      className={clsx(
+        'glass relative overflow-hidden p-6 text-right group',
+        // Instant hover lift (no transition for INP performance)
+        'hover:-translate-y-1',
+        className
+      )}
     >
       <div className="relative z-10 flex flex-col gap-3">
         {title ? (
-          <motion.h3
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1, duration: 0.4 }}
+          <h3
             className="bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-lg font-bold tracking-tight text-transparent"
+            style={{
+              animation: shouldReduceMotion ? undefined : 'fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards',
+            }}
           >
             {title}
-          </motion.h3>
+          </h3>
         ) : null}
         {description ? (
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2, duration: 0.4 }}
+          <p
             className="leading-relaxed text-sm text-muted-foreground"
+            style={{
+              animation: shouldReduceMotion ? undefined : 'fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s backwards',
+            }}
           >
             {description}
-          </motion.p>
+          </p>
         ) : null}
         {children}
       </div>

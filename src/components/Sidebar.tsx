@@ -2,13 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { motion, LayoutGroup } from 'framer-motion';
+import { useEffect, useState, useRef } from 'react';
 import clsx from 'clsx';
 import type { LucideIcon } from 'lucide-react';
 import { CalendarDays, Home, LifeBuoy, ListChecks } from 'lucide-react';
 import { BOOKING_PATH } from '@/lib/routes';
-import { liquidSpring } from '@/lib/animations';
 
 type NavigationGroup = 'main' | 'actions';
 
@@ -56,6 +54,18 @@ const navigationItems: NavigationItem[] = [
 const Sidebar = () => {
   const pathname = usePathname();
   const [activeHash, setActiveHash] = useState('');
+  const [indicatorStyle, setIndicatorStyle] = useState<{
+    mobile: { left: number; width: number };
+    desktop: { top: number; height: number };
+  }>({
+    mobile: { left: 0, width: 0 },
+    desktop: { top: 0, height: 0 },
+  });
+
+  const mobileItemRefs = useRef<(HTMLElement | null)[]>([]);
+  const desktopItemRefs = useRef<(HTMLElement | null)[]>([]);
+  const mobileNavRef = useRef<HTMLUListElement>(null);
+  const desktopNavRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -74,152 +84,194 @@ const Sidebar = () => {
     };
   }, []);
 
-  const renderItem = (item: NavigationItem) => {
+  // Update indicator position when active item changes
+  useEffect(() => {
+    const updateIndicatorPosition = () => {
+      // Find active item index
+      const activeIndex = navigationItems.findIndex(item =>
+        item.matches?.(pathname ?? '', activeHash) ?? false
+      );
+
+      if (activeIndex === -1) {
+        return;
+      }
+
+      // Update mobile indicator
+      const mobileItem = mobileItemRefs.current[activeIndex];
+      const mobileNav = mobileNavRef.current;
+      if (mobileItem && mobileNav) {
+        const navRect = mobileNav.getBoundingClientRect();
+        const itemRect = mobileItem.getBoundingClientRect();
+        setIndicatorStyle(prev => ({
+          ...prev,
+          mobile: {
+            left: itemRect.left - navRect.left,
+            width: itemRect.width,
+          },
+        }));
+      }
+
+      // Update desktop indicator (only main items)
+      const desktopMainItems = navigationItems.filter(item => item.group === 'main');
+      const desktopActiveIndex = desktopMainItems.findIndex(item =>
+        item.matches?.(pathname ?? '', activeHash) ?? false
+      );
+
+      if (desktopActiveIndex !== -1) {
+        const desktopItem = desktopItemRefs.current[desktopActiveIndex];
+        const desktopNav = desktopNavRef.current;
+        if (desktopItem && desktopNav) {
+          const navRect = desktopNav.getBoundingClientRect();
+          const itemRect = desktopItem.getBoundingClientRect();
+          setIndicatorStyle(prev => ({
+            ...prev,
+            desktop: {
+              top: itemRect.top - navRect.top,
+              height: itemRect.height,
+            },
+          }));
+        }
+      }
+    };
+
+    updateIndicatorPosition();
+
+    // Update on resize
+    window.addEventListener('resize', updateIndicatorPosition);
+    return () => window.removeEventListener('resize', updateIndicatorPosition);
+  }, [pathname, activeHash]);
+
+  const renderItem = (item: NavigationItem, index: number, isMobile: boolean) => {
     const Icon = item.icon;
     const isActive = item.matches?.(pathname ?? '', activeHash) ?? false;
     const baseClasses = clsx(
       'group flex h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-medium relative',
       'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
-      'transition-colors duration-300'
+      // Only show hover on non-active items - NO transitions for performance
+      !isActive && 'hover:bg-accent/10'
     );
 
     const content = (
-      <>
-        {/* Morphing liquid blob background for active state */}
-        {isActive && (
-          <motion.div
-            layoutId="activeNavBlob"
-            className="absolute inset-0 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/15 backdrop-blur-sm"
-            style={{
-              boxShadow: '0 4px 12px rgba(159, 221, 231, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.3)',
-            }}
-            transition={{
-              layout: {
-                type: 'spring',
-                stiffness: 300,
-                damping: 30,
-                mass: 0.8,
-              },
-            }}
-            initial={false}
-            aria-hidden
-          />
-        )}
-
-        {/* Subtle glow effect */}
-        {isActive && (
-          <motion.div
-            layoutId="activeNavGlow"
-            className="absolute -inset-1 rounded-2xl bg-accent/15 blur-lg -z-10"
-            transition={{
-              layout: {
-                type: 'spring',
-                stiffness: 280,
-                damping: 28,
-                mass: 0.9,
-              },
-            }}
-            initial={false}
-            aria-hidden
-          />
-        )}
-
-        {/* Icon and label */}
-        <motion.div
-          className="relative z-10 flex flex-col items-center justify-center gap-1"
-          animate={{
-            scale: isActive ? 1.05 : 1,
-          }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          transition={liquidSpring}
-        >
-          <Icon
-            aria-hidden
-            className={clsx(
-              'h-5 w-5 transition-colors duration-300',
-              isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
-            )}
-          />
-          <span className={clsx(
-            'text-[11px] leading-4 font-medium transition-colors duration-300',
+      <div className="relative z-10 flex flex-col items-center justify-center gap-1">
+        <Icon
+          aria-hidden
+          className={clsx(
+            'h-5 w-5',
             isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
-          )}>
-            {item.label}
-          </span>
-        </motion.div>
-      </>
+          )}
+        />
+        <span className={clsx(
+          'text-[11px] leading-4 font-medium',
+          isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
+        )}>
+          {item.label}
+        </span>
+      </div>
     );
 
-    const MotionComponent = motion(
-      item.href.startsWith('mailto:') || item.href.startsWith('tel:') ? 'a' : Link
-    );
+    const Component = item.href.startsWith('mailto:') || item.href.startsWith('tel:') ? 'a' : Link;
 
     return (
-      <MotionComponent
+      <Component
         key={item.label}
+        ref={(el) => {
+          if (isMobile) {
+            mobileItemRefs.current[index] = el;
+          } else {
+            desktopItemRefs.current[index] = el;
+          }
+        }}
         href={item.href}
         className={baseClasses}
         aria-label={item.ariaLabel ?? item.label}
         aria-current={isActive ? 'page' : undefined}
-        whileHover={!isActive ? {
-          backgroundColor: 'rgba(159, 221, 231, 0.1)',
-        } : undefined}
-        transition={{ duration: 0.2 }}
       >
         {content}
-      </MotionComponent>
+      </Component>
     );
   };
 
   const desktopMainItems = navigationItems.filter((item) => item.group === 'main');
   const desktopActionItems = navigationItems.filter((item) => item.group === 'actions');
 
+  const hasActiveItem = navigationItems.some(item => item.matches?.(pathname ?? '', activeHash) ?? false);
+  const hasActiveMainItem = desktopMainItems.some(item => item.matches?.(pathname ?? '', activeHash) ?? false);
+
   return (
-    <motion.nav
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={liquidSpring}
+    <nav
       aria-label="پیمایش اصلی و اقدامات سریع"
       className={clsx(
         "glass fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-xl items-center gap-2 rounded-3xl px-3 py-2 shadow-lg backdrop-blur",
-        "lg:inset-auto lg:right-4 lg:top-[105px] lg:h-[calc(100vh-150px)] lg:w-24 lg:max-w-none lg:flex-col lg:items-center lg:justify-between lg:gap-8 lg:px-4 lg:py-6"
+        "lg:inset-auto lg:right-4 lg:top-[105px] lg:h-[calc(100vh-150px)] lg:w-24 lg:max-w-none lg:flex-col lg:items-center lg:justify-between lg:gap-8 lg:px-4 lg:py-6",
+        "animate-fade-in-up"
       )}
     >
-      <LayoutGroup id="mobile-nav">
-        <ul className="flex w-full items-center justify-between gap-1 lg:hidden">
-          {navigationItems.map((item) => (
-            <li key={`mobile-${item.label}`} className="flex-1">
-              {renderItem(item)}
+      {/* Mobile Navigation */}
+      <ul ref={mobileNavRef} className="flex w-full items-center justify-between gap-1 lg:hidden relative">
+        {/* Morphing active indicator for mobile */}
+        {hasActiveItem && indicatorStyle.mobile.width > 0 && (
+          <div
+            className="absolute rounded-2xl bg-gradient-to-br from-accent/20 to-accent/15 backdrop-blur-sm pointer-events-none -z-10"
+            style={{
+              left: 0,
+              width: `${indicatorStyle.mobile.width}px`,
+              height: '56px', // h-14
+              top: 0,
+              transform: `translateX(${indicatorStyle.mobile.left}px)`,
+              transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+              boxShadow: '0 4px 12px rgba(159, 221, 231, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.3)',
+              willChange: 'transform',
+            }}
+            aria-hidden
+          />
+        )}
+        {navigationItems.map((item, index) => (
+          <li key={`mobile-${item.label}`} className="flex-1">
+            {renderItem(item, index, true)}
+          </li>
+        ))}
+      </ul>
+
+      {/* Desktop Navigation */}
+      <div className="hidden h-full w-full flex-col justify-between lg:flex">
+        <ul ref={desktopNavRef} className="flex flex-col items-center gap-4 relative">
+          {/* Morphing active indicator for desktop */}
+          {hasActiveMainItem && indicatorStyle.desktop.height > 0 && (
+            <div
+              className="absolute rounded-2xl bg-gradient-to-br from-accent/20 to-accent/15 backdrop-blur-sm pointer-events-none -z-10"
+              style={{
+                top: 0,
+                height: `${indicatorStyle.desktop.height}px`,
+                left: 0,
+                right: 0,
+                transform: `translateY(${indicatorStyle.desktop.top}px)`,
+                transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                boxShadow: '0 4px 12px rgba(159, 221, 231, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.3)',
+                willChange: 'transform',
+              }}
+              aria-hidden
+            />
+          )}
+          {desktopMainItems.map((item, index) => (
+            <li key={`desktop-${item.label}`} className="w-full">
+              {renderItem(item, index, false)}
             </li>
           ))}
         </ul>
-      </LayoutGroup>
-
-      <LayoutGroup id="desktop-nav">
-        <div className="hidden h-full w-full flex-col justify-between lg:flex">
-          <ul className="flex flex-col items-center gap-4">
-            {desktopMainItems.map((item) => (
-              <li key={`desktop-${item.label}`} className="w-full">
-                {renderItem(item)}
-              </li>
-            ))}
-          </ul>
-          {desktopActionItems.length > 0 && (
-            <div className="flex w-full flex-col items-center gap-4">
-              <div className="h-px w-full bg-white/20" aria-hidden />
-              <ul className="flex w-full flex-col items-center gap-4">
-                {desktopActionItems.map((item) => (
-                  <li key={`desktop-action-${item.label}`} className="w-full">
-                    {renderItem(item)}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      </LayoutGroup>
-    </motion.nav>
+        {desktopActionItems.length > 0 && (
+          <div className="flex w-full flex-col items-center gap-4">
+            <div className="h-px w-full bg-white/20" aria-hidden />
+            <ul className="flex w-full flex-col items-center gap-4">
+              {desktopActionItems.map((item, index) => (
+                <li key={`desktop-action-${item.label}`} className="w-full">
+                  {renderItem(item, desktopMainItems.length + index, false)}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </nav>
   );
 };
 

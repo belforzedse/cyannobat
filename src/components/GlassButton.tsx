@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion, type HTMLMotionProps } from 'framer-motion';
 import clsx from 'clsx';
-import { liquidSpring } from '@/lib/animations';
+import { luxuryTransitions } from '@/lib/luxuryAnimations';
 
 interface GlassButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
   /** Button content */
@@ -38,10 +38,11 @@ const GlassButton = ({
 
   return (
     <motion.button
-      whileHover={shouldReduceMotion ? undefined : { scale: 1.05, y: -2 }}
-      whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
-      transition={liquidSpring}
+      whileHover={shouldReduceMotion ? undefined : { scale: 1.05, y: -3 }}
+      whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
+      transition={shouldReduceMotion ? undefined : luxuryTransitions.marble}
       className={clsx(
+        'will-change-transform',
         'relative inline-flex items-center justify-center rounded-full font-semibold',
         'border backdrop-blur-md',
         'transition-all duration-300 ease-out',
