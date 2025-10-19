@@ -1,91 +1,96 @@
-import { NextResponse } from "next/server";
-import { getPayload } from "payload";
-import configPromise from "@payload-config";
-import { userIsStaff } from "@/lib/auth";
+import { NextResponse } from 'next/server'
+import { getPayload, type PayloadRequest } from 'payload'
 
-// define the shape we actually use from payload.login(...)
-type StaffLoginResult<User> = {
-  user: User;
-  token: string;
-  exp?: number; // access token exp (seconds)
-  refreshToken?: string;
-  refreshTokenExpiration?: number; // seconds (epoch) or ms (handle below)
-};
+import configPromise from '@payload-config'
+import { userIsStaff } from '@/lib/auth'
 
-export const dynamic = "force-dynamic";
+type StaffLoginUser = {
+  id: string
+  email: string
+  roles?: string[]
+}
+
+type StaffLoginResult = {
+  user: StaffLoginUser | null
+  token?: string
+  exp?: number
+  refreshToken?: string
+  refreshTokenExpiration?: number
+}
+
+export const dynamic = 'force-dynamic'
 
 export const POST = async (request: Request) => {
-  const payload = await getPayload({ config: configPromise });
+  const payload = await getPayload({ config: configPromise })
 
-  let body: unknown;
+  let body: unknown
   try {
-    body = await request.json();
+    body = await request.json()
   } catch {
-    return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
+    return NextResponse.json({ message: 'Invalid JSON body' }, { status: 400 })
   }
 
   if (
     !body ||
-    typeof body !== "object" ||
-    typeof (body as { email?: unknown }).email !== "string" ||
-    typeof (body as { password?: unknown }).password !== "string"
+    typeof body !== 'object' ||
+    typeof (body as { email?: unknown }).email !== 'string' ||
+    typeof (body as { password?: unknown }).password !== 'string'
   ) {
-    return NextResponse.json({ message: "Email and password are required" }, { status: 400 });
+    return NextResponse.json({ message: 'Email and password are required' }, { status: 400 })
   }
 
-  const { email, password } = body as { email: string; password: string };
+  const { email, password } = body as { email: string; password: string }
 
   try {
-    // tell TS what payload.login returns (narrow to the fields we use)
     const auth = (await payload.login({
-      collection: "users",
+      collection: 'users',
       data: { email, password },
-    })) as StaffLoginResult<{ id: string; email: string; roles?: string[] }>;
+    })) as StaffLoginResult
 
-    if (!auth.user || !userIsStaff(auth.user)) {
-      return NextResponse.json({ message: "حساب کاربری مجاز نیست." }, { status: 403 });
+    const payloadUser = auth.user as PayloadRequest['user']
+
+    if (!payloadUser || !userIsStaff(payloadUser)) {
+      return NextResponse.json({ message: 'حساب کاربری مجاز نیست.' }, { status: 403 })
     }
 
-    const roles = Array.isArray(auth.user.roles) ? auth.user.roles : [];
+    const rawRoles = (payloadUser as { roles?: unknown }).roles
+    const roles = Array.isArray(rawRoles) ? (rawRoles as string[]) : []
 
-    const res = NextResponse.json({
-      user: { id: auth.user.id, email: auth.user.email, roles },
-    });
+    const response = NextResponse.json({
+      user: { id: String(payloadUser.id), email: payloadUser.email ?? '', roles },
+    })
 
-    // --- access token cookie (value must be a string) ---
     if (auth.token) {
-      res.cookies.set("payload-token", auth.token, {
-        path: "/",
+      response.cookies.set('payload-token', auth.token, {
+        path: '/',
         httpOnly: true,
-        sameSite: "lax",
+        sameSite: 'lax',
         secure: true,
         ...(auth.exp ? { expires: new Date(auth.exp * 1000) } : {}),
-      });
+      })
     }
 
-    // --- refresh token cookie only if present (avoid string|undefined) ---
     if (auth.refreshToken) {
-      const rtExp = auth.refreshTokenExpiration;
-      res.cookies.set("payload-refresh-token", auth.refreshToken, {
-        path: "/",
+      const rtExp = auth.refreshTokenExpiration ?? undefined
+      response.cookies.set('payload-refresh-token', auth.refreshToken, {
+        path: '/',
         httpOnly: true,
-        sameSite: "lax",
+        sameSite: 'lax',
         secure: true,
         ...(rtExp
           ? {
-              // handle seconds vs ms
-              expires: new Date(rtExp > 1e12 ? rtExp : rtExp * 1000),
+              expires: new Date(rtExp > 1_000_000_000_000 ? rtExp : rtExp * 1000),
             }
           : {}),
-      });
+      })
     }
 
-    return res;
+    return response
   } catch (error) {
-    payload.logger.warn?.("Failed staff login attempt", error);
+    payload.logger.warn?.('Failed staff login attempt', error)
     return NextResponse.json(
-      { message: "ورود ناموفق بود. ایمیل یا رمز عبور را بررسی کنید." },
-      { status: 401 }
-    );
+      { message: 'ورود ناموفق بود. ایمیل یا رمز عبور را بررسی کنید.' },
+      { status: 401 },
+    )
   }
-};
+}

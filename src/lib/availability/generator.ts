@@ -379,10 +379,18 @@ export const generateAvailability = async (
               continue
             }
 
+            const startISO = slotStart.toISO()
+            const endISO = slotEnd.toISO()
+
+            if (!startISO || !endISO) {
+              cursor += duration
+              continue
+            }
+
             try {
               const hold = await bookingHold.get({
                 serviceId: String(service.id),
-                slot: slotStart.toISO(),
+                slot: startISO,
               })
               if (hold && hold.ttlSeconds > 0) {
                 cursor += duration
@@ -390,14 +398,6 @@ export const generateAvailability = async (
               }
             } catch {
               // Ignore hold lookup errors; slot will still be offered
-            }
-
-            const startISO = slotStart.toISO()
-            const endISO = slotEnd.toISO()
-
-            if (!startISO || !endISO) {
-              cursor += duration
-              continue
             }
 
             const slot: AvailabilitySlot = {
