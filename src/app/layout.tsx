@@ -1,7 +1,14 @@
 import type { ReactNode } from 'react';
+import '@styles/globals.css';
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
-  return children as React.ReactElement;
+  return (
+    <html lang='fa' dir='rtl' suppressHydrationWarning>
+      <body className='relative min-h-screen overflow-x-hidden bg-background text-foreground'>
+        {children}
+      </body>
+    </html>
+  );
 };
 
 export default RootLayout;
