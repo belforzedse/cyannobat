@@ -18,7 +18,15 @@ import { Users } from './collections/Users'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const connectionString = process.env.DATABASE_URI || ''
+const rawConnectionString = process.env.DATABASE_URI
+
+if (!rawConnectionString || rawConnectionString.trim() === '') {
+  throw new Error(
+    'DATABASE_URI environment variable is required to initialize the Payload Postgres adapter.',
+  )
+}
+
+const connectionString = rawConnectionString
 const projectRoot = process.cwd()
 const migrationsDir = path.resolve(
   projectRoot,
