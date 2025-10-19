@@ -127,10 +127,18 @@ export const POST = async (request: Request): Promise<Response> => {
   const { service, errors: serviceErrors } = await ensureServiceIsBookable(payload, serviceId)
 
   if (!service) {
+    const reasons = serviceErrors.length > 0 ? serviceErrors : ['SERVICE_NOT_FOUND']
+    payload.logger.warn?.('Booking hold rejected due to service issue', {
+      reason: reasons[0],
+      serviceId,
+      slot: normalizedSlot,
+      userId: customerId ?? 'unknown',
+    })
+
     return Response.json(
       {
         message: 'Unable to create booking hold',
-        reasons: serviceErrors.length > 0 ? serviceErrors : ['SERVICE_NOT_FOUND'],
+        reasons,
       },
       { status: 404 },
     )
@@ -138,6 +146,13 @@ export const POST = async (request: Request): Promise<Response> => {
 
   const now = new Date()
   if (slotDate.getTime() < now.getTime()) {
+    payload.logger.warn?.('Booking hold conflict detected', {
+      reason: 'PAST_SLOT',
+      serviceId,
+      slot: normalizedSlot,
+      userId: customerId ?? 'unknown',
+    })
+
     return Response.json(
       {
         message: 'Unable to create booking hold',
@@ -151,6 +166,13 @@ export const POST = async (request: Request): Promise<Response> => {
   if (leadTimeHours && leadTimeHours > 0) {
     const minStart = new Date(now.getTime() + leadTimeHours * 60 * 60 * 1000)
     if (slotDate.getTime() < minStart.getTime()) {
+      payload.logger.warn?.('Booking hold conflict detected', {
+        reason: 'LEAD_TIME_NOT_MET',
+        serviceId,
+        slot: normalizedSlot,
+        userId: customerId ?? 'unknown',
+      })
+
       return Response.json(
         {
           message: 'Unable to create booking hold',
@@ -162,6 +184,13 @@ export const POST = async (request: Request): Promise<Response> => {
   }
 
   if (!assertProviderBelongsToService(service, providerId)) {
+    payload.logger.warn?.('Booking hold conflict detected', {
+      reason: 'PROVIDER_NOT_AVAILABLE_FOR_SERVICE',
+      serviceId,
+      slot: normalizedSlot,
+      userId: customerId ?? 'unknown',
+    })
+
     return Response.json(
       {
         message: 'Unable to create booking hold',
@@ -177,6 +206,13 @@ export const POST = async (request: Request): Promise<Response> => {
     )
 
     if (Array.isArray(existingAppointment?.rows) && existingAppointment.rows.length > 0) {
+      payload.logger.warn?.('Booking hold conflict detected', {
+        reason: 'ALREADY_BOOKED',
+        serviceId,
+        slot: normalizedSlot,
+        userId: customerId ?? 'unknown',
+      })
+
       return Response.json(
         {
           message: 'Unable to create booking hold',
@@ -198,6 +234,13 @@ export const POST = async (request: Request): Promise<Response> => {
   try {
     const existingHold = await bookingHold.get({ serviceId, slot: normalizedSlot })
     if (existingHold && existingHold.ttlSeconds > 0) {
+      payload.logger.info?.('Booking hold request matched existing hold', {
+        reason: 'ALREADY_ON_HOLD',
+        serviceId,
+        slot: normalizedSlot,
+        userId: customerId ?? 'unknown',
+      })
+
       return Response.json(
         {
           message: 'Unable to create booking hold',

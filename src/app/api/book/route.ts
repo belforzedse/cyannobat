@@ -132,10 +132,18 @@ export const POST = async (request: Request): Promise<Response> => {
   const { service, errors: serviceErrors } = await ensureServiceIsBookable(payload, serviceId)
 
   if (!service) {
+    const reasons = serviceErrors.length > 0 ? serviceErrors : ['SERVICE_NOT_FOUND']
+    payload.logger.warn?.('Booking confirmation rejected due to service issue', {
+      reason: reasons[0],
+      serviceId,
+      slot: normalizedSlot,
+      userId: clientId ?? 'unknown',
+    })
+
     return Response.json(
       {
         message: 'Unable to confirm booking',
-        reasons: serviceErrors.length > 0 ? serviceErrors : ['SERVICE_NOT_FOUND'],
+        reasons,
       },
       { status: 404 },
     )
@@ -144,6 +152,13 @@ export const POST = async (request: Request): Promise<Response> => {
   const resolvedProviderId = extractProviderIdFromService(service, providerId)
 
   if (!resolvedProviderId) {
+    payload.logger.warn?.('Booking confirmation conflict detected', {
+      reason: 'PROVIDER_REQUIRED',
+      serviceId,
+      slot: normalizedSlot,
+      userId: clientId ?? 'unknown',
+    })
+
     return Response.json(
       {
         message: 'Unable to confirm booking',
@@ -159,6 +174,13 @@ export const POST = async (request: Request): Promise<Response> => {
     )
 
     if (Array.isArray(existingAppointment?.rows) && existingAppointment.rows.length > 0) {
+      payload.logger.warn?.('Booking confirmation conflict detected', {
+        reason: 'ALREADY_BOOKED',
+        serviceId,
+        slot: normalizedSlot,
+        userId: clientId ?? 'unknown',
+      })
+
       return Response.json(
         {
           message: 'Unable to confirm booking',
@@ -191,6 +213,13 @@ export const POST = async (request: Request): Promise<Response> => {
   }
 
   if (!hold || hold.ttlSeconds <= 0) {
+    payload.logger.warn?.('Booking confirmation conflict detected', {
+      reason: 'HOLD_NOT_FOUND',
+      serviceId,
+      slot: normalizedSlot,
+      userId: clientId ?? 'unknown',
+    })
+
     return Response.json(
       {
         message: 'Unable to confirm booking',
@@ -201,6 +230,13 @@ export const POST = async (request: Request): Promise<Response> => {
   }
 
   if (hold.customerId && hold.customerId !== clientId) {
+    payload.logger.info?.('Booking confirmation conflict detected', {
+      reason: 'HOLD_RESERVED_FOR_DIFFERENT_CUSTOMER',
+      serviceId,
+      slot: normalizedSlot,
+      userId: clientId ?? 'unknown',
+    })
+
     return Response.json(
       {
         message: 'Unable to confirm booking',
@@ -211,6 +247,13 @@ export const POST = async (request: Request): Promise<Response> => {
   }
 
   if (hold.providerId && hold.providerId !== resolvedProviderId) {
+    payload.logger.info?.('Booking confirmation conflict detected', {
+      reason: 'HOLD_RESERVED_FOR_DIFFERENT_PROVIDER',
+      serviceId,
+      slot: normalizedSlot,
+      userId: clientId ?? 'unknown',
+    })
+
     return Response.json(
       {
         message: 'Unable to confirm booking',
