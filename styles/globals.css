@@ -256,6 +256,63 @@ body {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
   }
 
+  .glass-fallback {
+    position: relative;
+  }
+
+  @supports not ((-webkit-backdrop-filter: blur(0)) or (backdrop-filter: blur(0))) {
+    .glass.glass-fallback,
+    .glass-fallback .glass {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(201, 205, 209, 0.85);
+      box-shadow:
+        0 14px 36px rgba(31, 38, 135, 0.16),
+        0 4px 12px rgba(31, 38, 135, 0.08);
+    }
+
+    [data-theme='dark'] .glass.glass-fallback,
+    [data-theme='dark'] .glass-fallback .glass {
+      background: rgba(25, 30, 40, 0.9);
+      border: 1px solid rgba(159, 221, 231, 0.35);
+      box-shadow:
+        0 18px 48px rgba(15, 20, 35, 0.55),
+        0 6px 20px rgba(15, 20, 35, 0.45);
+    }
+
+    .glass.glass-fallback::before,
+    .glass.glass-fallback::after,
+    .glass-fallback .glass::before,
+    .glass-fallback .glass::after {
+      display: none;
+    }
+
+    .glass.glass-fallback:hover,
+    .glass-fallback .glass:hover {
+      box-shadow:
+        0 16px 40px rgba(31, 38, 135, 0.2),
+        0 6px 16px rgba(31, 38, 135, 0.12);
+    }
+
+    [data-theme='dark'] .glass.glass-fallback:hover,
+    [data-theme='dark'] .glass-fallback .glass:hover {
+      box-shadow:
+        0 20px 52px rgba(15, 20, 35, 0.65),
+        0 8px 24px rgba(15, 20, 35, 0.5);
+    }
+
+    .glass-fallback .glass-pill {
+      background: rgba(255, 255, 255, 0.9);
+      border-color: rgba(201, 205, 209, 0.75);
+      box-shadow: 0 10px 24px rgba(31, 38, 135, 0.15);
+    }
+
+    [data-theme='dark'] .glass-fallback .glass-pill {
+      background: rgba(25, 30, 40, 0.85);
+      border-color: rgba(159, 221, 231, 0.3);
+      box-shadow: 0 12px 28px rgba(15, 20, 35, 0.45);
+    }
+  }
+
   @media (max-width: 1024px) {
     .glass,
     .glass-pill {

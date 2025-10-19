@@ -12,7 +12,7 @@ export const metadata = {
 const SiteLayout = ({ children }: { children: ReactNode }) => {
   return (
     <ThemeProvider>
-      <div className='relative flex min-h-screen w-full'>
+      <div className='relative flex min-h-screen w-full glass-fallback'>
         <Logo />
         <Sidebar />
         <div className='flex min-h-screen flex-1 flex-col'>
