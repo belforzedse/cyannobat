@@ -1,19 +1,11 @@
 import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
-import type { PayloadRequest } from 'payload'
+import { userIsAdmin, userIsStaff } from '@/lib/auth'
 
 const normalizeSlug = (input: string): string =>
   input
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)+/g, '')
-
-type UserWithRoles = PayloadRequest['user'] & { roles?: unknown }
-
-const isAdmin = (user: PayloadRequest['user']): boolean => {
-  const potentialRoles = (user as UserWithRoles | null | undefined)?.roles
-  if (!Array.isArray(potentialRoles)) return false
-  return potentialRoles.some((role): role is string => typeof role === 'string' && role === 'admin')
-}
 
 const providerSlugHook: CollectionBeforeValidateHook = async ({ data }) => {
   if (!data) return data
@@ -41,10 +33,10 @@ export const Providers: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: ({ req }) => Boolean(req.user),
+    create: ({ req }) => Boolean(req.user) && userIsStaff(req.user),
     update: async ({ req }) => {
       if (!req.user) return false
-      if (isAdmin(req.user)) return true
+      if (userIsStaff(req.user)) return true
 
       return {
         account: {
@@ -54,7 +46,7 @@ export const Providers: CollectionConfig = {
     },
     delete: ({ req }) => {
       if (!req.user) return false
-      return isAdmin(req.user)
+      return userIsAdmin(req.user)
     },
   },
   fields: [

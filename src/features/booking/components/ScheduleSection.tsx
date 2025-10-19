@@ -18,6 +18,26 @@ type ScheduleSectionProps = {
   onRetry?: () => void
 }
 
+const formatSelectedSummary = (day: AvailabilityDay | null, slot: AvailabilitySlot | null): string | null => {
+  if (!day || !slot) return null
+
+  try {
+    const dateLabel = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'full' }).format(new Date(`${day.date}T12:00:00Z`))
+    const formatter = new Intl.DateTimeFormat('fa-IR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: slot.timeZone ?? 'UTC',
+    })
+    const startLabel = formatter.format(new Date(slot.start))
+    const endLabel = formatter.format(new Date(slot.end))
+
+    return `${dateLabel} · ${startLabel} تا ${endLabel} — ${slot.providerName}`
+  } catch {
+    return `${day.date} · ${slot.start} تا ${slot.end} — ${slot.providerName}`
+  }
+}
+
 const ScheduleSection = ({
   availability,
   selectedDay,
@@ -28,42 +48,58 @@ const ScheduleSection = ({
   isLoading,
   errorMessage,
   onRetry,
-}: ScheduleSectionProps) => (
-  <div className={cardClasses}>
-    <div className="flex flex-col items-end gap-1 sm:gap-2 text-right">
-      <h3 className="text-sm font-semibold text-foreground">انتخاب زمان ملاقات</h3>
-      <p className="text-xs leading-6 text-muted-foreground">
-        از میان زمان‌های خالی زیر نوبت مناسب را انتخاب کنید. زمان‌ها بر اساس پزشکان و خدمات فعال مرتب شده‌اند.
-      </p>
+}: ScheduleSectionProps) => {
+  const activeDay =
+    (selectedDay ? availability.find((day) => day.date === selectedDay) : null) ??
+    availability.find((day) => day.slots.some((slot) => slot.id === selectedSlotId)) ??
+    null
+  const activeSlot = activeDay?.slots.find((slot) => slot.id === selectedSlotId) ?? null
+  const selectionSummary = formatSelectedSummary(activeDay, activeSlot)
+
+  return (
+    <div className={cardClasses}>
+      <div className="flex flex-col items-end gap-1 sm:gap-2 text-right">
+        <h3 className="text-sm font-semibold text-foreground">انتخاب تاریخ و ساعت ملاقات</h3>
+        <p className="text-xs leading-6 text-muted-foreground">
+          ابتدا روز مناسب را انتخاب کنید و سپس از میان زمان‌های خالی آن روز، ساعت دقیق نوبت را مشخص کنید. ساعت‌ها برای هر
+          پزشک و خدمت مرتب شده‌اند.
+        </p>
+        {selectionSummary ? (
+          <span className="rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-[11px] font-semibold text-accent">
+            {selectionSummary}
+          </span>
+        ) : null}
+      </div>
+      <div className="mt-4 sm:mt-5 lg:mt-6">
+        {errorMessage ? (
+          <div className="flex flex-col items-end gap-3 rounded-2xl border border-dashed border-red-300/50 bg-white/40 p-6 text-right text-sm text-red-500 dark:border-red-300/30 dark:bg-white/10">
+            <p>{errorMessage}</p>
+            {onRetry ? (
+              <button
+                type="button"
+                onClick={onRetry}
+                className="rounded-full border border-red-400/60 px-4 py-2 text-xs font-semibold text-red-600 transition-colors duration-200 hover:bg-red-50 dark:border-red-300/40 dark:text-red-200 dark:hover:bg-red-500/10"
+              >
+                تلاش دوباره
+              </button>
+            ) : null}
+          </div>
+        ) : (
+          <SchedulePicker
+            availability={availability}
+            selectedDay={selectedDay}
+            selectedSlotId={selectedSlotId}
+            onSelectDay={onSelectDay}
+            onSelectSlot={onSelectSlot}
+            placeholderMessage={placeholderMessage}
+            emptyMessage="برای این روز زمانی ثبت نشده است. لطفاً روز دیگری را امتحان کنید یا با پذیرش تماس بگیرید."
+            isLoading={isLoading}
+          />
+        )}
+      </div>
     </div>
-    <div className="mt-4 sm:mt-5 lg:mt-6">
-      {errorMessage ? (
-        <div className="flex flex-col items-end gap-3 rounded-2xl border border-dashed border-red-300/50 bg-white/40 p-6 text-right text-sm text-red-500 dark:border-red-300/30 dark:bg-white/10">
-          <p>{errorMessage}</p>
-          {onRetry ? (
-            <button
-              type="button"
-              onClick={onRetry}
-              className="rounded-full border border-red-400/60 px-4 py-2 text-xs font-semibold text-red-600 transition-colors duration-200 hover:bg-red-50 dark:border-red-300/40 dark:text-red-200 dark:hover:bg-red-500/10"
-            >
-              تلاش دوباره
-            </button>
-          ) : null}
-        </div>
-      ) : (
-        <SchedulePicker
-          availability={availability}
-          selectedDay={selectedDay}
-          selectedSlotId={selectedSlotId}
-          onSelectDay={onSelectDay}
-          onSelectSlot={onSelectSlot}
-          placeholderMessage={placeholderMessage}
-          emptyMessage="در حال حاضر زمانی برای این روز در دسترس نیست. لطفاً روز دیگری را امتحان کنید."
-          isLoading={isLoading}
-        />
-      )}
-    </div>
-  </div>
-)
+  )
+}
 
 export default ScheduleSection
+

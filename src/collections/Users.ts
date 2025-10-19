@@ -26,13 +26,25 @@ export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
     useAsTitle: 'email',
+    defaultColumns: ['email', 'roles'],
   },
   auth: true,
   access: {
     create: isFirstUserCreation,
   },
   fields: [
-    // Email added by default
-    // Add more fields as needed
+    {
+      name: 'roles',
+      type: 'select',
+      hasMany: true,
+      required: true,
+      defaultValue: ['patient'],
+      options: [
+        { label: 'Patient', value: 'patient' },
+        { label: 'Doctor', value: 'doctor' },
+        { label: 'Receptionist', value: 'receptionist' },
+        { label: 'Admin', value: 'admin' },
+      ],
+    },
   ],
 }

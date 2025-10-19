@@ -41,3 +41,12 @@
 - `/api/availability/calendar` now builds real slots from Payload data (services, providers, appointments). The generator lives in `src/lib/availability/generator.ts`; update there when adding new scheduling rules.
 - Frontend hooks (`useBookingState`) consume that endpoint client-side, so seed Providers/Services in Payload before testing booking flows or the UI will show the empty-state placeholder.
 
+## Roles & Seeding
+- User accounts carry a `roles` multi-select (`patient`, `doctor`, `receptionist`, `admin`). Staff checks live in `src/lib/auth.ts`; use `userIsStaff` for doctor/receptionist/admin gates.
+- Seed baseline accounts with `pnpm seed:staff` (honours `PAYLOAD_SECRET`, updates existing emails instead of duplicating). Credentials land at `patient|doctor|reception@example.com` with simple demo passwords—rotate them before shipping.
+
+## Staff Dashboard
+- Frontend dashboard lives at `/staff` (redirects to `/staff/login` when no valid staff session). Login endpoint (`/api/staff/login`) currently accepts email/password for dev accounts; swap it for SMS auth later.
+- Dashboard pulls data via server-side Payload lookups and client refreshes hitting `/api/staff/appointments` and `/api/staff/providers`; all routes enforce `userIsStaff` with helpers in `src/lib/api/auth.ts`.
+- Appointment status updates use `PATCH /api/staff/appointments/:id`, which runs with `overrideAccess: true` once staff auth is confirmed—extend this endpoint for future rescheduling or notes.
+

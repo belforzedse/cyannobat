@@ -1,49 +1,11 @@
 import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
-import type { PayloadRequest } from 'payload'
+import { userIsStaff } from '@/lib/auth'
 
 const normalizeSlug = (input: string): string =>
   input
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)+/g, '')
-
-type UserWithRoles = PayloadRequest['user'] & { roles?: unknown }
-
-const isAdmin = (user: PayloadRequest['user']): boolean => {
-  const potentialRoles = (user as UserWithRoles | null | undefined)?.roles
-  if (!Array.isArray(potentialRoles)) return false
-  return potentialRoles.some((role): role is string => typeof role === 'string' && role === 'admin')
-}
-
-const getProviderIdsForUser = async (req: PayloadRequest): Promise<string[]> => {
-  if (!req.user) return []
-
-  const result = await req.payload.find({
-    collection: 'providers',
-    where: {
-      account: {
-        equals: req.user.id,
-      },
-    },
-    depth: 0,
-    limit: 25,
-  })
-
-  const ids = result.docs
-    .map((doc) => {
-      if (doc && typeof doc === 'object') {
-        const candidate = (doc as { id?: unknown }).id
-        if (typeof candidate === 'string' || typeof candidate === 'number') {
-          return String(candidate)
-        }
-      }
-
-      return null
-    })
-    .filter((value): value is string => typeof value === 'string')
-
-  return ids
-}
 
 const servicesSlugHook: CollectionBeforeValidateHook = async ({ data }) => {
   if (!data) return data
@@ -73,36 +35,15 @@ export const Services: CollectionConfig = {
     read: () => true,
     create: async ({ req }) => {
       if (!req.user) return false
-      if (isAdmin(req.user)) return true
-
-      const providerIds = await getProviderIdsForUser(req)
-      return providerIds.length > 0
+      return userIsStaff(req.user)
     },
     update: async ({ req }) => {
       if (!req.user) return false
-      if (isAdmin(req.user)) return true
-
-      const providerIds = await getProviderIdsForUser(req)
-      if (providerIds.length === 0) return false
-
-      return {
-        providers: {
-          in: providerIds,
-        },
-      }
+      return userIsStaff(req.user)
     },
     delete: async ({ req }) => {
       if (!req.user) return false
-      if (isAdmin(req.user)) return true
-
-      const providerIds = await getProviderIdsForUser(req)
-      if (providerIds.length === 0) return false
-
-      return {
-        providers: {
-          in: providerIds,
-        },
-      }
+      return userIsStaff(req.user)
     },
   },
   fields: [

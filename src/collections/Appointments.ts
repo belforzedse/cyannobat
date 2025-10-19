@@ -1,6 +1,7 @@
 import type { CollectionAfterChangeHook, CollectionBeforeValidateHook, CollectionConfig, Where } from 'payload'
 import type { PayloadRequest } from 'payload'
 
+import { userIsStaff } from '@/lib/auth'
 import type { Service as ServiceDoc } from '../payload-types'
 import { bookingHold } from '../lib/redis'
 
@@ -8,14 +9,6 @@ const generateReference = (): string => {
   const timestamp = Date.now().toString(36).toUpperCase()
   const random = Math.random().toString(36).slice(2, 8).toUpperCase()
   return `APT-${timestamp}-${random}`
-}
-
-type UserWithRoles = PayloadRequest['user'] & { roles?: unknown }
-
-const isAdmin = (user: PayloadRequest['user']): boolean => {
-  const potentialRoles = (user as UserWithRoles | null | undefined)?.roles
-  if (!Array.isArray(potentialRoles)) return false
-  return potentialRoles.some((role): role is string => typeof role === 'string' && role === 'admin')
 }
 
 const getProviderIdsForUser = async (req: PayloadRequest): Promise<string[]> => {
@@ -217,7 +210,7 @@ export const Appointments: CollectionConfig = {
   access: {
     read: async ({ req }) => {
       if (!req.user) return false
-      if (isAdmin(req.user)) return true
+      if (userIsStaff(req.user)) return true
 
       const providerIds = await getProviderIdsForUser(req)
       const orConstraints: Where[] = [
@@ -241,7 +234,7 @@ export const Appointments: CollectionConfig = {
     create: ({ req }) => Boolean(req.user),
     update: async ({ req }) => {
       if (!req.user) return false
-      if (isAdmin(req.user)) return true
+      if (userIsStaff(req.user)) return true
 
       const providerIds = await getProviderIdsForUser(req)
       const constraints: Where[] = [
@@ -264,7 +257,7 @@ export const Appointments: CollectionConfig = {
     },
     delete: async ({ req }) => {
       if (!req.user) return false
-      if (isAdmin(req.user)) return true
+      if (userIsStaff(req.user)) return true
 
       const providerIds = await getProviderIdsForUser(req)
       const constraints: Where[] = [
