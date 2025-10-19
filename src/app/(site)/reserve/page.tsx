@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -13,6 +13,10 @@ import BookingSummary from '@/features/booking/components/BookingSummary'
 import ServiceSection from '@/features/booking/components/ServiceSection'
 import { reasonOptions } from '@/features/booking/constants'
 import { useBookingState } from '@/features/booking/hooks/useBookingState'
+import {
+  GlobalLoadingOverlayProvider,
+  useGlobalLoadingOverlay,
+} from '@/components/GlobalLoadingOverlayProvider'
 
 const HOLD_TTL_SECONDS = 5 * 60
 
@@ -30,7 +34,7 @@ const reasonMessages: Record<string, string> = {
   SERVICE_NOT_FOUND: 'خدمت انتخابی یافت نشد.',
 }
 
-const BookingPage = () => {
+const BookingPageContent = () => {
   const prefersReducedMotion = useReducedMotion()
   const router = useRouter()
   const {
@@ -66,11 +70,19 @@ const BookingPage = () => {
     reasonSummary,
     schedulePlaceholderMessage,
   } = useBookingState()
+  const { setActivity } = useGlobalLoadingOverlay()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [bookingReference, setBookingReference] = useState<string | null>(null)
+
+  useEffect(() => {
+    setActivity('booking-availability', availabilityLoading, 'در حال بررسی زمان‌های خالی...')
+    return () => {
+      setActivity('booking-availability', false)
+    }
+  }, [availabilityLoading, setActivity])
 
   const extractErrorMessages = useCallback((payload: unknown): string[] => {
     if (!payload || typeof payload !== 'object') return []
@@ -122,6 +134,7 @@ const BookingPage = () => {
     setBookingReference(null)
 
     try {
+      setActivity('booking-submit', true, 'در حال نهایی‌سازی نوبت...')
       const slot = selectedSchedule.slot
       const holdResponse = await fetch('/api/hold', {
         method: 'POST',
@@ -204,6 +217,7 @@ const BookingPage = () => {
       setSubmitError('ثبت نوبت با خطا مواجه شد. لطفاً دوباره تلاش کنید.')
     } finally {
       setIsSubmitting(false)
+      setActivity('booking-submit', false)
     }
   }, [
     additionalReason,
@@ -216,6 +230,7 @@ const BookingPage = () => {
     router,
     selectedReasons,
     selectedSchedule,
+    setActivity,
   ])
 
   const isActionDisabled = isContinueDisabled || isSubmitting
@@ -361,5 +376,11 @@ const BookingPage = () => {
     </motion.section>
   )
 }
+
+const BookingPage = () => (
+  <GlobalLoadingOverlayProvider>
+    <BookingPageContent />
+  </GlobalLoadingOverlayProvider>
+)
 
 export default BookingPage
