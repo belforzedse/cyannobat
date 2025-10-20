@@ -1,4 +1,4 @@
-import type { Access, CollectionConfig } from 'payload'
+import type { Access, CollectionBeforeValidateHook, CollectionConfig } from 'payload'
 
 import { extractRoles } from '@/lib/auth'
 import { canAssignRoles } from '@/lib/staff/rolePermissions'
@@ -33,15 +33,30 @@ const rolesFromData = (roles: unknown): string[] => {
 const canCreateUser: Access = async (args) => {
   const { req, data } = args
 
+  const requestedRoles = rolesFromData(data?.roles)
+  const rolesToAssign = requestedRoles.length > 0 ? requestedRoles : ['patient']
+
   if (!req.user) {
+    const onlyPatientRoles = rolesToAssign.every((role) => role === 'patient')
+    if (onlyPatientRoles) {
+      return true
+    }
+
     return isFirstUserCreation(args)
   }
 
   const creatorRoles = extractRoles(req.user)
-  const requestedRoles = rolesFromData(data?.roles)
-  const rolesToAssign = requestedRoles.length > 0 ? requestedRoles : ['patient']
 
   return canAssignRoles(creatorRoles, rolesToAssign)
+}
+
+const enforcePatientRoleForUnauthenticated: CollectionBeforeValidateHook = ({ data, req }) => {
+  if (req.user) return data
+
+  const nextData = { ...(data ?? {}) }
+  nextData.roles = ['patient']
+
+  return nextData
 }
 
 export const Users: CollectionConfig = {
@@ -49,6 +64,9 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'name', 'phone', 'roles'],
+  },
+  hooks: {
+    beforeValidate: [enforcePatientRoleForUnauthenticated],
   },
   auth: true,
   access: {
