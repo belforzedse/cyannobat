@@ -6,7 +6,8 @@ import { Button, Card, Input } from '@/components/ui'
 import { useToast } from '@/components/ui/ToastProvider'
 import { useGlobalLoadingOverlay } from '@/components/GlobalLoadingOverlayProvider'
 import type { StaffUser } from '@/features/staff/types'
-import { ASSIGNABLE_ROLES, type AssignableRole, getCreatableRolesForUser } from '@/lib/staff/rolePermissions'
+import { type AssignableRole, getCreatableRolesForUser } from '@/lib/staff/rolePermissions'
+import { isAssignableRole, roleLabels } from '@/features/staff/utils/roleLabels'
 
 type StaffUserCreationCardProps = {
   currentUser: StaffUser
@@ -17,22 +18,12 @@ type CreatedUser = {
   roles: string[]
 }
 
-const roleLabels: Record<AssignableRole, string> = {
-  patient: 'Patient',
-  doctor: 'Doctor',
-  receptionist: 'Receptionist',
-  admin: 'Admin',
-}
-
 const roleHelpText: Record<AssignableRole, string> = {
   patient: 'Basic portal access and booking management.',
   doctor: 'Clinical staff with access to provider tooling.',
   receptionist: 'Front desk staff with scheduling capabilities.',
   admin: 'Full administrative access across the workspace.',
 }
-
-const isAssignableRole = (value: string): value is AssignableRole =>
-  (ASSIGNABLE_ROLES as readonly string[]).includes(value)
 
 const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
   const creatableRoles = useMemo(() => getCreatableRolesForUser(currentUser.roles), [currentUser.roles])
