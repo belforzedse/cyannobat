@@ -17,7 +17,7 @@ const LoginForm = ({
   toggleHref,
   toggleLabel,
 }: LoginFormProps) => {
-  const [email, setEmail] = useState('')
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -33,7 +33,7 @@ const LoginForm = ({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ identifier, password }),
       })
 
       if (!response.ok) {
@@ -57,14 +57,14 @@ const LoginForm = ({
   return (
     <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4 text-right">
       <label className="flex flex-col gap-2 text-sm text-foreground">
-        ایمیل
+        ایمیل یا شماره موبایل
         <input
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          type="text"
+          value={identifier}
+          onChange={(event) => setIdentifier(event.target.value)}
           required
           className="rounded-xl border border-white/20 bg-white/50 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40 dark:border-white/10 dark:bg-white/10"
-          placeholder="you@example.com"
+          placeholder="you@example.com یا 09120000000"
         />
       </label>
 
