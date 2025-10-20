@@ -1,10 +1,11 @@
 'use client'
 
 import { useMemo } from 'react'
-import { useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import clsx from 'clsx'
 
 import type { AvailabilityDay, AvailabilitySlot } from '@/features/booking/types'
+import { luxuryContainer, luxurySlideFade } from '@/lib/luxuryAnimations'
 
 type SchedulePickerProps = {
   availability?: AvailabilityDay[]
@@ -67,6 +68,24 @@ const SchedulePicker = ({
   )
   const hasDenseSchedule = totalSlots > 24
   const reduceInteractiveMotion = Boolean(prefersReducedMotion) || hasDenseSchedule
+  const containerVariants = reduceInteractiveMotion ? undefined : luxuryContainer
+  const dayVariants = reduceInteractiveMotion
+    ? undefined
+    : luxurySlideFade('up', {
+        distance: 24,
+        duration: 0.55,
+        delayIn: 0.05,
+      })
+  const slotContainerVariants = reduceInteractiveMotion ? undefined : luxuryContainer
+  const slotVariants = reduceInteractiveMotion
+    ? undefined
+    : luxurySlideFade('up', {
+        distance: 16,
+        duration: 0.45,
+        delayIn: 0.04,
+      })
+
+  const motionStates = reduceInteractiveMotion ? {} : { initial: 'initial' as const, animate: 'animate' as const }
 
   if (isLoading) {
     return (
@@ -102,7 +121,11 @@ const SchedulePicker = ({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <motion.div
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+      variants={containerVariants}
+      {...motionStates}
+    >
       {availability.map((day) => {
         const isActiveDay = selectedDay === day.date
         const { weekday, label } = formatDayHeading(day.date)
@@ -110,7 +133,7 @@ const SchedulePicker = ({
         const dayDescription = dayLabelParts.length > 0 ? dayLabelParts.join('، ') : day.date
 
         return (
-          <div
+          <motion.div
             key={day.date}
             className={clsx(
               'glass-panel glass-panel--muted flex h-full flex-col gap-3 rounded-2xl p-4 sm:rounded-3xl',
@@ -122,6 +145,7 @@ const SchedulePicker = ({
               isActiveDay &&
                 'glass-panel--active glass-panel--accent',
             )}
+            variants={dayVariants}
           >
             <button
               type="button"
@@ -157,7 +181,11 @@ const SchedulePicker = ({
                   برای این روز زمانی در دسترس نیست.
                 </span>
               ) : (
-                <div className="grid grid-cols-2 gap-2">
+                <motion.div
+                  className="grid grid-cols-2 gap-2"
+                  variants={slotContainerVariants}
+                  {...motionStates}
+                >
                   {day.slots.map((slot) => {
                     const slotId = slot.id
                     const isSelected = isActiveDay && selectedSlotId === slotId
@@ -171,7 +199,7 @@ const SchedulePicker = ({
                     const slotAriaLabel = slotAriaLabelParts.join('، ')
 
                     return (
-                      <button
+                      <motion.button
                         type="button"
                         key={slotId}
                         className={clsx(
@@ -196,6 +224,7 @@ const SchedulePicker = ({
                         }}
                         aria-pressed={isSelected}
                         aria-label={slotAriaLabel}
+                        variants={slotVariants}
                       >
                         <span className="font-semibold">{formatSlotLabel(slot)}</span>
                         <span className="text-[10px] text-muted-foreground dark:text-muted-foreground">{slot.providerName}</span>
@@ -203,16 +232,16 @@ const SchedulePicker = ({
                         {slot.kind === 'virtual' ? (
                           <span className="text-[10px] text-accent-strong/80 dark:text-accent-foreground/90">مشاوره آنلاین</span>
                         ) : null}
-                      </button>
+                      </motion.button>
                     )
                   })}
-                </div>
+                </motion.div>
               )}
             </div>
-          </div>
+          </motion.div>
         )
       })}
-    </div>
+    </motion.div>
   )
 }
 

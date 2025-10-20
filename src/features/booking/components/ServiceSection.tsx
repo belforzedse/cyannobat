@@ -1,9 +1,11 @@
 'use client'
 
 import clsx from 'clsx'
+import { motion, useReducedMotion } from 'framer-motion'
 
 import { Card } from '@/components/ui'
 import { type ServiceOption } from '@/features/booking/types'
+import { luxuryContainer, luxuryPresets, luxurySlideFade } from '@/lib/luxuryAnimations'
 
 const listContainerClasses = 'grid gap-3 sm:grid-cols-2 lg:grid-cols-3'
 
@@ -40,8 +42,24 @@ const ServiceSection = ({
   errorMessage,
   onRetry,
 }: ServiceSectionProps) => {
+  const prefersReducedMotion = useReducedMotion()
+  const reduceMotion = Boolean(prefersReducedMotion)
+
+  const sectionVariants = reduceMotion ? undefined : luxuryPresets.silk('up')
+  const listVariants = reduceMotion ? undefined : luxuryContainer
+  const itemVariants = reduceMotion
+    ? undefined
+    : luxurySlideFade('up', {
+        distance: 24,
+        duration: 0.6,
+        delayIn: 0.08,
+      })
+
+  const motionStates = reduceMotion ? {} : { initial: 'initial' as const, animate: 'animate' as const }
+
   return (
-    <Card variant="muted" padding="lg" className="sm:rounded-3xl">
+    <motion.section variants={sectionVariants} {...motionStates}>
+      <Card variant="muted" padding="lg" className="sm:rounded-3xl">
       <div className="flex flex-col items-end gap-1 text-right sm:gap-2">
         <h3 className="text-sm font-semibold text-foreground">انتخاب خدمت درمانی</h3>
         <p className="text-xs leading-6 text-muted-foreground">
@@ -71,13 +89,17 @@ const ServiceSection = ({
             در حال حاضر خدمتی برای رزرو آنلاین فعال نشده است. لطفاً بعداً مراجعه کنید یا با پذیرش تماس بگیرید.
           </div>
         ) : (
-          <div className={listContainerClasses}>
+          <motion.div
+            className={listContainerClasses}
+            variants={listVariants}
+            {...motionStates}
+          >
             {services.map((service) => {
               const isSelected = service.id === selectedServiceId
               const durationLabel = formatDuration(service.durationMinutes)
 
               return (
-                <button
+                <motion.button
                   key={service.id}
                   type="button"
                   onClick={() => onSelectService(service.id)}
@@ -91,6 +113,7 @@ const ServiceSection = ({
                       'border-accent/70 bg-accent/20 text-accent shadow-[0_18px_42px_-30px_rgba(88,175,192,0.6)] dark:border-accent/40 dark:bg-accent/15',
                   )}
                   aria-pressed={isSelected}
+                  variants={itemVariants}
                 >
                   <span className="text-sm font-semibold">{service.title}</span>
                   {service.category ? (
@@ -99,13 +122,14 @@ const ServiceSection = ({
                   {durationLabel ? (
                     <span className="text-[11px] text-muted-foreground">مدت زمان تقریبی: {durationLabel}</span>
                   ) : null}
-                </button>
+                </motion.button>
               )
             })}
-          </div>
+          </motion.div>
         )}
       </div>
-    </Card>
+      </Card>
+    </motion.section>
   )
 }
 
