@@ -36,11 +36,12 @@ const navigationItems: NavigationItem[] = [
     matches: (pathname) => pathname.startsWith(BOOKING_PATH),
   },
   {
-    label: 'پشتیبانی',
-    href: 'mailto:support@cyannobat.com',
+    label: 'تماس با ما',
+    href: '/contact',
     icon: LifeBuoy,
     group: 'actions',
-    ariaLabel: 'ارسال ایمیل به پشتیبانی سایان نوبت',
+    ariaLabel: 'تماس با پشتیبانی سایان نوبت',
+    matches: (pathname) => pathname === '/contact',
   },
 ];
 
@@ -139,6 +140,8 @@ const SidebarAccountWidget = React.forwardRef<
   const baseClasses = clsx(
     'group flex h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-medium relative',
     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
+    // Smooth, slow transitions for hover effects
+    'transition-all duration-300 ease-out',
     !isActive && 'hover:bg-accent/10'
   );
 
@@ -153,11 +156,11 @@ const SidebarAccountWidget = React.forwardRef<
         >
           <div className="relative z-10 flex flex-col items-center justify-center gap-1">
             <UserCircle aria-hidden className={clsx(
-              'h-5 w-5',
+              'h-5 w-5 transition-colors duration-300 ease-out',
               isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
             )} />
             <span className={clsx(
-              'text-[11px] leading-4 font-medium',
+              'text-[11px] leading-4 font-medium transition-colors duration-300 ease-out',
               isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
             )}>ورود</span>
           </div>
@@ -176,11 +179,11 @@ const SidebarAccountWidget = React.forwardRef<
       >
         <div className="relative z-10 flex flex-col items-center justify-center gap-1">
           <UserCircle aria-hidden className={clsx(
-            'h-5 w-5',
+            'h-5 w-5 transition-colors duration-300 ease-out',
             isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
           )} />
           <span className={clsx(
-            'text-[11px] leading-4 font-medium',
+            'text-[11px] leading-4 font-medium transition-colors duration-300 ease-out',
             isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
           )}>
             حساب کاربری
@@ -320,7 +323,8 @@ const Sidebar = () => {
     const baseClasses = clsx(
       'group flex h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-medium relative',
       'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
-      // Only show hover on non-active items - NO transitions for performance
+      // Smooth, slow transitions for hover effects
+      'transition-all duration-300 ease-out',
       !isActive && 'hover:bg-accent/10'
     );
 
@@ -329,12 +333,12 @@ const Sidebar = () => {
         <Icon
           aria-hidden
           className={clsx(
-            'h-5 w-5',
+            'h-5 w-5 transition-colors duration-300 ease-out',
             isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
           )}
         />
         <span className={clsx(
-          'text-[11px] leading-4 font-medium',
+          'text-[11px] leading-4 font-medium transition-colors duration-300 ease-out',
           isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
         )}>
           {item.label}

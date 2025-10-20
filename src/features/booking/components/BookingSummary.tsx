@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import clsx from 'clsx'
 
+import { Card } from '@/components/ui'
 import { type CustomerInfo } from '@/features/booking/types'
 
 type BookingSummaryProps = {
@@ -30,7 +31,7 @@ const BookingSummary = ({
   serviceLabel,
   providerLabel,
 }: BookingSummaryProps) => (
-  <div className="rounded-2xl border border-white/20 bg-white/35 p-4 shadow-[0_16px_42px_-30px_rgba(31,38,135,0.25)] backdrop-blur-sm dark:border-white/10 dark:bg-black/40 sm:rounded-3xl sm:p-5 lg:p-6">
+  <Card variant="subtle" padding="lg" className="sm:rounded-3xl">
     <div className="flex flex-col items-end gap-3 text-right sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-col items-end gap-1">
         <span className="text-sm font-semibold text-foreground">خلاصه نهایی نوبت</span>
@@ -112,7 +113,7 @@ const BookingSummary = ({
         </dd>
       </div>
     </dl>
-  </div>
+  </Card>
 )
 
 export default BookingSummary

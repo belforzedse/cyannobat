@@ -1,13 +1,13 @@
 'use client'
 
 import React, { useCallback, useMemo, useState, useTransition } from 'react'
-import { useReducedMotion } from 'framer-motion'
-
-import clsx from 'clsx'
-import { RefreshCw, LogOut, Loader2 } from 'lucide-react'
+import { motion, useReducedMotion } from 'framer-motion'
+import { RefreshCw, LogOut, Loader2, Calendar, Users } from 'lucide-react'
 
 import type { StaffAppointment, StaffProvider, StaffUser } from '@/features/staff/types'
 import { useToast } from '@/components/ui/ToastProvider'
+import { Card, Button } from '@/components/ui'
+import GlassIcon from '@/components/GlassIcon'
 import {
   GlobalLoadingOverlayProvider,
   useGlobalLoadingOverlay,
@@ -49,7 +49,6 @@ const formatDateTime = (iso: string, timeZone: string) => {
 
 const StaffDashboardContent = ({ initialAppointments, initialProviders, currentUser }: StaffDashboardProps) => {
   const prefersReducedMotion = useReducedMotion()
-  const reduceMotion = Boolean(prefersReducedMotion)
   const [appointments, setAppointments] = useState<StaffAppointment[]>(initialAppointments)
   const [providers] = useState<StaffProvider[]>(initialProviders)
   const [filterStatus, setFilterStatus] = useState<string>('all')
@@ -78,43 +77,6 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
     })
   }, [appointments, filterStatus, searchTerm])
 
-  const appointmentCount = filteredAppointments.length
-  const providerCount = providers.length
-  const simplifyTableInteractions = reduceMotion || appointmentCount > 18
-  const simplifyProviderInteractions = reduceMotion || providerCount > 6
-
-  const logoutButtonInteractionClasses = reduceMotion
-    ? 'transition-none hover:opacity-95 dark:hover:opacity-90'
-    : simplifyTableInteractions
-      ? 'transition-opacity hover:opacity-90 dark:hover:opacity-90'
-      : 'transition-colors hover:border-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:border-red-400/60 dark:hover:bg-red-500/10 dark:hover:text-red-300'
-
-  const refreshButtonInteractionClasses = reduceMotion
-    ? 'transition-none hover:opacity-95'
-    : simplifyTableInteractions
-      ? 'transition-opacity hover:opacity-90'
-      : 'transition-colors hover:border-accent/60 hover:bg-accent/20'
-
-  const tableRowHoverClasses = reduceMotion
-    ? 'hover:bg-white/20 dark:hover:bg-white/10'
-    : simplifyTableInteractions
-      ? 'transition-opacity hover:bg-white/25 dark:hover:bg-white/10'
-      : 'transition-colors hover:bg-white/30 dark:hover:bg-white/5'
-
-  const statusSelectTransitionClasses = reduceMotion
-    ? 'focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30'
-    : simplifyTableInteractions
-      ? 'transition-opacity focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/35'
-      : 'transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40'
-
-  const providerCardTransitionClasses = reduceMotion
-    ? 'transition-none hover:opacity-95 dark:hover:opacity-90'
-    : simplifyProviderInteractions
-      ? 'transition-opacity hover:opacity-95 dark:hover:opacity-90'
-      : 'transition-all hover:border-accent/50 hover:bg-white/60 dark:hover:border-accent/40'
-
-  const denseInputBackground = reduceMotion ? 'bg-white/55 dark:bg-white/12' : 'bg-white/60 dark:bg-white/10'
-
   const handleRefresh = useCallback(() => {
     setActivity('staff-refresh', true, 'در حال به‌روزرسانی نوبت‌ها...')
     startRefreshTransition(async () => {
@@ -140,37 +102,40 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
     })
   }, [setActivity, showToast])
 
-  const handleStatusChange = useCallback(async (appointmentId: string, status: StaffAppointment['status']) => {
-    setUpdatingId(appointmentId)
-    setErrorMessage(null)
-    setActivity(`staff-status-${appointmentId}`, true, 'در حال ذخیره تغییر وضعیت...')
-    try {
-      const response = await fetch(`/api/staff/appointments/${appointmentId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status }),
-      })
-      if (!response.ok) {
-        throw new Error(`Failed to update appointment (${response.status})`)
+  const handleStatusChange = useCallback(
+    async (appointmentId: string, status: StaffAppointment['status']) => {
+      setUpdatingId(appointmentId)
+      setErrorMessage(null)
+      setActivity(`staff-status-${appointmentId}`, true, 'در حال ذخیره تغییر وضعیت...')
+      try {
+        const response = await fetch(`/api/staff/appointments/${appointmentId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status }),
+        })
+        if (!response.ok) {
+          throw new Error(`Failed to update appointment (${response.status})`)
+        }
+        const result = (await response.json()) as { appointment: StaffAppointment }
+        setAppointments((current) =>
+          current.map((appointment) => (appointment.id === appointmentId ? result.appointment : appointment)),
+        )
+        setFailedId(null)
+        showToast({ description: 'وضعیت نوبت با موفقیت ذخیره شد.', variant: 'success' })
+      } catch (error) {
+        console.error(error)
+        setErrorMessage('ذخیره وضعیت جدید ممکن نشد.')
+        setFailedId(appointmentId)
+        showToast({ description: 'ذخیره وضعیت جدید ممکن نشد.', variant: 'error' })
+      } finally {
+        setUpdatingId(null)
+        setActivity(`staff-status-${appointmentId}`, false)
       }
-      const result = (await response.json()) as { appointment: StaffAppointment }
-      setAppointments((current) =>
-        current.map((appointment) => (appointment.id === appointmentId ? result.appointment : appointment)),
-      )
-      setFailedId(null)
-      showToast({ description: 'وضعیت نوبت با موفقیت ذخیره شد.', variant: 'success' })
-    } catch (error) {
-      console.error(error)
-      setErrorMessage('ذخیره وضعیت جدید ممکن نشد.')
-      setFailedId(appointmentId)
-      showToast({ description: 'ذخیره وضعیت جدید ممکن نشد.', variant: 'error' })
-    } finally {
-      setUpdatingId(null)
-      setActivity(`staff-status-${appointmentId}`, false)
-    }
-  }, [setActivity, showToast])
+    },
+    [setActivity, showToast],
+  )
 
   const handleLogout = useCallback(async () => {
     await fetch('/api/staff/logout', {
@@ -180,222 +145,263 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
   }, [])
 
   return (
-    <div className="flex flex-col gap-6">
-      <header className="flex flex-col-reverse gap-3 rounded-2xl border border-white/20 bg-white/40 p-4 text-right shadow-sm dark:border-white/10 dark:bg-white/5 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-5">
-        <div>
-          <h1 className="text-xl font-semibold text-foreground">پیشخوان کارکنان</h1>
-          <p className="text-sm text-muted-foreground">مدیریت نوبت‌ها و بازه‌های زمانی از یک داشبورد اختصاصی.</p>
-        </div>
-        <div className="flex flex-col items-end gap-3 sm:flex-row sm:items-center sm:gap-4">
-          <div className="text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">{currentUser.email}</span>
-            <span className="mx-2 text-muted-foreground/70">•</span>
-            <span>{currentUser.roles.join(', ')}</span>
-          </div>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className={clsx(
-              'inline-flex items-center gap-2 rounded-full border border-white/30 px-4 py-2 text-xs font-semibold text-foreground',
-              'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500/60',
-              reduceMotion ? 'bg-white/35 dark:border-white/15 dark:bg-white/12' : 'bg-white/30 dark:border-white/15 dark:bg-white/10',
-              logoutButtonInteractionClasses,
-            )}
-          >
-            <LogOut className="h-4 w-4" />
-            خروج
-          </button>
-        </div>
-      </header>
+    <motion.div
+      initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: 'easeOut' }}
+      className="flex flex-col gap-8"
+    >
+      {/* Header Card */}
+      <div className="glass relative overflow-hidden px-8 py-12 text-right sm:px-12 lg:px-16">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full bg-accent/25 blur-[140px] sm:-left-16 dark:bg-accent/35"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-16 bottom-16 h-80 w-80 rounded-full bg-accent-strong/25 blur-[150px] dark:bg-accent-strong/35"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent opacity-70 dark:via-white/20"
+        />
 
-      <section className="rounded-2xl border border-white/20 bg-white/35 p-4 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/5 sm:p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-            <label className="text-xs font-medium text-muted-foreground">
-              وضعیت نوبت
-              <select
-                value={filterStatus}
-                onChange={(event) => setFilterStatus(event.target.value)}
-                className={clsx(
-                  'mt-1 w-full rounded-xl border border-white/30 px-3 py-2 text-sm text-foreground sm:mr-3 sm:w-40',
-                  denseInputBackground,
-                  'dark:border-white/20',
-                )}
-              >
-                <option value="all">همه وضعیت‌ها</option>
-                {statusOptions.map((status) => (
-                  <option key={status.value} value={status.value}>
-                    {status.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="text-xs font-medium text-muted-foreground">
-              جستجوی سریع
-              <input
-                type="search"
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="ایمیل بیمار، ارائه‌دهنده یا کد پیگیری"
-                className={clsx(
-                  'mt-1 w-full rounded-xl border border-white/30 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground sm:mr-3 sm:w-64',
-                  denseInputBackground,
-                  'dark:border-white/20',
-                )}
-              />
-            </label>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            className={clsx(
-              'inline-flex items-center gap-2 self-end rounded-full border border-accent/40 bg-accent/10 px-4 py-2 text-xs font-semibold text-accent',
-              'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/60',
-              refreshButtonInteractionClasses,
-              'disabled:cursor-not-allowed disabled:opacity-60',
-            )}
-          >
-            <RefreshCw className={clsx('h-4 w-4', isRefreshing && 'animate-spin')} />
-            به‌روزرسانی
-          </button>
-        </div>
-
-        {errorMessage ? (
-          <p className="mt-4 rounded-xl border border-red-400/40 bg-red-50 px-4 py-3 text-xs text-red-600 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200">
-            {errorMessage}
-          </p>
-        ) : null}
-
-        <div className="mt-4 overflow-x-auto">
-          <table className="min-w-full divide-y divide-white/20 text-sm text-right">
-            <thead className="text-xs uppercase tracking-wide text-muted-foreground">
-              <tr>
-                <th className="px-4 py-3">زمان نوبت</th>
-                <th className="px-4 py-3">بیمار</th>
-                <th className="px-4 py-3">ارائه‌دهنده</th>
-                <th className="px-4 py-3">خدمت</th>
-                <th className="px-4 py-3">کد پیگیری</th>
-                <th className="px-4 py-3">تاریخ ایجاد</th>
-                <th className="px-4 py-3">وضعیت</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/10 text-foreground">
-              {filteredAppointments.map((appointment) => (
-                <tr
-                  key={appointment.id}
-                  className={clsx(
-                    'focus-within:bg-white/20 focus-within:dark:bg-white/10',
-                    tableRowHoverClasses,
-                    failedId === appointment.id && 'bg-red-100 dark:bg-red-500/20',
-                  )}
-                >
-                  <td className="px-4 py-3 text-xs font-medium">
-                    {formatDateTime(appointment.start, appointment.timeZone)}
-                    <span className="block text-[11px] text-muted-foreground">
-                      تا {formatDateTime(appointment.end, appointment.timeZone).split('—')[1]?.trim() ?? ''}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-xs">{appointment.clientEmail}</td>
-                  <td className="px-4 py-3 text-xs">{appointment.providerName}</td>
-                  <td className="px-4 py-3 text-xs">{appointment.serviceTitle}</td>
-                  <td className="px-4 py-3 text-xs">{appointment.reference ?? '—'}</td>
-                  <td className="px-4 py-3 text-[11px] text-muted-foreground">
-                    {formatDateTime(appointment.createdAt, appointment.timeZone)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <select
-                        value={appointment.status}
-                        onChange={(event) => handleStatusChange(appointment.id, event.target.value as StaffAppointment['status'])}
-                        disabled={updatingId === appointment.id}
-                        className={clsx(
-                          'rounded-full border border-white/25 px-3 py-1 text-xs font-semibold text-foreground disabled:cursor-not-allowed disabled:opacity-70',
-                          reduceMotion ? 'bg-white/50 dark:bg-white/12' : 'bg-white/55 dark:bg-white/10',
-                          'dark:border-white/15',
-                          statusSelectTransitionClasses,
-                        )}
-                      >
-                        {statusOptions.map((status) => (
-                          <option key={status.value} value={status.value}>
-                            {status.label}
-                          </option>
-                        ))}
-                      </select>
-                      {updatingId === appointment.id ? (
-                        <Loader2
-                          data-testid={`status-spinner-${appointment.id}`}
-                          className="h-4 w-4 animate-spin text-muted-foreground"
-                          aria-hidden="true"
-                        />
-                      ) : null}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filteredAppointments.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-4 py-6 text-center text-sm text-muted-foreground">
-                    نوبتی با این شرایط یافت نشد.
-                  </td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="rounded-2xl border border-white/20 bg-white/35 p-4 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/5 sm:p-6">
-        <div className="flex flex-col items-end gap-1 text-right">
-          <h2 className="text-lg font-semibold text-foreground">بازه‌های زمانی ارائه‌دهندگان</h2>
-          <p className="text-xs text-muted-foreground">برای تعریف بازه‌های جدید یا ویرایش، به بخش مربوطه در سیستم مدیریت مراجعه کنید.</p>
-        </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {providers.map((provider) => (
-            <div
-              key={provider.id}
-              className={clsx(
-                'rounded-2xl border border-white/25 bg-white/45 p-4 text-xs text-right shadow-sm',
-                'dark:border-white/15 dark:bg-white/10',
-                providerCardTransitionClasses,
-              )}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <motion.span
+              initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: prefersReducedMotion ? 0 : 0.1, duration: prefersReducedMotion ? 0 : 0.45 }}
+              className="inline-block rounded-full border border-white/25 bg-white/20 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm dark:border-white/15 dark:bg-white/10"
             >
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-sm font-semibold text-foreground">{provider.displayName}</span>
-                <span className="text-[11px] text-muted-foreground">منطقه زمانی: {provider.timeZone}</span>
-              </div>
-              <ul className="mt-3 space-y-2">
-                {provider.availability.length > 0 ? (
-                  provider.availability.map((window, index) => (
-                    <li
-                      key={`${provider.id}-${window.day}-${index}`}
-                      className="rounded-xl border border-white/20 bg-white/40 px-3 py-2 text-[11px] text-muted-foreground dark:border-white/15 dark:bg-white/5"
-                    >
-                      <span className="font-semibold text-foreground">{window.day}</span>
-                      <span className="mx-1 text-muted-foreground/60">—</span>
-                      <span>
-                        {window.startTime} تا {window.endTime}
-                      </span>
-                    </li>
-                  ))
-                ) : (
-                  <li className="rounded-xl border border-dashed border-white/20 px-3 py-2 text-[11px] text-muted-foreground dark:border-white/15">
-                    بازه‌ای ثبت نشده است.
-                  </li>
-                )}
-              </ul>
+              پنل مدیریت
+            </motion.span>
+
+            <motion.h1
+              initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: prefersReducedMotion ? 0 : 0.2, duration: prefersReducedMotion ? 0 : 0.5 }}
+              className="mt-4 bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-4xl font-bold text-transparent sm:text-5xl"
+            >
+              پیشخوان کارکنان
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: prefersReducedMotion ? 0 : 0.3, duration: prefersReducedMotion ? 0 : 0.5 }}
+              className="mt-3 max-w-2xl text-balance leading-relaxed text-muted-foreground"
+            >
+              مدیریت نوبت‌ها و بازه‌های زمانی از یک داشبورد اختصاصی.
+            </motion.p>
+          </div>
+
+          <motion.div
+            initial={{ opacity: prefersReducedMotion ? 1 : 0, scale: prefersReducedMotion ? 1 : 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: prefersReducedMotion ? 0 : 0.4, duration: prefersReducedMotion ? 0 : 0.5 }}
+            className="flex flex-col items-end gap-3"
+          >
+            <div className="text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">{currentUser.email}</span>
+              <span className="mx-2 text-muted-foreground/70">•</span>
+              <span>{currentUser.roles.join(', ')}</span>
             </div>
-          ))}
-          {providers.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-white/20 bg-white/20 p-6 text-center text-sm text-muted-foreground dark:border-white/10">
-              هنوز پروفایل ارائه‌دهنده‌ای ثبت نشده است.
-            </div>
-          ) : null}
+            <Button variant="secondary" size="sm" onClick={handleLogout} className="gap-2">
+              <LogOut className="h-4 w-4" />
+              خروج
+            </Button>
+          </motion.div>
         </div>
-      </section>
-    </div>
+      </div>
+
+      {/* Appointments Section */}
+      <motion.div
+        initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: prefersReducedMotion ? 0 : 0.5, duration: prefersReducedMotion ? 0 : 0.5 }}
+      >
+        <Card variant="default" padding="lg">
+          <div className="flex flex-col items-end gap-1 text-right">
+            <div className="flex w-full items-center justify-between">
+              <GlassIcon icon={Calendar} size="sm" label="مدیریت نوبت‌ها" />
+              <h2 className="text-lg font-semibold text-foreground">مدیریت نوبت‌ها</h2>
+            </div>
+          </div>
+
+          {/* Filters and Actions */}
+          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-muted-foreground">وضعیت نوبت</label>
+                <select
+                  value={filterStatus}
+                  onChange={(event) => setFilterStatus(event.target.value)}
+                  className="glass-panel rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
+                >
+                  <option value="all">همه وضعیت‌ها</option>
+                  {statusOptions.map((status) => (
+                    <option key={status.value} value={status.value}>
+                      {status.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-muted-foreground">جستجوی سریع</label>
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="ایمیل، ارائه‌دهنده یا کد پیگیری"
+                  className="glass-panel w-full rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 sm:w-64"
+                />
+              </div>
+            </div>
+
+            <Button variant="secondary" size="sm" onClick={handleRefresh} disabled={isRefreshing} className="gap-2">
+              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              به‌روزرسانی
+            </Button>
+          </div>
+
+          {errorMessage && (
+            <div className="mt-4 rounded-xl border border-red-400/40 bg-red-50 px-4 py-3 text-xs text-red-600 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200">
+              {errorMessage}
+            </div>
+          )}
+
+          {/* Appointments Table */}
+          <div className="mt-6 overflow-x-auto">
+            <table className="min-w-full divide-y divide-white/10 text-right text-sm">
+              <thead className="text-xs uppercase tracking-wide text-muted-foreground">
+                <tr>
+                  <th className="px-4 py-3">زمان نوبت</th>
+                  <th className="px-4 py-3">بیمار</th>
+                  <th className="px-4 py-3">ارائه‌دهنده</th>
+                  <th className="px-4 py-3">خدمت</th>
+                  <th className="px-4 py-3">کد پیگیری</th>
+                  <th className="px-4 py-3">تاریخ ایجاد</th>
+                  <th className="px-4 py-3">وضعیت</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5 text-foreground">
+                {filteredAppointments.map((appointment) => (
+                  <tr
+                    key={appointment.id}
+                    className={`transition-colors hover:bg-white/5 focus-within:bg-white/10 ${
+                      failedId === appointment.id ? 'bg-red-100 dark:bg-red-500/20' : ''
+                    }`}
+                  >
+                    <td className="px-4 py-3 text-xs font-medium">
+                      {formatDateTime(appointment.start, appointment.timeZone)}
+                      <span className="block text-[11px] text-muted-foreground">
+                        تا {formatDateTime(appointment.end, appointment.timeZone).split('—')[1]?.trim() ?? ''}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-xs">{appointment.clientEmail}</td>
+                    <td className="px-4 py-3 text-xs">{appointment.providerName}</td>
+                    <td className="px-4 py-3 text-xs">{appointment.serviceTitle}</td>
+                    <td className="px-4 py-3 text-xs">{appointment.reference ?? '—'}</td>
+                    <td className="px-4 py-3 text-[11px] text-muted-foreground">
+                      {formatDateTime(appointment.createdAt, appointment.timeZone)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={appointment.status}
+                          onChange={(event) =>
+                            handleStatusChange(appointment.id, event.target.value as StaffAppointment['status'])
+                          }
+                          disabled={updatingId === appointment.id}
+                          className="glass-panel rounded-full px-3 py-1 text-xs font-semibold text-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none focus:ring-2 focus:ring-accent/40"
+                        >
+                          {statusOptions.map((status) => (
+                            <option key={status.value} value={status.value}>
+                              {status.label}
+                            </option>
+                          ))}
+                        </select>
+                        {updatingId === appointment.id && (
+                          <Loader2
+                            data-testid={`status-spinner-${appointment.id}`}
+                            className="h-4 w-4 animate-spin text-muted-foreground"
+                            aria-hidden="true"
+                          />
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {filteredAppointments.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="px-4 py-6 text-center text-sm text-muted-foreground">
+                      نوبتی با این شرایط یافت نشد.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </motion.div>
+
+      {/* Providers Section */}
+      <motion.div
+        initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: prefersReducedMotion ? 0 : 0.6, duration: prefersReducedMotion ? 0 : 0.5 }}
+      >
+        <Card variant="default" padding="lg">
+          <div className="flex flex-col items-end gap-1 text-right">
+            <div className="flex w-full items-center justify-between">
+              <GlassIcon icon={Users} size="sm" label="بازه‌های زمانی ارائه‌دهندگان" />
+              <h2 className="text-lg font-semibold text-foreground">بازه‌های زمانی ارائه‌دهندگان</h2>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              برای تعریف بازه‌های جدید یا ویرایش، به بخش مربوطه در سیستم مدیریت مراجعه کنید.
+            </p>
+          </div>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {providers.map((provider) => (
+              <Card key={provider.id} variant="subtle" padding="md" className="transition-transform hover:scale-[1.02]">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-semibold text-foreground">{provider.displayName}</span>
+                  <span className="text-[11px] text-muted-foreground">منطقه زمانی: {provider.timeZone}</span>
+                </div>
+                <ul className="mt-3 space-y-2">
+                  {provider.availability.length > 0 ? (
+                    provider.availability.map((window, index) => (
+                      <li
+                        key={`${provider.id}-${window.day}-${index}`}
+                        className="glass-panel rounded-xl px-3 py-2 text-[11px] text-muted-foreground"
+                      >
+                        <span className="font-semibold text-foreground">{window.day}</span>
+                        <span className="mx-1 text-muted-foreground/60">—</span>
+                        <span>
+                          {window.startTime} تا {window.endTime}
+                        </span>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="rounded-xl border border-dashed border-white/20 px-3 py-2 text-[11px] text-muted-foreground dark:border-white/15">
+                      بازه‌ای ثبت نشده است.
+                    </li>
+                  )}
+                </ul>
+              </Card>
+            ))}
+            {providers.length === 0 && (
+              <div className="col-span-full rounded-2xl border border-dashed border-white/20 bg-white/10 p-6 text-center text-sm text-muted-foreground dark:border-white/10">
+                هنوز پروفایل ارائه‌دهنده‌ای ثبت نشده است.
+              </div>
+            )}
+          </div>
+        </Card>
+      </motion.div>
+    </motion.div>
   )
 }
 

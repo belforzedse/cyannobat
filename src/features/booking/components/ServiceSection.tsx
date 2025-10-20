@@ -2,10 +2,8 @@
 
 import clsx from 'clsx'
 
+import { Card } from '@/components/ui'
 import { type ServiceOption } from '@/features/booking/types'
-
-const cardClasses =
-  'rounded-2xl sm:rounded-3xl border border-white/25 bg-white/45 p-4 sm:p-5 lg:p-6 shadow-[0_18px_40px_-28px_rgba(31,38,135,0.3)] backdrop-blur-sm dark:border-white/10 dark:bg-black/50'
 
 const listContainerClasses = 'grid gap-3 sm:grid-cols-2 lg:grid-cols-3'
 
@@ -43,7 +41,7 @@ const ServiceSection = ({
   onRetry,
 }: ServiceSectionProps) => {
   return (
-    <div className={cardClasses}>
+    <Card variant="muted" padding="lg" className="sm:rounded-3xl">
       <div className="flex flex-col items-end gap-1 text-right sm:gap-2">
         <h3 className="text-sm font-semibold text-foreground">انتخاب خدمت درمانی</h3>
         <p className="text-xs leading-6 text-muted-foreground">
@@ -60,7 +58,7 @@ const ServiceSection = ({
               <button
                 type="button"
                 onClick={onRetry}
-                className="rounded-full border border-red-400/60 px-4 py-2 text-xs font-semibold text-red-600 transition-colors duration-200 hover:bg-red-50 dark:border-red-300/40 dark:text-red-200 dark:hover:bg-red-500/10"
+                className="rounded-full border border-red-400/60 px-4 py-2 text-xs font-semibold text-red-600 transition-all duration-300 ease-out hover:bg-red-50 dark:border-red-300/40 dark:text-red-200 dark:hover:bg-red-500/10"
               >
                 تلاش دوباره
               </button>
@@ -84,7 +82,9 @@ const ServiceSection = ({
                   type="button"
                   onClick={() => onSelectService(service.id)}
                   className={clsx(
-                    'flex h-full flex-col items-end gap-2 rounded-2xl border px-4 py-3 text-right transition-all duration-200',
+                    'flex h-full flex-col items-end gap-2 rounded-2xl border px-4 py-3 text-right',
+                    // Smooth, slow transitions for all properties
+                    'transition-all duration-300 ease-out',
                     'border-white/20 bg-white/55 hover:border-accent/50 hover:bg-white/75',
                     'dark:border-white/15 dark:bg-black/45 dark:hover:border-accent/40 dark:hover:bg-black/55',
                     isSelected &&
@@ -105,7 +105,7 @@ const ServiceSection = ({
           </div>
         )}
       </div>
-    </div>
+    </Card>
   )
 }
 

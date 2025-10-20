@@ -1,9 +1,8 @@
 'use client';
 
 import clsx from 'clsx';
+import { Card, Textarea } from '@/components/ui';
 import { type ReasonOption } from '../types';
-
-import GlassSection from './GlassSection';
 
 type ReasonsSectionProps = {
   options: readonly ReasonOption[];
@@ -20,7 +19,7 @@ const ReasonsSection = ({
   additionalReason,
   onAdditionalReasonChange,
 }: ReasonsSectionProps) => (
-  <GlassSection>
+  <Card variant="default" padding="lg" className="sm:rounded-3xl">
     <div className="flex flex-col items-end gap-1 sm:gap-2 text-right">
       <h3 className="text-sm font-semibold text-foreground">دلیل مراجعه</h3>
       <p className="text-xs leading-6 text-muted-foreground">
@@ -36,7 +35,9 @@ const ReasonsSection = ({
             key={reason.value}
             onClick={() => onToggleReason(reason.value)}
             className={clsx(
-              'flex w-full flex-row-reverse items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-right shadow-sm transition-all duration-200',
+              'flex w-full flex-row-reverse items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-right shadow-sm',
+              // Smooth, slow transitions for all properties
+              'transition-all duration-300 ease-out',
               'hover:border-accent/60 hover:bg-accent/10 dark:hover:border-accent/50 dark:hover:bg-accent/10',
               isSelected
                 ? 'border-accent/70 bg-accent/20 text-foreground shadow-[0_12px_28px_-22px_rgba(88,175,192,0.75)] dark:border-accent/60'
@@ -46,7 +47,9 @@ const ReasonsSection = ({
             <span className="text-sm font-medium">{reason.label}</span>
             <span
               className={clsx(
-                'flex h-7 w-7 items-center justify-center rounded-full border text-xs font-semibold transition-colors',
+                'flex h-7 w-7 items-center justify-center rounded-full border text-xs font-semibold',
+                // Smooth, slow transitions for the checkmark circle
+                'transition-all duration-300 ease-out',
                 isSelected
                   ? 'border-accent/70 bg-accent text-slate-900'
                   : 'border-white/30 bg-white/40 text-muted-foreground dark:border-white/20 dark:bg-black/30',
@@ -59,19 +62,15 @@ const ReasonsSection = ({
         );
       })}
     </div>
-    <div className="mt-4 sm:mt-5 lg:mt-6 flex flex-col gap-2">
-      <label htmlFor="additional-reason" className="text-sm font-medium text-foreground text-right">
-        توضیحات تکمیلی
-      </label>
-      <textarea
-        id="additional-reason"
-        value={additionalReason}
-        onChange={(event) => onAdditionalReasonChange(event.target.value)}
-        className="min-h-[120px] w-full rounded-xl border border-white/20 bg-white/50 px-4 py-3 text-right text-sm text-foreground placeholder:text-muted-foreground transition-colors duration-200 hover:border-white/30 hover:bg-white/60 focus:border-accent focus:bg-white/70 focus:outline-none focus:ring-2 focus:ring-accent/40 dark:border-white/12 dark:bg-white/10 dark:hover:border-white/20 dark:hover:bg-white/15 dark:focus:border-accent/50 dark:focus:bg-white/20"
-        placeholder="در صورت نیاز جزئیات بیشتری را بنویسید"
-      />
-    </div>
-  </GlassSection>
+    <Textarea
+      label="توضیحات تکمیلی"
+      className="mt-4 sm:mt-5 lg:mt-6"
+      value={additionalReason}
+      onChange={(event) => onAdditionalReasonChange(event.target.value)}
+      placeholder="در صورت نیاز جزئیات بیشتری را بنویسید"
+      rows={5}
+    />
+  </Card>
 );
 
 export default ReasonsSection;

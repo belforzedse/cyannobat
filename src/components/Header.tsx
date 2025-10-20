@@ -45,7 +45,7 @@ const Header = () => {
           href="/account"
           className="
             glass-pill hidden sm:inline-flex px-5 py-2 text-sm font-medium text-foreground
-            transition-colors hover:text-foreground
+            transition-all duration-300 ease-out hover:text-foreground
             focus-visible:outline-none focus-visible:ring-2
             focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2
             focus-visible:ring-offset-background
@@ -59,7 +59,7 @@ const Header = () => {
           className="
             glass-pill inline-flex items-center px-3 py-2 text-xs font-medium text-foreground
             sm:px-5 sm:text-sm
-            transition-colors hover:text-foreground
+            transition-all duration-300 ease-out hover:text-foreground
             focus-visible:outline-none focus-visible:ring-2
             focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2
             focus-visible:ring-offset-background

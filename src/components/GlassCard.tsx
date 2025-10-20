@@ -26,8 +26,8 @@ const GlassCard = ({ title, description, children, className }: GlassCardProps) 
       variants={cardVariants}
       className={clsx(
         'glass relative overflow-hidden p-6 text-right group',
-        // Instant hover lift (no transition for INP performance)
-        'hover:-translate-y-1',
+        // Smooth, slow hover lift
+        'transition-transform duration-300 ease-out hover:-translate-y-1',
         className
       )}
     >

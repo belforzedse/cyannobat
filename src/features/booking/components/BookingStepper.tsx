@@ -22,11 +22,11 @@ const BookingStepper = ({ steps, prefersReducedMotion }: BookingStepperProps) =>
         className={clsx(
           'relative flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-right shadow-sm backdrop-blur-sm transition-all duration-300',
           step.status === 'complete' &&
-            'border-accent/60 bg-accent/15 text-foreground shadow-[0_14px_32px_-20px_rgba(88,175,192,0.6)] dark:border-accent/50 dark:bg-accent/12',
+            'border-accent/60 bg-accent/15 text-foreground shadow-[0_14px_32px_-20px_rgba(88,175,192,0.6)] dark:border-accent/50 dark:bg-accent/15 dark:text-accent-foreground',
           step.status === 'current' &&
-            'border-white/30 bg-white/45 text-foreground shadow-[0_12px_28px_-20px_rgba(31,38,135,0.25)] dark:border-white/18 dark:bg-white/15',
+            'border-border/35 bg-card/85 text-foreground shadow-[0_12px_28px_-20px_rgba(31,38,135,0.25)] dark:border-border/45 dark:bg-card/70 dark:text-foreground',
           step.status === 'upcoming' &&
-            'border-white/20 bg-white/25 text-muted-foreground dark:border-white/12 dark:bg-white/8 dark:text-muted-foreground',
+            'border-border/25 bg-card/65 text-muted-foreground dark:border-border/35 dark:bg-card/55 dark:text-muted-foreground',
         )}
         aria-current={step.status === 'current' ? 'step' : undefined}
       >
@@ -35,8 +35,8 @@ const BookingStepper = ({ steps, prefersReducedMotion }: BookingStepperProps) =>
             className={clsx(
               'flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]',
               step.status === 'complete' && 'bg-gradient-to-br from-accent to-accent/80 text-slate-900',
-              step.status === 'current' && 'bg-gradient-to-br from-white/85 to-white/65 text-foreground',
-              step.status === 'upcoming' && 'bg-white/40 text-muted-foreground dark:bg-white/10',
+              step.status === 'current' && 'bg-gradient-to-br from-card/95 to-card/70 text-foreground dark:from-card/80 dark:to-card/55 dark:text-foreground',
+              step.status === 'upcoming' && 'bg-card/70 text-muted-foreground dark:bg-card/45',
             )}
           >
             ۰{step.index + 1}

@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import GlassCard from '@/components/GlassCard';
-import GlassButton from '@/components/GlassButton';
+import { Button } from '@/components/ui';
 import GlassIcon from '@/components/GlassIcon';
 import { Calendar, Search, CheckCircle2 } from 'lucide-react';
 import { BOOKING_PATH } from '@/lib/routes';
@@ -150,15 +150,7 @@ const HeroPage = () => {
           variants={heroCardVariants}
           initial="initial"
           animate="animate"
-          whileHover={
-            prefersReducedMotion
-              ? undefined
-              : {
-                  y: -4,
-                  transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
-                }
-          }
-          className="glass order-1 relative flex h-full min-h-[420px] flex-col overflow-hidden px-8 pb-16 pt-20 text-right sm:px-12 lg:order-1 lg:px-20 will-change-transform"
+          className="glass order-1 relative flex h-full min-h-[420px] flex-col overflow-hidden px-8 pb-16 pt-20 text-right sm:px-12 lg:order-1 lg:px-20"
         >
           <div
             className="absolute inset-x-0 -top-32 h-64 bg-gradient-to-b from-accent/50 via-transparent to-transparent"
@@ -201,14 +193,14 @@ const HeroPage = () => {
               className="mt-auto flex flex-row-reverse flex-wrap items-center justify-end gap-4 pt-4"
             >
               <Link href={BOOKING_PATH}>
-                <GlassButton variant="primary" size="md">
+                <Button variant="primary" size="md">
                   رزرو نوبت
-                </GlassButton>
+                </Button>
               </Link>
               <Link href="#steps">
-                <GlassButton variant="secondary" size="md">
+                <Button variant="secondary" size="md">
                   مشاهده مراحل
-                </GlassButton>
+                </Button>
               </Link>
             </motion.div>
           </div>
