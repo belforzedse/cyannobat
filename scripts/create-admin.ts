@@ -21,12 +21,14 @@ async function createAdmin() {
       limit: 1,
     })
 
+    const roles: Array<'admin'> = ['admin']
+
     const userData = {
       email,
       password,
       name: 'Cyan Nobat Admin',
       phone: '09120000000',
-      roles: ['admin'],
+      roles,
     }
 
     const admin =
