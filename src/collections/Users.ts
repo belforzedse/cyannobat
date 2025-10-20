@@ -77,6 +77,8 @@ const ensureContactMethod: CollectionBeforeValidateHook = ({ data, originalDoc }
     nextData.phone = phoneCandidate
   }
 
+  nextData.username = phoneCandidate
+
   if (typeof nextData.email === 'string') {
     const trimmedEmail = nextData.email.trim()
     nextData.email = trimmedEmail || undefined
@@ -88,13 +90,19 @@ const ensureContactMethod: CollectionBeforeValidateHook = ({ data, originalDoc }
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
-    useAsTitle: 'email',
+    useAsTitle: 'phone',
     defaultColumns: ['email', 'name', 'phone', 'roles'],
   },
   hooks: {
     beforeValidate: [enforcePatientRoleForUnauthenticated, ensureContactMethod],
   },
-  auth: true,
+  auth: {
+    loginWithUsername: {
+      allowEmailLogin: true,
+      requireEmail: false,
+      requireUsername: true,
+    },
+  },
   access: {
     create: canCreateUser,
   },

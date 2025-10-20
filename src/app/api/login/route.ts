@@ -30,51 +30,30 @@ export const POST = async (request: Request) => {
     typeof (body as { identifier?: unknown }).identifier !== 'string' ||
     typeof (body as { password?: unknown }).password !== 'string'
   ) {
-    return NextResponse.json({ message: 'Email and password are required' }, { status: 400 })
+    return NextResponse.json({ message: 'ایمیل یا شماره تلفن و رمز عبور الزامی است.' }, { status: 400 })
   }
 
   const { identifier, password } = body as { identifier: string; password: string }
   const trimmedIdentifier = identifier.trim()
 
   if (!trimmedIdentifier) {
-    return NextResponse.json({ message: 'Email and password are required' }, { status: 400 })
+    return NextResponse.json({ message: 'ایمیل یا شماره تلفن و رمز عبور الزامی است.' }, { status: 400 })
   }
 
   try {
-    let email = trimmedIdentifier
-
-    if (!trimmedIdentifier.includes('@')) {
-      const userQuery = await payload.find({
-        collection: 'users',
-        where: {
-          phone: {
-            equals: trimmedIdentifier,
-          },
-        },
-        limit: 1,
-      })
-
-      const matchedUser = userQuery.docs[0]
-
-      if (!matchedUser?.email) {
-        return NextResponse.json(
-          { message: 'ورود ناموفق بود. ایمیل یا رمز عبور را بررسی کنید.' },
-          { status: 401 },
-        )
-      }
-
-      email = matchedUser.email
-    }
+    const loginData: { email?: string; username?: string; password: string } = trimmedIdentifier.includes('@')
+      ? { email: trimmedIdentifier, password }
+      : { username: trimmedIdentifier, password }
 
     const auth = (await payload.login({
       collection: 'users',
-      data: { email, password },
+      data: loginData,
     })) as StaffLoginResult
 
     const authUser = auth.user as PayloadRequest['user']
 
     if (!authUser) {
-      return NextResponse.json({ message: 'ورود ناموفق بود. ایمیل یا رمز عبور را بررسی کنید.' }, { status: 401 })
+      return NextResponse.json({ message: 'ورود ناموفق بود. ایمیل یا شماره تلفن یا رمز عبور را بررسی کنید.' }, { status: 401 })
     }
 
     const roles = extractRoles(authUser)
@@ -115,7 +94,7 @@ export const POST = async (request: Request) => {
   } catch (error) {
     payload.logger.warn?.('Failed login attempt', error)
     return NextResponse.json(
-      { message: 'ورود ناموفق بود. ایمیل یا رمز عبور را بررسی کنید.' },
+      { message: 'ورود ناموفق بود. ایمیل یا شماره تلفن یا رمز عبور را بررسی کنید.' },
       { status: 401 },
     )
   }
