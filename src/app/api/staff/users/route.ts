@@ -12,7 +12,6 @@ const roleEnum = z.enum(ASSIGNABLE_ROLES as [typeof ASSIGNABLE_ROLES[number], ..
 const emailSchema = z
   .string({ invalid_type_error: 'Email must be a string' })
   .trim()
-  .min(1, 'Email must be provided')
   .email('Email must be valid')
 
 const phoneSchema = z
@@ -84,17 +83,13 @@ export const POST = async (request: Request) => {
   const normalizedPhone = body.phone.trim()
   const normalizedEmail = body.email?.trim()
 
-  const emailToPersist =
-    normalizedEmail && normalizedEmail.length > 0
-      ? normalizedEmail
-      : `user-${normalizedPhone.replace(/\D/g, '')}@cyannobat.local`
-
   try {
     const created = await payload.create({
       collection: 'users',
       data: {
-        email: emailToPersist,
+        email: normalizedEmail || undefined,
         phone: normalizedPhone,
+        username: normalizedPhone,
         password: body.password,
         roles: rolesToAssign,
       },

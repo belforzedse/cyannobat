@@ -151,15 +151,13 @@ export const POST = async (request: Request) => {
   let createdUser: PayloadRequest['user'] | null = null
 
   try {
-    const generatedEmail = `patient-${phone.replace(/\D/g, '') || phone}@cyannobat.local`
-    const normalizedEmail = (email ?? generatedEmail).toLowerCase()
-
     const created = await payload.create({
       collection: 'users',
       data: {
-        email: normalizedEmail,
+        email: email ?? undefined,
         name,
         phone,
+        username: phone,
         roles: ['patient'],
         password,
       },
@@ -189,7 +187,7 @@ export const POST = async (request: Request) => {
     auth = (await payload.login({
       collection: 'users',
       data: {
-        phone,
+        username: phone,
         password,
       },
     } as never)) as AuthResult

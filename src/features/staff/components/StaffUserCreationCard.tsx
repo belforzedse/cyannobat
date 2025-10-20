@@ -19,17 +19,17 @@ type CreatedUser = {
 }
 
 const roleLabelsFa: Record<AssignableRole, string> = {
-  patient: 'O"UOU.OO�',
-  doctor: 'U_O�O\'Uc',
-  receptionist: 'U.O3O�U^U, U_O�UOO�O\'',
-  admin: 'U.O_UOO�',
+  patient: 'بیمار',
+  doctor: 'پزشک',
+  receptionist: 'مسئول پذیرش',
+  admin: 'مدیر سیستم',
 }
 
 const roleHelpText: Record<AssignableRole, string> = {
-  patient: 'O_O3O�O�O3UO U_OUOU� O"U� U_O�O�OU, U^ U.O_UOO�UOO� U+U^O"O��?OU�O.',
-  doctor: 'O1OU^ UcOO_O� O_O�U.OU+ O"O O_O3O�O�O3UO O"U� OO"O�OO�U�OUO U_O�O\'Uc.',
-  receptionist: 'U_O�O3U+U, U_O�UOO�O\' O"O OU.UcOU+ O�U.OU+�?OO"U+O_UO U+U^O"O��?OU�O.',
-  admin: 'O_O3O�O�O3UO U.O_UOO�UOO�UO UcOU.U, O"U� O�U.OU. O"OrO\'�?OU�O.',
+  patient: 'حساب‌های بیمار فقط به داشبورد شخصی دسترسی دارند و نمی‌توانند کاربران دیگر را مدیریت کنند.',
+  doctor: 'پزشکان می‌توانند نوبت‌های خود را ببینند و وضعیت بیمارانشان را به‌روزرسانی کنند.',
+  receptionist: 'مسئولان پذیرش می‌توانند نوبت‌ها و اطلاعات تماس بیماران را مدیریت و هماهنگ کنند.',
+  admin: 'مدیران سیستم به همه تنظیمات مدیریتی و داده‌های کاربران دسترسی کامل دارند.',
 }
 
 const isAssignableRole = (value: string): value is AssignableRole =>
@@ -77,7 +77,7 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
     const trimmedPhone = phone.trim()
 
     if (!selectedRole) {
-      setFormError('U,O�U?OU< UOUc U+U,O\' O"O�OUO OOrO�O�OO� OU+O�OrOO" UcU+UOO_.')
+      setFormError('لطفاً یک نقش معتبر انتخاب کنید.')
       return
     }
 
@@ -93,7 +93,7 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
 
     setFormError(null)
     setIsSubmitting(true)
-    setActivity('staff-create-user', true, 'OUOO�OO_ O-O3OO" UcOO�O"O�UO O�O_UOO_...')
+    setActivity('staff-create-user', true, 'در حال ایجاد کاربر جدید...')
 
     try {
       const response = await fetch('/api/staff/users', {
@@ -110,7 +110,7 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
       })
 
       if (!response.ok) {
-        let description = 'OU.UcOU+ OUOO�OO_ UcOO�O"O� U^O�U^O_ U+O_OO�O_.'
+        let description = 'در ایجاد کاربر مشکلی پیش آمد.'
 
         try {
           const errorBody = (await response.json()) as { message?: string }
@@ -135,12 +135,12 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
 
       const contactLabel = result.user.email ?? result.user.phone ?? trimmedPhone
       showToast({
-        description: `O-O3OO" ${roleLabelsFa[selectedRole]} O"O�OUO ${contactLabel} OUOO�OO_ O'O_.`,
+        description: `کاربر ${roleLabelsFa[selectedRole]} برای ${contactLabel} با موفقیت ایجاد شد.`,
         variant: 'success',
       })
     } catch (error) {
       console.error(error)
-      const description = 'OU.UcOU+ OUOO�OO_ UcOO�O"O� U^O�U^O_ U+O_OO�O_. U,O�U?OU< O_U^O"OO�U� O�U,OO\' UcU+UOO_.'
+      const description = 'در ایجاد کاربر مشکلی پیش آمد. لطفاً اتصال خود را بررسی کنید و دوباره تلاش کنید.'
       setFormError(description)
       showToast({ description, variant: 'error' })
     } finally {
@@ -152,23 +152,23 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
   return (
     <Card variant='default' padding='lg' className='flex flex-col gap-6'>
       <div className='flex flex-col gap-1 text-right'>
-        <h2 className='text-lg font-semibold text-foreground'>OU?O�U^O_U+ O1OU^ O�UOU.</h2>
+        <h2 className='text-lg font-semibold text-foreground'>ایجاد کاربر جدید</h2>
         <p className='text-xs text-muted-foreground'>
-          O-O3OO"�?OU�OUO UcOO�O"O�UO O�O_UOO_ O�O O"O O3O�O- O_O3O�O�O3UO U.U+OO3O" OUOO�OO_ UcU+UOO_. O�U+U�O U+U,O'�?OU�OUOUO UcU� U.O�OO�
-          O"U� U.O_UOO�UOO� O�U+�?OU�O U�O3O�UOO_ O_O� O�UOO� U+U.OUOO' O_OO_U� U.UO�?OO'U^U+O_.
+          برای افزودن کاربر جدید، نقش مناسب را انتخاب کنید و اطلاعات تماس او را وارد کنید. این اطلاعات فقط برای تیم شما
+          قابل مشاهده است.
         </p>
       </div>
 
       <form className='flex flex-col gap-5' onSubmit={handleSubmit}>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-4'>
           <label className='flex flex-col gap-2 text-sm'>
-            <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>OUOU.UOU,</span>
+            <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>ایمیل (اختیاری)</span>
             <Input
               type='email'
               autoComplete='email'
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              placeholder='UcOO�O"O�@example.com'
+              placeholder='user@example.com'
             />
           </label>
 
@@ -185,7 +185,7 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
           </label>
 
           <label className='flex flex-col gap-2 text-sm'>
-            <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>O�U.O� O1O"U^O� U.U^U,O�</span>
+            <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>رمز عبور موقت</span>
             <Input
               type='password'
               autoComplete='new-password'
@@ -193,12 +193,12 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
               minLength={8}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder='O-O_OU,U, U, UcOO�OUcO�O�'
+              placeholder='حداقل ۸ کاراکتر'
             />
           </label>
 
           <label className='flex flex-col gap-2 text-sm'>
-            <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>U+U,O'</span>
+            <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>نقش کاربر</span>
             <select
               className='glass-panel rounded-xl px-3 py-2 text-sm text-foreground ring-offset-background transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-70'
               value={selectedRole}
@@ -233,23 +233,22 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
 
         <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
           <p className='text-[11px] text-muted-foreground'>
-            O-O3OO"�?OU�O U?U^O�OU< OUOO�OO_ U.UO�?OO'U^U+O_. O�U.O� O1O"U^O� U.U^U,O� O�O O"U� OO'O�O�OUc O"U_O�OO�UOO_ U^ OO� UcOO�O"O�OU+ O"OrU^OU�UOO_
-            U_O3 OO� U^O�U^O_ O�U+ O�O O�O�UOUOO� O_U�U+O_.
+            رمز عبور را از طریق کانال‌های امن در اختیار کاربر بگذارید. در صورت نیاز می‌توانید بعداً نقش او را نیز تغییر دهید.
           </p>
           <Button type='submit' disabled={isSubmitting}>
-            {isSubmitting ? 'O_O� O-OU, OUOO�OO_...' : 'OUOO�OO_ O-O3OO"'}
+            {isSubmitting ? 'در حال ایجاد...' : 'ایجاد کاربر'}
           </Button>
         </div>
       </form>
 
       {lastCreatedUser && (
         <div className='rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-muted-foreground dark:border-white/10 dark:bg-white/5'>
-          <span className='font-semibold text-foreground'>O�OrO�UOU+ O-O3OO" OUOO�OO_O'O_U�:</span>{' '}
+          <span className='font-semibold text-foreground'>آخرین کاربر ایجاد شده:</span>{' '}
           <span>{lastCreatedUser.email ?? '—'}</span>
           <span className='mx-2 text-muted-foreground/60'>•</span>
           <span>{lastCreatedUser.phone ?? '—'}</span>
           <span className='mx-2 text-muted-foreground/60'>•</span>
-          <span>{lastCreatedUser.roles.map((role) => getRoleLabelFa(role)).join('OO ')}</span>
+          <span>{lastCreatedUser.roles.map((role) => getRoleLabelFa(role)).join('، ')}</span>
         </div>
       )}
     </Card>
