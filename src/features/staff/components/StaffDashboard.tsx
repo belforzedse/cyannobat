@@ -149,48 +149,33 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
       initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: 'easeOut' }}
-      className="flex flex-col gap-8"
+      className="mx-auto flex w-full max-w-6xl flex-col gap-8"
     >
-      {/* Header Card */}
-      <div className="glass relative overflow-hidden px-4 py-8 text-right sm:px-10 sm:py-12 lg:px-16">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full bg-accent/25 blur-[140px] sm:-left-16 dark:bg-accent/35"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-16 bottom-16 h-80 w-80 rounded-full bg-accent-strong/25 blur-[150px] dark:bg-accent-strong/35"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent opacity-70 dark:via-white/20"
-        />
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <motion.span
-              initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: prefersReducedMotion ? 0 : 0.1, duration: prefersReducedMotion ? 0 : 0.45 }}
-              className="inline-block rounded-full border border-white/25 bg-white/20 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm dark:border-white/15 dark:bg-white/10"
-            >
-              پنل مدیریت
-            </motion.span>
-
+      <motion.div
+        initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: prefersReducedMotion ? 0 : 0.1, duration: prefersReducedMotion ? 0 : 0.45 }}
+      >
+        <Card
+          variant="default"
+          padding="lg"
+          className="flex flex-col gap-4 text-right sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div className="flex flex-col gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">پنل مدیریت</span>
             <motion.h1
               initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: prefersReducedMotion ? 0 : 0.2, duration: prefersReducedMotion ? 0 : 0.5 }}
-              className="mt-4 bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-4xl font-bold text-transparent sm:text-5xl"
+              className="text-3xl font-bold text-foreground sm:text-4xl"
             >
               پیشخوان کارکنان
             </motion.h1>
-
             <motion.p
               initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: prefersReducedMotion ? 0 : 0.3, duration: prefersReducedMotion ? 0 : 0.5 }}
-              className="mt-3 max-w-2xl text-balance leading-relaxed text-muted-foreground"
+              className="text-sm leading-relaxed text-muted-foreground"
             >
               مدیریت نوبت‌ها و بازه‌های زمانی از یک داشبورد اختصاصی.
             </motion.p>
@@ -199,10 +184,10 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
           <motion.div
             initial={{ opacity: prefersReducedMotion ? 1 : 0, scale: prefersReducedMotion ? 1 : 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: prefersReducedMotion ? 0 : 0.4, duration: prefersReducedMotion ? 0 : 0.5 }}
-            className="flex flex-col items-end gap-3"
+            transition={{ delay: prefersReducedMotion ? 0 : 0.35, duration: prefersReducedMotion ? 0 : 0.5 }}
+            className="flex flex-col items-end gap-3 text-sm text-muted-foreground"
           >
-            <div className="text-sm text-muted-foreground">
+            <div>
               <span className="font-medium text-foreground">{currentUser.email}</span>
               <span className="mx-2 text-muted-foreground/70">•</span>
               <span>{currentUser.roles.join(', ')}</span>
@@ -212,25 +197,24 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
               خروج
             </Button>
           </motion.div>
-        </div>
-      </div>
+        </Card>
+      </motion.div>
 
-      {/* Appointments Section */}
       <motion.div
         initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: prefersReducedMotion ? 0 : 0.5, duration: prefersReducedMotion ? 0 : 0.5 }}
+        transition={{ delay: prefersReducedMotion ? 0 : 0.4, duration: prefersReducedMotion ? 0 : 0.5 }}
       >
-        <Card variant="default" padding="md" className="sm:p-8">
-          <div className="flex flex-col items-end gap-1 text-right">
+        <Card variant="default" padding="lg" className="flex flex-col gap-6 text-right">
+          <div className="flex flex-col gap-1 text-right">
             <div className="flex w-full items-center justify-between">
               <GlassIcon icon={Calendar} size="sm" label="مدیریت نوبت‌ها" />
               <h2 className="text-lg font-semibold text-foreground">مدیریت نوبت‌ها</h2>
             </div>
+            <p className="text-xs text-muted-foreground">فهرست نوبت‌های رزرو شده در بازه پیش‌رو.</p>
           </div>
 
-          {/* Filters and Actions */}
-          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-muted-foreground">وضعیت نوبت</label>
@@ -267,13 +251,12 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
           </div>
 
           {errorMessage && (
-            <div className="mt-4 rounded-xl border border-red-400/40 bg-red-50 px-4 py-3 text-xs text-red-600 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200">
+            <div className="rounded-xl border border-red-400/40 bg-red-50 px-4 py-3 text-xs text-red-600 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200">
               {errorMessage}
             </div>
           )}
 
-          {/* Appointments Table */}
-          <div className="mt-6 space-y-6">
+          <div className="space-y-6">
             <div className="hidden overflow-x-auto md:block">
               <table className="min-w-full divide-y divide-white/10 text-right text-sm">
                 <thead className="text-xs uppercase tracking-wide text-muted-foreground">
@@ -352,16 +335,15 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
                   <div
                     key={appointment.id}
                     className={`glass-panel rounded-2xl p-4 text-right shadow-sm transition-colors ${
-                      failedId === appointment.id ? 'border border-red-300/60 bg-red-50 dark:border-red-400/60 dark:bg-red-500/20' :
-                      'border border-white/10 bg-white/10 dark:border-white/10'
+                      failedId === appointment.id
+                        ? 'border border-red-300/60 bg-red-50 dark:border-red-400/60 dark:bg-red-500/20'
+                        : 'border border-white/10 bg-white/10 dark:border-white/10'
                     }`}
                   >
                     <div className="flex flex-col gap-3 text-sm text-foreground">
                       <div className="flex flex-col gap-1">
                         <span className="text-xs font-semibold text-muted-foreground">زمان نوبت</span>
-                        <span className="font-medium">
-                          {formatDateTime(appointment.start, appointment.timeZone)}
-                        </span>
+                        <span className="font-medium">{formatDateTime(appointment.start, appointment.timeZone)}</span>
                         <span className="text-[11px] text-muted-foreground">
                           تا {formatDateTime(appointment.end, appointment.timeZone).split('—')[1]?.trim() ?? ''}
                         </span>
@@ -433,36 +415,35 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
         </Card>
       </motion.div>
 
-      {/* Providers Section */}
       <motion.div
         initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: prefersReducedMotion ? 0 : 0.6, duration: prefersReducedMotion ? 0 : 0.5 }}
+        transition={{ delay: prefersReducedMotion ? 0 : 0.45, duration: prefersReducedMotion ? 0 : 0.5 }}
       >
-        <Card variant="default" padding="md" className="sm:p-8">
-          <div className="flex flex-col items-end gap-1 text-right">
+        <Card variant="default" padding="lg" className="flex flex-col gap-6 text-right">
+          <div className="flex flex-col gap-1 text-right">
             <div className="flex w-full items-center justify-between">
               <GlassIcon icon={Users} size="sm" label="بازه‌های زمانی ارائه‌دهندگان" />
               <h2 className="text-lg font-semibold text-foreground">بازه‌های زمانی ارائه‌دهندگان</h2>
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               برای تعریف بازه‌های جدید یا ویرایش، به بخش مربوطه در سیستم مدیریت مراجعه کنید.
             </p>
           </div>
 
-          <div className="mt-6 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {providers.map((provider) => (
               <Card
                 key={provider.id}
                 variant="subtle"
                 padding="sm"
-                className="transition-transform hover:scale-[1.02] sm:p-6"
+                className="flex flex-col gap-3 transition-transform hover:scale-[1.01] sm:p-6"
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-semibold text-foreground">{provider.displayName}</span>
                   <span className="text-[11px] text-muted-foreground">منطقه زمانی: {provider.timeZone}</span>
                 </div>
-                <ul className="mt-3 space-y-2">
+                <ul className="space-y-2">
                   {provider.availability.length > 0 ? (
                     provider.availability.map((window, index) => (
                       <li
