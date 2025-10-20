@@ -48,13 +48,30 @@ export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'roles'],
+    defaultColumns: ['email', 'name', 'phone', 'roles'],
   },
   auth: true,
   access: {
     create: canCreateUser,
   },
   fields: [
+    {
+      name: 'name',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'phone',
+      type: 'text',
+      required: true,
+      unique: true,
+      validate: (value) => {
+        if (typeof value !== 'string') return 'Phone number is required'
+
+        const iranPhoneRegex = /^(\+98|0)?9\d{9}$/
+        return iranPhoneRegex.test(value) || 'Enter a valid Iranian phone number'
+      },
+    },
     {
       name: 'roles',
       type: 'select',
