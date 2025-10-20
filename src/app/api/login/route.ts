@@ -54,12 +54,14 @@ export const POST = async (request: Request) => {
       isStaff: userIsStaff(authUser),
     })
 
+    const secureCookies = process.env.NODE_ENV === 'production'
+
     if (auth.token) {
       response.cookies.set('payload-token', auth.token, {
         path: '/',
         httpOnly: true,
         sameSite: 'lax',
-        secure: true,
+        secure: secureCookies,
         ...(auth.exp ? { expires: new Date(auth.exp * 1000) } : {}),
       })
     }
@@ -70,7 +72,7 @@ export const POST = async (request: Request) => {
         path: '/',
         httpOnly: true,
         sameSite: 'lax',
-        secure: true,
+        secure: secureCookies,
         ...(rtExp
           ? {
               expires: new Date(rtExp > 1_000_000_000_000 ? rtExp : rtExp * 1000),
@@ -88,4 +90,3 @@ export const POST = async (request: Request) => {
     )
   }
 }
-
