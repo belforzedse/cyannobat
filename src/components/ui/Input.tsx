@@ -1,6 +1,6 @@
 'use client'
 
-import { InputHTMLAttributes, forwardRef, useState, useId } from 'react'
+import { InputHTMLAttributes, forwardRef, useId } from 'react'
 import clsx from 'clsx'
 
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
@@ -38,8 +38,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    const [isFocused, setIsFocused] = useState(false)
-
     const reactId = useId()
     const generatedId = id || `input-${reactId}`
 
@@ -100,8 +98,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={generatedId}
             className={inputClasses}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
             aria-invalid={error ? 'true' : 'false'}
             aria-describedby={
               error ? `${generatedId}-error` : helperText ? `${generatedId}-helper` : undefined

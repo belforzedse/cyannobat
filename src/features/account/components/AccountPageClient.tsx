@@ -1,8 +1,9 @@
 'use client'
 
+import { useCallback } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import Link from 'next/link'
-import { Calendar, Mail } from 'lucide-react'
+import { Calendar, LogOut, Mail } from 'lucide-react'
 
 import { Card, Button } from '@/components/ui'
 import GlassIcon from '@/components/GlassIcon'
@@ -26,6 +27,13 @@ type AccountPageClientProps = {
 
 const AccountPageClient = ({ userEmail, roles, isStaff, upcomingAppointments }: AccountPageClientProps) => {
   const prefersReducedMotion = useReducedMotion()
+
+  const handleLogout = useCallback(async () => {
+    await fetch('/api/logout', {
+      method: 'POST',
+    })
+    window.location.href = '/login'
+  }, [])
 
   const statusLabels: Record<string, string> = {
     pending: 'در انتظار',
@@ -67,6 +75,17 @@ const AccountPageClient = ({ userEmail, roles, isStaff, upcomingAppointments }: 
         >
           اطلاعات ورود شما با سیستم رزرو یکپارچه است. نقش‌های فعال: {roles.length > 0 ? roles.join('، ') : 'کاربر مهمان'}.
         </motion.p>
+        <motion.div
+          initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: prefersReducedMotion ? 0 : 0.35, duration: prefersReducedMotion ? 0 : 0.45 }}
+          className="mt-2 flex justify-end"
+        >
+          <Button variant="secondary" size="sm" onClick={handleLogout} className="gap-2">
+            <LogOut className="h-4 w-4" />
+            خروج از حساب
+          </Button>
+        </motion.div>
       </motion.header>
 
       {/* Staff Redirect Card */}
