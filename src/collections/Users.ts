@@ -1,5 +1,8 @@
 import type { Access, CollectionConfig } from 'payload'
 
+import { extractRoles } from '@/lib/auth'
+import { canAssignRoles } from '@/lib/staff/rolePermissions'
+
 // Allow creating first user without authentication
 const isFirstUserCreation: Access = async ({ req }) => {
   // If user is already authenticated, allow access
@@ -22,6 +25,25 @@ const isFirstUserCreation: Access = async ({ req }) => {
   }
 }
 
+const rolesFromData = (roles: unknown): string[] => {
+  if (!Array.isArray(roles)) return []
+  return roles.filter((role): role is string => typeof role === 'string')
+}
+
+const canCreateUser: Access = async (args) => {
+  const { req, data } = args
+
+  if (!req.user) {
+    return isFirstUserCreation(args)
+  }
+
+  const creatorRoles = extractRoles(req.user)
+  const requestedRoles = rolesFromData(data?.roles)
+  const rolesToAssign = requestedRoles.length > 0 ? requestedRoles : ['patient']
+
+  return canAssignRoles(creatorRoles, rolesToAssign)
+}
+
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
@@ -30,7 +52,7 @@ export const Users: CollectionConfig = {
   },
   auth: true,
   access: {
-    create: isFirstUserCreation,
+    create: canCreateUser,
   },
   fields: [
     {

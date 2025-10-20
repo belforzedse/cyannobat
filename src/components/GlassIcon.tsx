@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { motion, useReducedMotion, type HTMLMotionProps } from 'framer-motion';
 import clsx from 'clsx';
 import type { LucideIcon } from 'lucide-react';

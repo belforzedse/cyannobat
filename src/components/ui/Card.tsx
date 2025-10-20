@@ -1,6 +1,6 @@
 'use client'
 
-import { HTMLAttributes, forwardRef } from 'react'
+import React, { HTMLAttributes, forwardRef } from 'react'
 import clsx from 'clsx'
 
 type CardVariant = 'default' | 'muted' | 'subtle' | 'active' | 'accent' | 'compact'

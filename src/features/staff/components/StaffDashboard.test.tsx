@@ -28,15 +28,15 @@ const providers: StaffProvider[] = [
   },
 ]
 
-const currentUser: StaffUser = {
+const defaultStaffUser: StaffUser = {
   email: 'staff@example.com',
   roles: ['staff'],
 }
 
-const renderDashboard = (appointments: StaffAppointment[]) => {
+const renderDashboard = (appointments: StaffAppointment[], user: StaffUser = defaultStaffUser) => {
   return render(
     <ToastProvider>
-      <StaffDashboard initialAppointments={appointments} initialProviders={providers} currentUser={currentUser} />
+      <StaffDashboard initialAppointments={appointments} initialProviders={providers} currentUser={user} />
     </ToastProvider>,
   )
 }
@@ -49,6 +49,20 @@ describe('StaffDashboard interactions', () => {
     fetchMock.mockReset()
     globalThis.fetch = fetchMock as unknown as typeof fetch
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: vi.fn().mockImplementation((query) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    })
   })
 
   afterEach(() => {
@@ -68,19 +82,19 @@ describe('StaffDashboard interactions', () => {
 
     renderDashboard([baseAppointment])
 
-    const row = screen.getByText('patient@example.com').closest('tr')
+    const row = screen.getAllByRole('cell', { name: 'patient@example.com' })[0]?.closest('tr')
     expect(row).not.toBeNull()
     const statusSelect = within(row as HTMLTableRowElement).getByRole('combobox')
 
     fireEvent.change(statusSelect, { target: { value: 'confirmed' } })
 
-    expect(screen.getByTestId('status-spinner-appointment-1')).toBeInTheDocument()
+    expect(screen.getAllByTestId('status-spinner-appointment-1')[0]).toBeInTheDocument()
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/staff/appointments/appointment-1', expect.anything()))
 
     await screen.findByText('وضعیت نوبت با موفقیت ذخیره شد.')
 
-    await waitFor(() => expect(screen.queryByTestId('status-spinner-appointment-1')).not.toBeInTheDocument())
+    await waitFor(() => expect(screen.queryAllByTestId('status-spinner-appointment-1')).toHaveLength(0))
     expect((row as HTMLTableRowElement).className).not.toContain('bg-red-100')
   })
 
@@ -92,7 +106,7 @@ describe('StaffDashboard interactions', () => {
 
     renderDashboard([baseAppointment])
 
-    const row = screen.getByText('patient@example.com').closest('tr')
+    const row = screen.getAllByRole('cell', { name: 'patient@example.com' })[0]?.closest('tr')
     const statusSelect = within(row as HTMLTableRowElement).getByRole('combobox')
 
     fireEvent.change(statusSelect, { target: { value: 'confirmed' } })
@@ -103,7 +117,7 @@ describe('StaffDashboard interactions', () => {
     expect(messages.length).toBeGreaterThanOrEqual(2)
 
     await waitFor(() => expect((row as HTMLTableRowElement).className).toContain('bg-red-100'))
-    await waitFor(() => expect(screen.queryByTestId('status-spinner-appointment-1')).not.toBeInTheDocument())
+    await waitFor(() => expect(screen.queryAllByTestId('status-spinner-appointment-1')).toHaveLength(0))
   })
 
   it('shows success toast when refreshing succeeds', async () => {
@@ -142,6 +156,43 @@ describe('StaffDashboard interactions', () => {
 
     const errors = await screen.findAllByText('به‌روزرسانی فهرست نوبت‌ها با مشکل مواجه شد.')
     expect(errors.length).toBeGreaterThan(0)
+  })
+
+  it('submits user creation request when admin completes the form', async () => {
+    const adminUser: StaffUser = {
+      email: 'admin@example.com',
+      roles: ['admin'],
+    }
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        user: {
+          email: 'newpatient@example.com',
+          roles: ['patient'],
+        },
+      }),
+    } as Response)
+
+    renderDashboard([baseAppointment], adminUser)
+
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'newpatient@example.com' } })
+    fireEvent.change(screen.getByLabelText('Temporary password'), { target: { value: 'examplepass' } })
+
+    const roleSelect = screen.getByLabelText('Role')
+    fireEvent.change(roleSelect, { target: { value: 'patient' } })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Create account' }))
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/staff/users',
+      expect.objectContaining({
+        method: 'POST',
+      }),
+    )
+
+    await screen.findByText('Created Patient account for newpatient@example.com.')
   })
 })
 

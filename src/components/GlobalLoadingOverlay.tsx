@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 
 import useSmoothLoading from '@/hooks/useSmoothLoading'

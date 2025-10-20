@@ -12,6 +12,7 @@ import {
   GlobalLoadingOverlayProvider,
   useGlobalLoadingOverlay,
 } from '@/components/GlobalLoadingOverlayProvider'
+import StaffUserCreationCard from './StaffUserCreationCard'
 
 type StaffDashboardProps = {
   initialAppointments: StaffAppointment[]
@@ -198,6 +199,14 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
             </Button>
           </motion.div>
         </Card>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: prefersReducedMotion ? 0 : 0.25, duration: prefersReducedMotion ? 0 : 0.5 }}
+      >
+        <StaffUserCreationCard currentUser={currentUser} />
       </motion.div>
 
       <motion.div

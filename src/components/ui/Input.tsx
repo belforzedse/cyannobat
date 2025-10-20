@@ -1,6 +1,6 @@
 'use client'
 
-import { InputHTMLAttributes, forwardRef, useId } from 'react'
+import React, { InputHTMLAttributes, forwardRef, useId } from 'react'
 import clsx from 'clsx'
 
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
