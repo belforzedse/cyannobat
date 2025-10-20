@@ -5,11 +5,11 @@ import { getPayload } from 'payload'
 
 import configPromise from '@payload-config'
 import { userIsStaff } from '@/lib/auth'
-import LoginForm from '@/features/auth/components/LoginForm'
+import SignupForm from '@/features/auth/components/SignupForm'
 
 export const dynamic = 'force-dynamic'
 
-const LoginPage = async () => {
+const SignupPage = async () => {
   const payload = await getPayload({
     config: configPromise,
   })
@@ -35,15 +35,14 @@ const LoginPage = async () => {
   return (
     <div className="flex flex-col gap-6 text-right">
       <div className="space-y-3">
-        <h1 className="text-3xl font-bold text-foreground sm:text-4xl">ورود به حساب کاربری</h1>
+        <h1 className="text-3xl font-bold text-foreground sm:text-4xl">ایجاد حساب کاربری جدید</h1>
         <p className="text-sm leading-7 text-muted-foreground">
-          پس از ورود، کاربران عادی به داشبورد شخصی هدایت می‌شوند و کاربران کادر درمان مستقیماً به پیشخوان ویژه کارکنان
-          می‌روند.
+          پس از تکمیل ثبت‌نام، کاربران عادی وارد داشبورد شخصی می‌شوند و اعضای کادر درمان به صورت خودکار به پیشخوان ویژه کارکنان منتقل خواهند شد.
         </p>
       </div>
-      <LoginForm toggleHref="/signup" toggleLabel="حساب ندارید؟ ثبت‌نام کنید" />
+      <SignupForm toggleHref="/login" toggleLabel="حساب دارید؟ وارد شوید" />
     </div>
   )
 }
 
-export default LoginPage
+export default SignupPage

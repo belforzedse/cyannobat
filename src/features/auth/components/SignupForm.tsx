@@ -4,20 +4,21 @@ import { useState, type FormEvent } from 'react'
 
 const staffRoles = ['admin', 'doctor', 'receptionist'] as const
 
-type LoginFormProps = {
+type SignupFormProps = {
   redirectToStaff?: string
   redirectToAccount?: string
   toggleHref?: string
   toggleLabel?: string
 }
 
-const LoginForm = ({
+const SignupForm = ({
   redirectToStaff = '/staff',
   redirectToAccount = '/account',
   toggleHref,
   toggleLabel,
-}: LoginFormProps) => {
-  const [email, setEmail] = useState('')
+}: SignupFormProps) => {
+  const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -28,27 +29,32 @@ const LoginForm = ({
     setErrorMessage(null)
 
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, phone, password }),
       })
 
       if (!response.ok) {
-        const result = await response.json().catch(() => ({ message: 'ورود ناموفق بود.' }))
-        throw new Error(result.message ?? 'ورود ناموفق بود.')
+        const result = await response.json().catch(() => ({ message: 'ثبت‌نام ناموفق بود.' }))
+        throw new Error(result.message ?? 'ثبت‌نام ناموفق بود.')
       }
 
-      const result = (await response.json()) as { user: { roles?: string[] } }
-      const roles = Array.isArray(result.user?.roles) ? result.user.roles : []
+      let result: unknown = null
+      if (response.status !== 204) {
+        result = await response.json().catch(() => null)
+      }
+
+      const rawRoles = (result as { user?: { roles?: unknown } } | null)?.user?.roles
+      const roles = Array.isArray(rawRoles) ? (rawRoles as string[]) : []
       const isStaff = roles.some((role) => staffRoles.includes(role as (typeof staffRoles)[number]))
 
       window.location.href = isStaff ? redirectToStaff : redirectToAccount
     } catch (error) {
       console.error(error)
-      setErrorMessage((error as Error).message ?? 'ورود ناموفق بود.')
+      setErrorMessage((error as Error).message ?? 'ثبت‌نام ناموفق بود.')
     } finally {
       setIsSubmitting(false)
     }
@@ -57,14 +63,26 @@ const LoginForm = ({
   return (
     <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4 text-right">
       <label className="flex flex-col gap-2 text-sm text-foreground">
-        ایمیل
+        نام و نام خانوادگی
         <input
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          type="text"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
           required
           className="rounded-xl border border-white/20 bg-white/50 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40 dark:border-white/10 dark:bg-white/10"
-          placeholder="you@example.com"
+          placeholder="رضا رضایی"
+        />
+      </label>
+
+      <label className="flex flex-col gap-2 text-sm text-foreground">
+        شماره موبایل
+        <input
+          type="tel"
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+          required
+          className="rounded-xl border border-white/20 bg-white/50 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40 dark:border-white/10 dark:bg-white/10"
+          placeholder="09123456789"
         />
       </label>
 
@@ -92,7 +110,7 @@ const LoginForm = ({
           disabled={isSubmitting}
           className="inline-flex items-center justify-center rounded-full border border-accent/50 bg-accent px-5 py-2 text-sm font-semibold text-white transition-colors hover:border-accent/70 hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmitting ? 'در حال ورود...' : 'ورود'}
+          {isSubmitting ? 'در حال ثبت‌نام...' : 'ثبت‌نام'}
         </button>
 
         {toggleHref && toggleLabel ? (
@@ -104,12 +122,11 @@ const LoginForm = ({
         ) : null}
 
         <p className="text-xs leading-6 text-muted-foreground">
-          احراز هویت پیامکی به‌زودی راه‌اندازی می‌شود. تا آن موقع از حساب‌های موقتی یا رمز عبور خود استفاده کنید.
+          احراز هویت پیامکی در مراحل بعدی فعال می‌شود. تا آن زمان، رمز عبور امن انتخاب کنید و آن را نزد خود نگه دارید.
         </p>
       </div>
     </form>
   )
 }
 
-export default LoginForm
-
+export default SignupForm
