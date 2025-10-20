@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import clsx from 'clsx'
 
 import BookingStepper from '@/features/booking/components/BookingStepper'
 import ScheduleSection from '@/features/booking/components/ScheduleSection'
@@ -90,7 +91,7 @@ const BookingPageContent = () => {
   const shouldShowReasonSection = isScheduleComplete
   const shouldShowContactSection = isReasonComplete
   const shouldShowSummarySection =
-    isServiceComplete || isScheduleComplete || isReasonComplete || isCustomerComplete
+    isServiceComplete && isScheduleComplete && isReasonComplete && isCustomerComplete
 
   useEffect(() => {
     setActivity('booking-availability', availabilityLoading, 'در حال بررسی زمان‌های خالی...')
@@ -251,7 +252,7 @@ const BookingPageContent = () => {
       initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: 'easeOut' }}
-      className="glass glass-fallback relative flex flex-col gap-6 overflow-hidden px-4 py-6 text-right sm:gap-12 sm:px-12 sm:py-12 lg:px-16"
+      className="glass glass-fallback relative flex min-h-dvh flex-col gap-6 overflow-hidden px-4 py-6 text-right sm:gap-12 sm:px-12 sm:py-12 lg:px-16"
     >
       <div
         aria-hidden
@@ -297,17 +298,24 @@ const BookingPageContent = () => {
 
       <BookingStepper steps={stepsWithStatus} prefersReducedMotion={prefersReducedMotion} />
 
-      <form className="grid gap-4 sm:gap-6 lg:gap-8">
-        <motion.div layout {...sectionAnimation} transition={{ ...sectionAnimation.transition, delay: 0 }}>
-          <ServiceSection
-            services={services}
-            selectedServiceId={selectedServiceId}
-            onSelectService={handleServiceSelect}
-            isLoading={servicesLoading}
-            errorMessage={servicesError}
-            onRetry={refreshServices}
-          />
-        </motion.div>
+      <div
+        className={clsx(
+          'grid gap-6 sm:gap-8',
+          shouldShowSummarySection &&
+            'lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(320px,360px)] lg:items-start lg:gap-12',
+        )}
+      >
+        <form className="grid gap-4 sm:gap-6 lg:gap-8">
+          <motion.div layout {...sectionAnimation} transition={{ ...sectionAnimation.transition, delay: 0 }}>
+            <ServiceSection
+              services={services}
+              selectedServiceId={selectedServiceId}
+              onSelectService={handleServiceSelect}
+              isLoading={servicesLoading}
+              errorMessage={servicesError}
+              onRetry={refreshServices}
+            />
+          </motion.div>
 
         {shouldShowScheduleSection && (
           <motion.div
@@ -362,29 +370,31 @@ const BookingPageContent = () => {
             />
           </motion.div>
         )}
-      </form>
+        </form>
 
-      {shouldShowSummarySection && (
-        <motion.div
-          key="booking-summary"
-          layout
-          {...sectionAnimation}
-          transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.2 }}
-        >
-          <BookingSummary
-            prefersReducedMotion={prefersReducedMotion}
-            isContinueDisabled={isContinueDisabled}
-            formattedDate={formattedDate}
-            formattedTime={formattedTime}
-            reasonSummary={reasonSummary}
-            customerInfo={customerInfo}
-            customerNotes={customerNotes}
-            isCustomerComplete={isCustomerComplete}
-            serviceLabel={selectedServiceLabel}
-            providerLabel={selectedProviderLabel}
-          />
-        </motion.div>
-      )}
+        {shouldShowSummarySection && (
+          <motion.div
+            key="booking-summary"
+            layout
+            {...sectionAnimation}
+            transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.2 }}
+            className="lg:sticky lg:top-6"
+          >
+            <BookingSummary
+              prefersReducedMotion={prefersReducedMotion}
+              isContinueDisabled={isContinueDisabled}
+              formattedDate={formattedDate}
+              formattedTime={formattedTime}
+              reasonSummary={reasonSummary}
+              customerInfo={customerInfo}
+              customerNotes={customerNotes}
+              isCustomerComplete={isCustomerComplete}
+              serviceLabel={selectedServiceLabel}
+              providerLabel={selectedProviderLabel}
+            />
+          </motion.div>
+        )}
+      </div>
 
       {shouldShowContactSection && (
         <motion.div
