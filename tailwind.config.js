@@ -2,7 +2,7 @@ import animate from 'tailwindcss-animate';
 
 /** @type {import('tailwindcss').Config} */
 const config = {
-  darkMode: ['class', 'class'],
+  darkMode: ['class', '[data-theme="dark"]'],
   content: ['./src/**/*.{js,ts,jsx,tsx}', './styles/**/*.{css,scss}'],
   theme: {
     extend: {
