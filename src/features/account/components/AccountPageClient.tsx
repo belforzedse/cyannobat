@@ -41,37 +41,20 @@ const AccountPageClient = ({ userEmail, roles, isStaff, upcomingAppointments }: 
       initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: 'easeOut' }}
-      className="relative flex flex-col gap-8"
+      className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-12 text-right sm:px-10"
     >
-      {/* Header Card */}
-      <div className="glass relative overflow-hidden px-8 py-12 text-right sm:px-12 lg:px-16">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full bg-accent/25 blur-[140px] sm:-left-16 dark:bg-accent/35"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-16 bottom-16 h-80 w-80 rounded-full bg-accent-strong/25 blur-[150px] dark:bg-accent-strong/35"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent opacity-70 dark:via-white/20"
-        />
-
-        <motion.span
-          initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: prefersReducedMotion ? 0 : 0.1, duration: prefersReducedMotion ? 0 : 0.45 }}
-          className="inline-block rounded-full border border-white/25 bg-white/20 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm dark:border-white/15 dark:bg-white/10"
-        >
-          پنل کاربری
-        </motion.span>
-
+      <motion.header
+        initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: prefersReducedMotion ? 0 : 0.1, duration: prefersReducedMotion ? 0 : 0.45 }}
+        className="flex flex-col gap-3"
+      >
+        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">پنل کاربری</span>
         <motion.h1
           initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: prefersReducedMotion ? 0 : 0.2, duration: prefersReducedMotion ? 0 : 0.5 }}
-          className="mt-4 bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-4xl font-bold text-transparent sm:text-5xl"
+          className="text-3xl font-bold text-foreground sm:text-4xl"
         >
           حساب کاربری
         </motion.h1>
@@ -80,11 +63,11 @@ const AccountPageClient = ({ userEmail, roles, isStaff, upcomingAppointments }: 
           initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: prefersReducedMotion ? 0 : 0.3, duration: prefersReducedMotion ? 0 : 0.5 }}
-          className="mt-3 max-w-2xl text-balance leading-relaxed text-muted-foreground"
+          className="text-sm leading-relaxed text-muted-foreground"
         >
           اطلاعات ورود شما با سیستم رزرو یکپارچه است. نقش‌های فعال: {roles.length > 0 ? roles.join('، ') : 'کاربر مهمان'}.
         </motion.p>
-      </div>
+      </motion.header>
 
       {/* Staff Redirect Card */}
       {isStaff && (
@@ -93,13 +76,12 @@ const AccountPageClient = ({ userEmail, roles, isStaff, upcomingAppointments }: 
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: prefersReducedMotion ? 0 : 0.4, duration: prefersReducedMotion ? 0 : 0.5 }}
         >
-          <Card variant="accent" padding="lg">
-            <div className="flex flex-col items-end gap-4 text-right">
-              <h2 className="text-lg font-semibold text-accent">ورود به پیشخوان کارکنان</h2>
-              <p className="text-sm text-accent/90">
-                شما به عنوان عضو کادر درمان وارد شده‌اید. برای مدیریت نوبت‌ها و بازه‌های زمانی، به پیشخوان کارکنان منتقل
-                شوید.
-              </p>
+          <Card variant="accent" padding="lg" className="flex flex-col gap-4 text-right">
+            <h2 className="text-lg font-semibold text-accent">ورود به پیشخوان کارکنان</h2>
+            <p className="text-sm leading-6 text-accent/90">
+              شما به عنوان عضو کادر درمان وارد شده‌اید. برای مدیریت نوبت‌ها و بازه‌های زمانی، به پیشخوان کارکنان منتقل شوید.
+            </p>
+            <div className="flex justify-end">
               <Link href="/staff">
                 <Button variant="secondary" size="md">
                   رفتن به پیشخوان
@@ -117,39 +99,35 @@ const AccountPageClient = ({ userEmail, roles, isStaff, upcomingAppointments }: 
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: prefersReducedMotion ? 0 : 0.4, duration: prefersReducedMotion ? 0 : 0.5 }}
         >
-          <Card variant="default" padding="lg">
-            <div className="flex flex-col items-end gap-1 text-right">
-              <div className="flex w-full items-center justify-between">
-                <GlassIcon icon={Calendar} size="sm" label="نوبت‌های آینده" />
-                <h2 className="text-lg font-semibold text-foreground">نوبت‌های آینده</h2>
-              </div>
+          <Card variant="default" padding="lg" className="flex flex-col gap-4 text-right">
+            <div className="flex items-center justify-between">
+              <GlassIcon icon={Calendar} size="sm" label="نوبت‌های آینده" />
+              <h2 className="text-lg font-semibold text-foreground">نوبت‌های آینده</h2>
             </div>
 
             {upcomingAppointments.length === 0 ? (
-              <p className="mt-4 text-sm text-muted-foreground">
+              <p className="text-sm leading-6 text-muted-foreground">
                 نوبت فعالی ثبت نشده است. از طریق صفحه رزرو، زمان مناسب خود را انتخاب کنید.
               </p>
             ) : (
-              <ul className="mt-6 space-y-3">
+              <ul className="space-y-3">
                 {upcomingAppointments.map((appointment) => (
                   <motion.li
                     key={appointment.id}
                     whileHover={prefersReducedMotion ? undefined : { scale: 1.01 }}
                     transition={{ type: 'spring', stiffness: 300 }}
                   >
-                    <Card variant="subtle" padding="md">
-                      <div className="flex flex-col gap-2 text-right text-sm">
-                        <span className="font-semibold text-foreground">{appointment.serviceTitle}</span>
-                        <div className="flex flex-col gap-1 text-xs text-muted-foreground">
-                          <span>ارائه‌دهنده: {appointment.providerName}</span>
-                          <span>زمان: {new Date(appointment.start).toLocaleString('fa-IR', { hour12: false })}</span>
-                          <span className="inline-flex items-center gap-2">
-                            وضعیت:
-                            <span className="rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 text-[11px] font-medium text-accent">
-                              {statusLabels[appointment.status] ?? appointment.status}
-                            </span>
+                    <Card variant="subtle" padding="md" className="flex flex-col gap-2 text-right text-sm">
+                      <span className="font-semibold text-foreground">{appointment.serviceTitle}</span>
+                      <div className="flex flex-col gap-1 text-xs text-muted-foreground">
+                        <span>ارائه‌دهنده: {appointment.providerName}</span>
+                        <span>زمان: {new Date(appointment.start).toLocaleString('fa-IR', { hour12: false })}</span>
+                        <span className="inline-flex items-center gap-2">
+                          وضعیت:
+                          <span className="rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 text-[11px] font-medium text-accent">
+                            {statusLabels[appointment.status] ?? appointment.status}
                           </span>
-                        </div>
+                        </span>
                       </div>
                     </Card>
                   </motion.li>
@@ -166,14 +144,12 @@ const AccountPageClient = ({ userEmail, roles, isStaff, upcomingAppointments }: 
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: prefersReducedMotion ? 0 : 0.5, duration: prefersReducedMotion ? 0 : 0.5 }}
       >
-        <Card variant="default" padding="lg">
-          <div className="flex flex-col items-end gap-1 text-right">
-            <div className="flex w-full items-center justify-between">
-              <GlassIcon icon={Mail} size="sm" label="اطلاعات ورود" />
-              <h2 className="text-lg font-semibold text-foreground">اطلاعات ورود</h2>
-            </div>
+        <Card variant="default" padding="lg" className="flex flex-col gap-4 text-right">
+          <div className="flex items-center justify-between">
+            <GlassIcon icon={Mail} size="sm" label="اطلاعات ورود" />
+            <h2 className="text-lg font-semibold text-foreground">اطلاعات ورود</h2>
           </div>
-          <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+          <div className="space-y-2 text-sm leading-6 text-muted-foreground">
             <p>
               ایمیل ثبت شده: <span className="font-semibold text-foreground">{userEmail}</span>
             </p>
