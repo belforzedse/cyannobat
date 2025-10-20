@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import clsx from 'clsx';
 import type { LucideIcon } from 'lucide-react';
@@ -61,7 +61,6 @@ const SidebarAccountWidget = React.forwardRef<
     isActive?: boolean
   }
 >(({ layout, isActive = false }, ref) => {
-  const router = useRouter();
   const [session, setSession] = useState<SessionState>({ status: 'loading' });
 
   useEffect(() => {
@@ -120,10 +119,6 @@ const SidebarAccountWidget = React.forwardRef<
     };
   }, []);
 
-  const handleLogin = () => {
-    router.push('/login');
-  };
-
   const accountHref = session.status === 'authenticated' && session.isStaff ? '/staff' : '/account';
   const containerClassName = "w-full";
 
@@ -147,10 +142,9 @@ const SidebarAccountWidget = React.forwardRef<
 
   if (session.status === "unauthenticated") {
     return (
-      <div ref={ref} className={containerClassName}>
-        <button
-          type="button"
-          onClick={handleLogin}
+      <div ref={ref} className={containerClassName} data-layout={layout}>
+        <Link
+          href="/login"
           className={baseClasses}
           aria-label="ورود یا ثبت‌نام"
         >
@@ -164,13 +158,13 @@ const SidebarAccountWidget = React.forwardRef<
               isActive ? 'text-foreground' : 'text-current group-hover:text-foreground'
             )}>ورود</span>
           </div>
-        </button>
+        </Link>
       </div>
     );
   }
 
   return (
-    <div ref={ref} className={containerClassName}>
+    <div ref={ref} className={containerClassName} data-layout={layout}>
       <Link
         href={accountHref}
         className={baseClasses}
