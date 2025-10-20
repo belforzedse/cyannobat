@@ -6,7 +6,8 @@ import { Button, Card, Input } from '@/components/ui'
 import { useToast } from '@/components/ui/ToastProvider'
 import { useGlobalLoadingOverlay } from '@/components/GlobalLoadingOverlayProvider'
 import type { StaffUser } from '@/features/staff/types'
-import { ASSIGNABLE_ROLES, type AssignableRole, getCreatableRolesForUser } from '@/lib/staff/rolePermissions'
+import { type AssignableRole, getCreatableRolesForUser } from '@/lib/staff/rolePermissions'
+import { isAssignableRole, roleLabels } from '@/features/staff/utils/roleLabels'
 
 type StaffUserCreationCardProps = {
   currentUser: StaffUser

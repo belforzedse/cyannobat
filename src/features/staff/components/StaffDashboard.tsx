@@ -12,6 +12,7 @@ import {
   GlobalLoadingOverlayProvider,
   useGlobalLoadingOverlay,
 } from '@/components/GlobalLoadingOverlayProvider'
+import { getRoleLabel } from '@/features/staff/utils/roleLabels'
 import StaffUserCreationCard from './StaffUserCreationCard'
 
 type StaffDashboardProps = {
@@ -191,7 +192,7 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
             <div>
               <span className="font-medium text-foreground">{currentUser.email}</span>
               <span className="mx-2 text-muted-foreground/70">•</span>
-              <span>{currentUser.roles.join(', ')}</span>
+              <span>{currentUser.roles.map(getRoleLabel).join('، ')}</span>
             </div>
             <Button variant="secondary" size="sm" onClick={handleLogout} className="gap-2">
               <LogOut className="h-4 w-4" />
