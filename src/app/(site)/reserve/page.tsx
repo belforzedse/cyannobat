@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -81,6 +81,10 @@ const BookingPageContent = () => {
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [bookingReference, setBookingReference] = useState<string | null>(null)
 
+  const scheduleSectionRef = useRef<HTMLDivElement | null>(null)
+  const reasonSectionRef = useRef<HTMLDivElement | null>(null)
+  const contactSectionRef = useRef<HTMLDivElement | null>(null)
+
   const sectionAnimation = {
     initial: { opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -12 },
     animate: { opacity: 1, y: 0 },
@@ -99,6 +103,44 @@ const BookingPageContent = () => {
       setActivity('booking-availability', false)
     }
   }, [availabilityLoading, setActivity])
+
+  const scrollToSection = useCallback(
+    (sectionRef: { current: HTMLElement | null }) => {
+      const element = sectionRef.current
+      if (!element) return
+
+      element.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' })
+    },
+    [prefersReducedMotion],
+  )
+
+  const hasShownScheduleSectionRef = useRef(shouldShowScheduleSection)
+  const hasShownReasonSectionRef = useRef(shouldShowReasonSection)
+  const hasShownContactSectionRef = useRef(shouldShowContactSection)
+
+  useEffect(() => {
+    if (shouldShowScheduleSection && !hasShownScheduleSectionRef.current) {
+      scrollToSection(scheduleSectionRef)
+    }
+
+    hasShownScheduleSectionRef.current = shouldShowScheduleSection
+  }, [shouldShowScheduleSection, scrollToSection])
+
+  useEffect(() => {
+    if (shouldShowReasonSection && !hasShownReasonSectionRef.current) {
+      scrollToSection(reasonSectionRef)
+    }
+
+    hasShownReasonSectionRef.current = shouldShowReasonSection
+  }, [shouldShowReasonSection, scrollToSection])
+
+  useEffect(() => {
+    if (shouldShowContactSection && !hasShownContactSectionRef.current) {
+      scrollToSection(contactSectionRef)
+    }
+
+    hasShownContactSectionRef.current = shouldShowContactSection
+  }, [shouldShowContactSection, scrollToSection])
 
   const extractErrorMessages = useCallback((payload: unknown): string[] => {
     if (!payload || typeof payload !== 'object') return []
@@ -321,6 +363,7 @@ const BookingPageContent = () => {
           <motion.div
             key="booking-schedule"
             layout
+            ref={scheduleSectionRef}
             {...sectionAnimation}
             transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.05 }}
           >
@@ -342,6 +385,7 @@ const BookingPageContent = () => {
           <motion.div
             key="booking-reasons"
             layout
+            ref={reasonSectionRef}
             {...sectionAnimation}
             transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.1 }}
           >
@@ -359,6 +403,7 @@ const BookingPageContent = () => {
           <motion.div
             key="booking-contact"
             layout
+            ref={contactSectionRef}
             {...sectionAnimation}
             transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.15 }}
           >
