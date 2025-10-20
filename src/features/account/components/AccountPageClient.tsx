@@ -19,13 +19,15 @@ type Appointment = {
 }
 
 type AccountPageClientProps = {
+  userName: string
   userEmail: string
+  userPhone: string
   roles: string[]
   isStaff: boolean
   upcomingAppointments: Appointment[]
 }
 
-const AccountPageClient = ({ userEmail, roles, isStaff, upcomingAppointments }: AccountPageClientProps) => {
+const AccountPageClient = ({ userName, userEmail, userPhone, roles, isStaff, upcomingAppointments }: AccountPageClientProps) => {
   const prefersReducedMotion = useReducedMotion()
 
   const handleLogout = useCallback(async () => {
@@ -171,6 +173,12 @@ const AccountPageClient = ({ userEmail, roles, isStaff, upcomingAppointments }: 
           <div className="space-y-2 text-sm leading-6 text-muted-foreground">
             <p>
               ایمیل ثبت شده: <span className="font-semibold text-foreground">{userEmail}</span>
+            </p>
+            <p>
+              نام کامل: <span className="font-semibold text-foreground">{userName || 'ثبت نشده'}</span>
+            </p>
+            <p>
+              شماره تماس: <span className="font-semibold text-foreground">{userPhone || 'ثبت نشده'}</span>
             </p>
             <p>برای تغییر رمز عبور یا به‌روزرسانی اطلاعات تماس، با پشتیبانی هماهنگ کنید.</p>
           </div>

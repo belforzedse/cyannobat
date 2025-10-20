@@ -34,6 +34,8 @@ export const GET = async (request: Request) => {
     user: {
       id: String(authUser.id),
       email: authUser.email ?? '',
+      name: authUser.name ?? '',
+      phone: authUser.phone ?? '',
       roles,
     },
     isStaff: userIsStaff(authUser),

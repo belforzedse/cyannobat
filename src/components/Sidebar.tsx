@@ -50,7 +50,7 @@ type SessionState =
   | { status: 'unauthenticated' }
   | {
       status: 'authenticated';
-      user: { id: string; email: string; roles: string[] };
+      user: { id: string; email: string; name: string; phone: string; roles: string[] };
       isStaff: boolean;
     };
 
@@ -79,7 +79,7 @@ const SidebarAccountWidget = React.forwardRef<
 
         const data: {
           authenticated: boolean;
-          user?: { id: string; email?: string; roles?: unknown };
+          user?: { id: string; email?: string; name?: string; phone?: string; roles?: unknown };
           isStaff?: boolean;
         } = await response.json();
 
@@ -97,6 +97,8 @@ const SidebarAccountWidget = React.forwardRef<
             user: {
               id: String(data.user.id),
               email: data.user.email ?? '',
+              name: data.user.name ?? '',
+              phone: data.user.phone ?? '',
               roles,
             },
             isStaff: Boolean(data.isStaff),

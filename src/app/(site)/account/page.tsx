@@ -67,7 +67,9 @@ const AccountPage = async () => {
   }
 
   const userId = String((authUser as { id?: string | number }).id ?? '')
+  const userName = (authUser as { name?: string }).name ?? ''
   const userEmail = (authUser as { email?: string }).email ?? ''
+  const userPhone = (authUser as { phone?: string }).phone ?? ''
   const roles = extractRoles(authUser)
   const isStaff = userIsStaff(authUser)
 
@@ -90,7 +92,16 @@ const AccountPage = async () => {
     upcomingAppointments = result.docs.map((doc) => mapAppointment(doc as PopulatedAppointment))
   }
 
-  return <AccountPageClient userEmail={userEmail} roles={roles} isStaff={isStaff} upcomingAppointments={upcomingAppointments} />
+  return (
+    <AccountPageClient
+      userName={userName}
+      userEmail={userEmail}
+      userPhone={userPhone}
+      roles={roles}
+      isStaff={isStaff}
+      upcomingAppointments={upcomingAppointments}
+    />
+  )
 }
 
 export default AccountPage
