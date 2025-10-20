@@ -27,15 +27,45 @@ export const POST = async (request: Request) => {
   if (
     !body ||
     typeof body !== 'object' ||
-    typeof (body as { email?: unknown }).email !== 'string' ||
+    typeof (body as { identifier?: unknown }).identifier !== 'string' ||
     typeof (body as { password?: unknown }).password !== 'string'
   ) {
     return NextResponse.json({ message: 'Email and password are required' }, { status: 400 })
   }
 
-  const { email, password } = body as { email: string; password: string }
+  const { identifier, password } = body as { identifier: string; password: string }
+  const trimmedIdentifier = identifier.trim()
+
+  if (!trimmedIdentifier) {
+    return NextResponse.json({ message: 'Email and password are required' }, { status: 400 })
+  }
 
   try {
+    let email = trimmedIdentifier
+
+    if (!trimmedIdentifier.includes('@')) {
+      const userQuery = await payload.find({
+        collection: 'users',
+        where: {
+          phone: {
+            equals: trimmedIdentifier,
+          },
+        },
+        limit: 1,
+      })
+
+      const matchedUser = userQuery.docs[0]
+
+      if (!matchedUser?.email) {
+        return NextResponse.json(
+          { message: 'ورود ناموفق بود. ایمیل یا رمز عبور را بررسی کنید.' },
+          { status: 401 },
+        )
+      }
+
+      email = matchedUser.email
+    }
+
     const auth = (await payload.login({
       collection: 'users',
       data: { email, password },
