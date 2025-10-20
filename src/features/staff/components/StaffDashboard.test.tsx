@@ -176,13 +176,13 @@ describe('StaffDashboard interactions', () => {
 
     renderDashboard([baseAppointment], adminUser)
 
-    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'newpatient@example.com' } })
-    fireEvent.change(screen.getByLabelText('Temporary password'), { target: { value: 'examplepass' } })
+    fireEvent.change(screen.getByLabelText('ایمیل'), { target: { value: 'newpatient@example.com' } })
+    fireEvent.change(screen.getByLabelText('رمز عبور موقت'), { target: { value: 'examplepass' } })
 
-    const roleSelect = screen.getByLabelText('Role')
+    const roleSelect = screen.getByLabelText('نقش')
     fireEvent.change(roleSelect, { target: { value: 'patient' } })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Create account' }))
+    fireEvent.click(screen.getByRole('button', { name: 'ایجاد حساب' }))
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
     expect(fetchMock).toHaveBeenCalledWith(
@@ -192,7 +192,7 @@ describe('StaffDashboard interactions', () => {
       }),
     )
 
-    await screen.findByText('Created Patient account for newpatient@example.com.')
+    await screen.findByText('حساب بیمار برای newpatient@example.com ایجاد شد.')
   })
 })
 
