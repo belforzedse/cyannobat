@@ -61,6 +61,9 @@ const BookingPageContent = () => {
     customerNotes,
     setCustomerNotes,
     stepsWithStatus,
+    isServiceComplete,
+    isScheduleComplete,
+    isReasonComplete,
     formattedDate,
     formattedTime,
     selectedServiceLabel,
@@ -76,6 +79,18 @@ const BookingPageContent = () => {
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [bookingReference, setBookingReference] = useState<string | null>(null)
+
+  const sectionAnimation = {
+    initial: { opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -12 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: prefersReducedMotion ? 0 : 0.3, ease: 'easeOut' },
+  }
+
+  const shouldShowScheduleSection = isServiceComplete
+  const shouldShowReasonSection = isScheduleComplete
+  const shouldShowContactSection = isReasonComplete
+  const shouldShowSummarySection =
+    isServiceComplete || isScheduleComplete || isReasonComplete || isCustomerComplete
 
   useEffect(() => {
     setActivity('booking-availability', availabilityLoading, 'در حال بررسی زمان‌های خالی...')
@@ -283,92 +298,138 @@ const BookingPageContent = () => {
       <BookingStepper steps={stepsWithStatus} prefersReducedMotion={prefersReducedMotion} />
 
       <form className="grid gap-4 sm:gap-6 lg:gap-8">
-        <ServiceSection
-          services={services}
-          selectedServiceId={selectedServiceId}
-          onSelectService={handleServiceSelect}
-          isLoading={servicesLoading}
-          errorMessage={servicesError}
-          onRetry={refreshServices}
-        />
+        <motion.div layout {...sectionAnimation} transition={{ ...sectionAnimation.transition, delay: 0 }}>
+          <ServiceSection
+            services={services}
+            selectedServiceId={selectedServiceId}
+            onSelectService={handleServiceSelect}
+            isLoading={servicesLoading}
+            errorMessage={servicesError}
+            onRetry={refreshServices}
+          />
+        </motion.div>
 
-        <ScheduleSection
-          availability={availabilityForSelection}
-          selectedDay={selectedDay}
-          selectedSlotId={selectedSchedule?.slot.id ?? null}
-          onSelectDay={handleDaySelect}
-          onSelectSlot={handleSlotSelect}
-          placeholderMessage={schedulePlaceholderMessage}
-          isLoading={availabilityLoading}
-          errorMessage={availabilityError}
-          onRetry={refreshAvailability}
-        />
+        {shouldShowScheduleSection && (
+          <motion.div
+            key="booking-schedule"
+            layout
+            {...sectionAnimation}
+            transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.05 }}
+          >
+            <ScheduleSection
+              availability={availabilityForSelection}
+              selectedDay={selectedDay}
+              selectedSlotId={selectedSchedule?.slot.id ?? null}
+              onSelectDay={handleDaySelect}
+              onSelectSlot={handleSlotSelect}
+              placeholderMessage={schedulePlaceholderMessage}
+              isLoading={availabilityLoading}
+              errorMessage={availabilityError}
+              onRetry={refreshAvailability}
+            />
+          </motion.div>
+        )}
 
-        <ReasonsSection
-          options={reasonOptions}
-          selectedReasons={selectedReasons}
-          onToggleReason={handleReasonToggle}
-          additionalReason={additionalReason}
-          onAdditionalReasonChange={(value) => setAdditionalReason(value)}
-        />
+        {shouldShowReasonSection && (
+          <motion.div
+            key="booking-reasons"
+            layout
+            {...sectionAnimation}
+            transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.1 }}
+          >
+            <ReasonsSection
+              options={reasonOptions}
+              selectedReasons={selectedReasons}
+              onToggleReason={handleReasonToggle}
+              additionalReason={additionalReason}
+              onAdditionalReasonChange={(value) => setAdditionalReason(value)}
+            />
+          </motion.div>
+        )}
 
-        <ContactSection
-          customerInfo={customerInfo}
-          onCustomerChange={handleCustomerChange}
-          customerNotes={customerNotes}
-          onCustomerNotesChange={(value) => setCustomerNotes(value)}
-        />
+        {shouldShowContactSection && (
+          <motion.div
+            key="booking-contact"
+            layout
+            {...sectionAnimation}
+            transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.15 }}
+          >
+            <ContactSection
+              customerInfo={customerInfo}
+              onCustomerChange={handleCustomerChange}
+              customerNotes={customerNotes}
+              onCustomerNotesChange={(value) => setCustomerNotes(value)}
+            />
+          </motion.div>
+        )}
       </form>
 
-      <BookingSummary
-        prefersReducedMotion={prefersReducedMotion}
-        isContinueDisabled={isContinueDisabled}
-        formattedDate={formattedDate}
-        formattedTime={formattedTime}
-        reasonSummary={reasonSummary}
-        customerInfo={customerInfo}
-        customerNotes={customerNotes}
-        isCustomerComplete={isCustomerComplete}
-        serviceLabel={selectedServiceLabel}
-        providerLabel={selectedProviderLabel}
-      />
+      {shouldShowSummarySection && (
+        <motion.div
+          key="booking-summary"
+          layout
+          {...sectionAnimation}
+          transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.2 }}
+        >
+          <BookingSummary
+            prefersReducedMotion={prefersReducedMotion}
+            isContinueDisabled={isContinueDisabled}
+            formattedDate={formattedDate}
+            formattedTime={formattedTime}
+            reasonSummary={reasonSummary}
+            customerInfo={customerInfo}
+            customerNotes={customerNotes}
+            isCustomerComplete={isCustomerComplete}
+            serviceLabel={selectedServiceLabel}
+            providerLabel={selectedProviderLabel}
+          />
+        </motion.div>
+      )}
 
-      <div className="flex flex-col items-end gap-2">
-        <div className="flex flex-wrap items-center justify-end gap-3">
-          <Link href="/" className="btn-secondary">
-            بازگشت
-          </Link>
-          <motion.button
-            type="button"
-            className="btn-primary"
-            disabled={isActionDisabled}
-            onClick={handleContinue}
-            whileHover={prefersReducedMotion || isActionDisabled ? undefined : { y: -3 }}
-            whileTap={prefersReducedMotion || isActionDisabled ? undefined : { scale: 0.97 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 22 }}
-          >
-            {isSubmitting ? 'در حال ثبت...' : 'ادامه'}
-          </motion.button>
-        </div>
-        <div className="flex max-w-xl flex-col items-end gap-1 text-right" aria-live="polite">
-          {isSubmitting && (
-            <span className="text-xs text-muted-foreground">چند لحظه صبر کنید؛ در حال ثبت نوبت هستیم.</span>
-          )}
-          {submitError && <span className="text-sm text-destructive">{submitError}</span>}
-          {validationErrors.length > 0 && (
-            <ul className="list-disc space-y-1 pr-4 text-xs text-destructive">
-              {validationErrors.map((message, index) => (
-                <li key={`${message}-${index}`}>{message}</li>
-              ))}
-            </ul>
-          )}
-          {bookingReference && !isSubmitting && (
-            <span className="text-sm text-accent">
-              نوبت با کد پیگیری {bookingReference} ثبت شد. در حال انتقال به صفحه تأیید...
-            </span>
-          )}
-        </div>
-      </div>
+      {shouldShowContactSection && (
+        <motion.div
+          key="booking-actions"
+          layout
+          {...sectionAnimation}
+          transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.25 }}
+          className="flex flex-col items-end gap-2"
+        >
+          <div className="flex flex-wrap items-center justify-end gap-3">
+            <Link href="/" className="btn-secondary">
+              بازگشت
+            </Link>
+            <motion.button
+              type="button"
+              className="btn-primary"
+              disabled={isActionDisabled}
+              onClick={handleContinue}
+              whileHover={prefersReducedMotion || isActionDisabled ? undefined : { y: -3 }}
+              whileTap={prefersReducedMotion || isActionDisabled ? undefined : { scale: 0.97 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+            >
+              {isSubmitting ? 'در حال ثبت...' : 'ادامه'}
+            </motion.button>
+          </div>
+          <div className="flex max-w-xl flex-col items-end gap-1 text-right" aria-live="polite">
+            {isSubmitting && (
+              <span className="text-xs text-muted-foreground">چند لحظه صبر کنید؛ در حال ثبت نوبت هستیم.</span>
+            )}
+            {submitError && <span className="text-sm text-destructive">{submitError}</span>}
+            {validationErrors.length > 0 && (
+              <ul className="list-disc space-y-1 pr-4 text-xs text-destructive">
+                {validationErrors.map((message, index) => (
+                  <li key={`${message}-${index}`}>{message}</li>
+                ))}
+              </ul>
+            )}
+            {bookingReference && !isSubmitting && (
+              <span className="text-sm text-accent">
+                نوبت با کد پیگیری {bookingReference} ثبت شد. در حال انتقال به صفحه تأیید...
+              </span>
+            )}
+          </div>
+        </motion.div>
+      )}
     </motion.section>
   )
 }
