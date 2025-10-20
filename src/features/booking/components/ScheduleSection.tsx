@@ -1,8 +1,11 @@
 'use client'
 
+import { motion, useReducedMotion } from 'framer-motion'
+
 import SchedulePicker from '@/components/SchedulePicker'
 import { Card } from '@/components/ui'
 import { type AvailabilityDay, type AvailabilitySlot } from '@/features/booking/types'
+import { luxuryPresets } from '@/lib/luxuryAnimations'
 
 type ScheduleSectionProps = {
   availability: AvailabilityDay[]
@@ -47,6 +50,11 @@ const ScheduleSection = ({
   errorMessage,
   onRetry,
 }: ScheduleSectionProps) => {
+  const prefersReducedMotion = useReducedMotion()
+  const reduceMotion = Boolean(prefersReducedMotion)
+  const sectionVariants = reduceMotion ? undefined : luxuryPresets.silk('up')
+  const motionStates = reduceMotion ? {} : { initial: 'initial' as const, animate: 'animate' as const }
+
   const activeDay =
     (selectedDay ? availability.find((day) => day.date === selectedDay) : null) ??
     availability.find((day) => day.slots.some((slot) => slot.id === selectedSlotId)) ??
@@ -55,7 +63,8 @@ const ScheduleSection = ({
   const selectionSummary = formatSelectedSummary(activeDay, activeSlot)
 
   return (
-    <Card variant="default" padding="lg" className="sm:rounded-3xl">
+    <motion.section variants={sectionVariants} {...motionStates}>
+      <Card variant="default" padding="lg" className="sm:rounded-3xl">
       <div className="flex flex-col items-end gap-1 sm:gap-2 text-right">
         <h3 className="text-sm font-semibold text-foreground">انتخاب تاریخ و زمان خدمت</h3>
         <p className="text-xs leading-6 text-muted-foreground">
@@ -95,7 +104,8 @@ const ScheduleSection = ({
           />
         )}
       </div>
-    </Card>
+      </Card>
+    </motion.section>
   )
 }
 
