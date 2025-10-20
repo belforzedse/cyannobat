@@ -17,22 +17,24 @@ type CreatedUser = {
   roles: string[]
 }
 
-const roleLabels: Record<AssignableRole, string> = {
-  patient: 'Patient',
-  doctor: 'Doctor',
-  receptionist: 'Receptionist',
-  admin: 'Admin',
+const roleLabelsFa: Record<AssignableRole, string> = {
+  patient: 'بیمار',
+  doctor: 'پزشک',
+  receptionist: 'مسئول پذیرش',
+  admin: 'مدیر',
 }
 
 const roleHelpText: Record<AssignableRole, string> = {
-  patient: 'Basic portal access and booking management.',
-  doctor: 'Clinical staff with access to provider tooling.',
-  receptionist: 'Front desk staff with scheduling capabilities.',
-  admin: 'Full administrative access across the workspace.',
+  patient: 'دسترسی پایه به پرتال و مدیریت نوبت‌ها.',
+  doctor: 'عضو کادر درمان با دسترسی به ابزارهای پزشک.',
+  receptionist: 'پرسنل پذیرش با امکان زمان‌بندی نوبت‌ها.',
+  admin: 'دسترسی مدیریتی کامل به تمام بخش‌ها.',
 }
 
 const isAssignableRole = (value: string): value is AssignableRole =>
   (ASSIGNABLE_ROLES as readonly string[]).includes(value)
+
+const getRoleLabelFa = (role: string) => (isAssignableRole(role) ? roleLabelsFa[role] : role)
 
 const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
   const creatableRoles = useMemo(() => getCreatableRolesForUser(currentUser.roles), [currentUser.roles])
@@ -68,13 +70,13 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
     event.preventDefault()
 
     if (!selectedRole) {
-      setFormError('Select a role to assign.')
+      setFormError('لطفاً یک نقش برای اختصاص انتخاب کنید.')
       return
     }
 
     setFormError(null)
     setIsSubmitting(true)
-    setActivity('staff-create-user', true, 'Creating user account...')
+    setActivity('staff-create-user', true, 'ایجاد حساب کاربری جدید...')
 
     try {
       const response = await fetch('/api/staff/users', {
@@ -90,7 +92,7 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
       })
 
       if (!response.ok) {
-        let description = 'Unable to create the user.'
+        let description = 'امکان ایجاد کاربر وجود ندارد.'
 
         try {
           const errorBody = (await response.json()) as { message?: string }
@@ -112,12 +114,12 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
       setPassword('')
       setLastCreatedUser(result.user)
       showToast({
-        description: `Created ${roleLabels[selectedRole]} account for ${result.user.email}.`,
+        description: `حساب ${roleLabelsFa[selectedRole]} برای ${result.user.email} ایجاد شد.`,
         variant: 'success',
       })
     } catch (error) {
       console.error(error)
-      const description = 'Unable to create the user. Please try again.'
+      const description = 'امکان ایجاد کاربر وجود ندارد. لطفاً دوباره تلاش کنید.'
       setFormError(description)
       showToast({ description, variant: 'error' })
     } finally {
@@ -129,29 +131,29 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
   return (
     <Card variant='default' padding='lg' className='flex flex-col gap-6'>
       <div className='flex flex-col gap-1 text-right'>
-        <h2 className='text-lg font-semibold text-foreground'>Add a team member</h2>
+        <h2 className='text-lg font-semibold text-foreground'>افزودن عضو تیم</h2>
         <p className='text-xs text-muted-foreground'>
-          Create new user accounts with the appropriate permissions. Only the roles you are allowed to manage are shown
-          below.
+          حساب‌های کاربری جدید را با سطح دسترسی مناسب ایجاد کنید. تنها نقش‌هایی که مجاز به مدیریت آن‌ها هستید در زیر
+          نمایش داده می‌شوند.
         </p>
       </div>
 
       <form className='flex flex-col gap-5' onSubmit={handleSubmit}>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
           <label className='flex flex-col gap-2 text-sm'>
-            <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>Email</span>
+            <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>ایمیل</span>
             <Input
               type='email'
               autoComplete='email'
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              placeholder='name@example.com'
+              placeholder='کاربر@example.com'
             />
           </label>
 
           <label className='flex flex-col gap-2 text-sm'>
-            <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>Temporary password</span>
+            <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>رمز عبور موقت</span>
             <Input
               type='password'
               autoComplete='new-password'
@@ -159,12 +161,12 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
               minLength={8}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder='At least 8 characters'
+              placeholder='حداقل ۸ کاراکتر'
             />
           </label>
 
           <label className='flex flex-col gap-2 text-sm'>
-            <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>Role</span>
+            <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>نقش</span>
             <select
               className='glass-panel rounded-xl px-3 py-2 text-sm text-foreground ring-offset-background transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-70'
               value={selectedRole}
@@ -177,7 +179,7 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
             >
               {creatableRoles.map((role) => (
                 <option key={role} value={role}>
-                  {roleLabels[role]}
+                  {roleLabelsFa[role]}
                 </option>
               ))}
             </select>
@@ -186,7 +188,7 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
 
         {selectedRole && (
           <p className='rounded-xl border border-dashed border-white/15 bg-white/10 px-4 py-3 text-xs text-muted-foreground dark:border-white/10'>
-            <span className='font-semibold text-foreground'>{roleLabels[selectedRole]}:</span>{' '}
+            <span className='font-semibold text-foreground'>{roleLabelsFa[selectedRole]}:</span>{' '}
             {roleHelpText[selectedRole]}
           </p>
         )}
@@ -199,21 +201,20 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
 
         <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
           <p className='text-[11px] text-muted-foreground'>
-            Accounts are created instantly. Share the temporary password and encourage recipients to update it after
-            signing in.
+            حساب‌ها فوراً ایجاد می‌شوند. رمز عبور موقت را به اشتراک بگذارید و از کاربران بخواهید پس از ورود آن را تغییر دهند.
           </p>
           <Button type='submit' disabled={isSubmitting}>
-            {isSubmitting ? 'Creating...' : 'Create account'}
+            {isSubmitting ? 'در حال ایجاد...' : 'ایجاد حساب'}
           </Button>
         </div>
       </form>
 
       {lastCreatedUser && (
         <div className='rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-muted-foreground dark:border-white/10 dark:bg-white/5'>
-          <span className='font-semibold text-foreground'>Last created:</span>{' '}
+          <span className='font-semibold text-foreground'>آخرین حساب ایجادشده:</span>{' '}
           <span>{lastCreatedUser.email}</span>
           <span className='mx-2 text-muted-foreground/60'>•</span>
-          <span>{lastCreatedUser.roles.join(', ')}</span>
+          <span>{lastCreatedUser.roles.map((role) => getRoleLabelFa(role)).join('، ')}</span>
         </div>
       )}
     </Card>
