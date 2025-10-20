@@ -18,6 +18,7 @@ const SignupForm = ({
   toggleLabel,
 }: SignupFormProps) => {
   const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -28,13 +29,27 @@ const SignupForm = ({
     setIsSubmitting(true)
     setErrorMessage(null)
 
+    const trimmedEmail = email.trim()
+    const trimmedPhone = phone.trim()
+
+    if (!trimmedEmail && !trimmedPhone) {
+      setIsSubmitting(false)
+      setErrorMessage('حداقل یکی از فیلدهای ایمیل یا شماره تلفن را وارد کنید.')
+      return
+    }
+
     try {
       const response = await fetch('/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, phone, password }),
+        body: JSON.stringify({
+          name,
+          email: trimmedEmail || undefined,
+          phone: trimmedPhone || undefined,
+          password,
+        }),
       })
 
       if (!response.ok) {

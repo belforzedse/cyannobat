@@ -9,15 +9,21 @@ export const dynamic = 'force-dynamic'
 
 const roleEnum = z.enum(ASSIGNABLE_ROLES as [typeof ASSIGNABLE_ROLES[number], ...typeof ASSIGNABLE_ROLES[number][]])
 
+const emailSchema = z
+  .string({ invalid_type_error: 'Email must be a string' })
+  .trim()
+  .min(1, 'Email must be provided')
+  .email('Email must be valid')
+
+const phoneSchema = z
+  .string({ invalid_type_error: 'Phone number must be a string' })
+  .trim()
+  .min(1, 'Phone number must be provided')
+  .regex(/^(\+98|0)?9\d{9}$/, 'Enter a valid Iranian phone number')
+
 const createUserSchema = z.object({
-  email: z
-    .string({
-      required_error: 'Email is required',
-      invalid_type_error: 'Email must be a string',
-    })
-    .trim()
-    .min(1, 'Email is required')
-    .email('Email must be valid'),
+  email: emailSchema.optional().or(z.literal('').transform(() => undefined)),
+  phone: phoneSchema,
   password: z
     .string({
       required_error: 'Password is required',
@@ -75,24 +81,36 @@ export const POST = async (request: Request) => {
     )
   }
 
+  const normalizedPhone = body.phone.trim()
+  const normalizedEmail = body.email?.trim()
+
+  const emailToPersist =
+    normalizedEmail && normalizedEmail.length > 0
+      ? normalizedEmail
+      : `user-${normalizedPhone.replace(/\D/g, '')}@cyannobat.local`
+
   try {
     const created = await payload.create({
       collection: 'users',
       data: {
-        email: body.email,
+        email: emailToPersist,
+        phone: normalizedPhone,
         password: body.password,
         roles: rolesToAssign,
       },
       overrideAccess: false,
     })
 
-    const createdRoles = Array.isArray(created.roles) ? created.roles.filter((role): role is string => typeof role === 'string') : []
+    const createdRoles = Array.isArray(created.roles)
+      ? created.roles.filter((role): role is string => typeof role === 'string')
+      : []
 
     return NextResponse.json(
       {
         user: {
           id: created.id,
           email: created.email,
+          phone: created.phone,
           roles: createdRoles,
         },
       },
@@ -104,7 +122,7 @@ export const POST = async (request: Request) => {
     if (error instanceof Error && /duplicate key value|already exists/i.test(error.message)) {
       return NextResponse.json(
         {
-          message: 'A user with that email already exists.',
+          message: 'A user with the same email or phone already exists.',
         },
         { status: 409 },
       )

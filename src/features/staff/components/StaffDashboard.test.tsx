@@ -169,6 +169,7 @@ describe('StaffDashboard interactions', () => {
       json: async () => ({
         user: {
           email: 'newpatient@example.com',
+          phone: null,
           roles: ['patient'],
         },
       }),
@@ -185,12 +186,16 @@ describe('StaffDashboard interactions', () => {
     fireEvent.click(screen.getByRole('button', { name: 'ایجاد حساب' }))
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
-    expect(fetchMock).toHaveBeenCalledWith(
-      '/api/staff/users',
-      expect.objectContaining({
-        method: 'POST',
-      }),
-    )
+    const fetchArgs = fetchMock.mock.calls[0] as unknown[]
+    expect(fetchArgs[0]).toBe('/api/staff/users')
+    expect((fetchArgs[1] as RequestInit)?.method).toBe('POST')
+
+    const body = JSON.parse(((fetchArgs[1] as RequestInit)?.body as string) ?? '{}')
+    expect(body).toMatchObject({
+      email: 'newpatient@example.com',
+      roles: ['patient'],
+    })
+    expect(body.phone).toBeUndefined()
 
     await screen.findByText('حساب بیمار برای newpatient@example.com ایجاد شد.')
   })

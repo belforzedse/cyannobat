@@ -14,9 +14,11 @@ type AuthResult = {
 
 const iranPhoneRegex = /^(\+98|0)?9\d{9}$/
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 const parseBody = async (
   request: Request,
-): Promise<{ name: string; phone: string; password: string } | NextResponse> => {
+): Promise<{ name: string; phone: string; password: string; email?: string } | NextResponse> => {
   let body: unknown
 
   try {
@@ -32,10 +34,11 @@ const parseBody = async (
     )
   }
 
-  const { name, phone, password } = body as {
+  const { name, phone, password, email } = body as {
     name?: unknown
     phone?: unknown
     password?: unknown
+    email?: unknown
   }
 
   if (typeof name !== 'string' || typeof phone !== 'string' || typeof password !== 'string') {
@@ -47,6 +50,7 @@ const parseBody = async (
 
   const trimmedName = name.trim()
   const trimmedPhone = phone.trim()
+  const trimmedEmail = typeof email === 'string' ? email.trim().toLowerCase() : undefined
 
   if (!trimmedName) {
     return NextResponse.json({ message: 'Name is required' }, { status: 400 })
@@ -63,7 +67,17 @@ const parseBody = async (
     )
   }
 
-  return { name: trimmedName, phone: trimmedPhone, password }
+  if (email !== undefined) {
+    if (typeof email !== 'string' || !trimmedEmail) {
+      return NextResponse.json({ message: 'Email must be a valid string' }, { status: 400 })
+    }
+
+    if (!emailRegex.test(trimmedEmail)) {
+      return NextResponse.json({ message: 'Enter a valid email address' }, { status: 400 })
+    }
+  }
+
+  return { name: trimmedName, phone: trimmedPhone, password, email: trimmedEmail }
 }
 
 const setAuthCookies = (response: NextResponse, auth: AuthResult) => {
@@ -106,7 +120,7 @@ export const POST = async (request: Request) => {
     return parsed
   }
 
-  const { name, phone, password } = parsed
+  const { name, phone, password, email } = parsed
 
   try {
     const existing = await payload.find({
@@ -137,9 +151,13 @@ export const POST = async (request: Request) => {
   let createdUser: PayloadRequest['user'] | null = null
 
   try {
+    const generatedEmail = `patient-${phone.replace(/\D/g, '') || phone}@cyannobat.local`
+    const normalizedEmail = (email ?? generatedEmail).toLowerCase()
+
     const created = await payload.create({
       collection: 'users',
       data: {
+        email: normalizedEmail,
         name,
         phone,
         roles: ['patient'],

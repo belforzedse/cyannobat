@@ -1,4 +1,5 @@
 import type { Access, CollectionBeforeValidateHook, CollectionConfig } from 'payload'
+import { ValidationError } from 'payload/errors'
 
 import { extractRoles } from '@/lib/auth'
 import { canAssignRoles } from '@/lib/staff/rolePermissions'
@@ -59,6 +60,31 @@ const enforcePatientRoleForUnauthenticated: CollectionBeforeValidateHook = ({ da
   return nextData
 }
 
+const ensureContactMethod: CollectionBeforeValidateHook = ({ data, originalDoc }) => {
+  const nextData = { ...(data ?? {}) }
+  const phoneCandidate =
+    typeof nextData.phone === 'string'
+      ? nextData.phone.trim()
+      : typeof originalDoc?.phone === 'string'
+        ? originalDoc.phone.trim()
+        : ''
+
+  if (!phoneCandidate) {
+    throw new ValidationError([{ message: 'Phone number is required.', path: 'phone' }])
+  }
+
+  if (typeof nextData.phone === 'string') {
+    nextData.phone = phoneCandidate
+  }
+
+  if (typeof nextData.email === 'string') {
+    const trimmedEmail = nextData.email.trim()
+    nextData.email = trimmedEmail || undefined
+  }
+
+  return nextData
+}
+
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
@@ -66,7 +92,7 @@ export const Users: CollectionConfig = {
     defaultColumns: ['email', 'name', 'phone', 'roles'],
   },
   hooks: {
-    beforeValidate: [enforcePatientRoleForUnauthenticated],
+    beforeValidate: [enforcePatientRoleForUnauthenticated, ensureContactMethod],
   },
   auth: true,
   access: {
@@ -84,7 +110,7 @@ export const Users: CollectionConfig = {
       required: true,
       unique: true,
       validate: (value) => {
-        if (typeof value !== 'string') return 'Phone number is required'
+        if (typeof value !== 'string' || value.trim().length === 0) return 'Phone number is required'
 
         const iranPhoneRegex = /^(\+98|0)?9\d{9}$/
         return iranPhoneRegex.test(value) || 'Enter a valid Iranian phone number'
