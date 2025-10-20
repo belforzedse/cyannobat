@@ -128,6 +128,9 @@ export interface User {
   updatedAt: string;
   createdAt: string;
   email: string;
+  name: string;
+  phone: string;
+  roles: ('patient' | 'doctor' | 'receptionist' | 'admin')[];
   resetPasswordToken?: string | null;
   resetPasswordExpiration?: string | null;
   salt?: string | null;
@@ -386,6 +389,9 @@ export interface UsersSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   email?: T;
+  name?: T;
+  phone?: T;
+  roles?: T;
   resetPasswordToken?: T;
   resetPasswordExpiration?: T;
   salt?: T;
