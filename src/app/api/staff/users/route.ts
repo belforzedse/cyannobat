@@ -4,6 +4,10 @@ import { ZodError, z } from 'zod'
 import { authenticateStaffRequest, unauthorizedResponse } from '@/lib/api/auth'
 import { extractRoles } from '@/lib/auth'
 import { ASSIGNABLE_ROLES, canAssignRoles, type AssignableRole } from '@/lib/staff/rolePermissions'
+import {
+  isValidIranNationalId,
+  normalizeIranNationalIdDigits,
+} from '@/lib/validators/iran-national-id'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,9 +24,18 @@ const phoneSchema = z
   .min(1, 'Phone number must be provided')
   .regex(/^(\+98|0)?9\d{9}$/, 'Enter a valid Iranian phone number')
 
+const nationalIdSchema = z
+  .string({ invalid_type_error: 'National ID must be a string', required_error: 'National ID is required' })
+  .transform((value) => normalizeIranNationalIdDigits(value))
+  .transform((value) => value.trim())
+  .refine((value) => isValidIranNationalId(value), {
+    message: 'Enter a valid Iranian national ID',
+  })
+
 const createUserSchema = z.object({
   email: emailSchema.optional().or(z.literal('').transform(() => undefined)),
   phone: phoneSchema,
+  nationalId: nationalIdSchema,
   password: z
     .string({
       required_error: 'Password is required',
@@ -83,6 +96,7 @@ export const POST = async (request: Request) => {
 
   const normalizedPhone = body.phone.trim()
   const normalizedEmail = body.email?.trim()
+  const normalizedNationalId = body.nationalId
 
   try {
     const created = await payload.create({
@@ -91,6 +105,7 @@ export const POST = async (request: Request) => {
         email: normalizedEmail || undefined,
         name: normalizedPhone,
         phone: normalizedPhone,
+        nationalId: normalizedNationalId,
         username: normalizedPhone,
         password: body.password,
         roles: rolesToAssign,
@@ -111,6 +126,7 @@ export const POST = async (request: Request) => {
           id: created.id,
           email: created.email,
           phone: created.phone,
+          nationalId: (created as { nationalId?: string }).nationalId ?? null,
           roles: createdRoles,
         },
       },
@@ -122,7 +138,7 @@ export const POST = async (request: Request) => {
     if (error instanceof Error && /duplicate key value|already exists/i.test(error.message)) {
       return NextResponse.json(
         {
-          message: 'A user with the same email or phone already exists.',
+          message: 'A user with the same email, phone, or national ID already exists.',
         },
         { status: 409 },
       )

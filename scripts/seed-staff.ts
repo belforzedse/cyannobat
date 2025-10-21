@@ -4,16 +4,25 @@ import path from 'path'
 const USERS_TO_SEED = [
   {
     email: 'patient@example.com',
+    name: 'کاربر بیمار',
+    phone: '09100000001',
+    nationalId: '0084575948',
     password: 'patient123!',
     roles: ['patient'],
   },
   {
     email: 'doctor@example.com',
+    name: 'دکتر نمونه',
+    phone: '09100000002',
+    nationalId: '0010350829',
     password: 'doctor123!',
     roles: ['doctor'],
   },
   {
     email: 'reception@example.com',
+    name: 'مسئول پذیرش',
+    phone: '09100000003',
+    nationalId: '0499370899',
     password: 'reception123!',
     roles: ['receptionist'],
   },
@@ -42,6 +51,9 @@ const run = async () => {
       const target = existing.docs[0]
       const updateData: Record<string, unknown> = {
         roles: user.roles,
+        name: user.name,
+        phone: user.phone,
+        nationalId: user.nationalId,
       }
       await payload.update({
         collection: 'users',
@@ -54,6 +66,9 @@ const run = async () => {
 
     const createData: Record<string, unknown> = {
       email: user.email,
+      name: user.name,
+      phone: user.phone,
+      nationalId: user.nationalId,
       password: user.password,
       roles: user.roles,
     }

@@ -3,6 +3,10 @@ import { ValidationError } from 'payload'
 
 import { extractRoles } from '@/lib/auth'
 import { canAssignRoles } from '@/lib/staff/rolePermissions'
+import {
+  isValidIranNationalId,
+  normalizeIranNationalIdDigits,
+} from '@/lib/validators/iran-national-id'
 
 // Allow creating first user without authentication
 const isFirstUserCreation: Access = async ({ req }) => {
@@ -87,6 +91,24 @@ const ensureContactMethod: CollectionBeforeValidateHook = ({ data, originalDoc }
     nextData.email = trimmedEmail || undefined
   }
 
+  const nationalIdCandidate =
+    typeof nextData.nationalId === 'string'
+      ? normalizeIranNationalIdDigits(nextData.nationalId).trim()
+      : typeof originalDoc?.nationalId === 'string'
+        ? normalizeIranNationalIdDigits(originalDoc.nationalId).trim()
+        : ''
+
+  if (!isValidIranNationalId(nationalIdCandidate)) {
+    throw new ValidationError({
+      collection: 'users',
+      errors: [{ message: 'National ID is required and must be valid.', path: 'nationalId' }],
+    })
+  }
+
+  if (typeof nextData.nationalId === 'string') {
+    nextData.nationalId = nationalIdCandidate
+  }
+
   return nextData
 }
 
@@ -125,6 +147,20 @@ export const Users: CollectionConfig = {
 
         const iranPhoneRegex = /^(\+98|0)?9\d{9}$/
         return iranPhoneRegex.test(value) || 'Enter a valid Iranian phone number'
+      },
+    },
+    {
+      name: 'nationalId',
+      type: 'text',
+      required: true,
+      unique: true,
+      validate: (value: unknown) => {
+        if (typeof value !== 'string' || value.trim().length === 0) {
+          return 'National ID is required'
+        }
+
+        const normalized = normalizeIranNationalIdDigits(value).trim()
+        return isValidIranNationalId(normalized) || 'Enter a valid Iranian national ID'
       },
     },
     {
