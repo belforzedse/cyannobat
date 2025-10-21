@@ -2,7 +2,7 @@ import type { ZodIssue } from 'zod'
 import { sql } from 'drizzle-orm'
 import configPromise, { payloadDrizzle } from '@payload-config'
 import { bookingHold, BookingHoldConflictError, BookingHoldStoreError } from '@/lib/redis'
-import { bookingHoldRequestSchema } from '@/lib/schemas/booking'
+import { bookingHoldReleaseSchema, bookingHoldRequestSchema } from '@/lib/schemas/booking'
 import { getPayload } from 'payload'
 
 const buildValidationErrorResponse = (issues: ZodIssue[]): Response =>
@@ -316,6 +316,83 @@ export const POST = async (request: Request): Promise<Response> => {
     return Response.json(
       {
         message: 'Unable to create booking hold',
+      },
+      { status: 500 },
+    )
+  }
+}
+
+export const DELETE = async (request: Request): Promise<Response> => {
+  let rawBody: unknown
+  try {
+    rawBody = await request.json()
+  } catch {
+    return Response.json(
+      {
+        message: 'Invalid request',
+        errors: [{ path: 'body', message: 'Request body must be valid JSON' }],
+      },
+      { status: 400 },
+    )
+  }
+
+  const parsed = bookingHoldReleaseSchema.safeParse(rawBody)
+
+  if (!parsed.success) {
+    return buildValidationErrorResponse(parsed.error.issues)
+  }
+
+  const { serviceId, slot } = parsed.data
+  const slotDate = new Date(slot)
+
+  if (Number.isNaN(slotDate.getTime())) {
+    return Response.json(
+      {
+        message: 'Invalid request',
+        errors: [{ path: 'slot', message: 'slot must be a valid date' }],
+      },
+      { status: 400 },
+    )
+  }
+
+  const normalizedSlot = slotDate.toISOString()
+
+  try {
+    const released = await bookingHold.release({ serviceId, slot: normalizedSlot })
+
+    if (!released) {
+      return Response.json(
+        {
+          message: 'Unable to release booking hold',
+          reasons: ['HOLD_NOT_FOUND'],
+          released: false,
+        },
+        { status: 404 },
+      )
+    }
+
+    return Response.json(
+      {
+        message: 'Booking hold released',
+        released: true,
+      },
+      { status: 200 },
+    )
+  } catch (error) {
+    if (error instanceof BookingHoldStoreError) {
+      return Response.json(
+        {
+          message: 'Unable to release booking hold',
+          reasons: ['HOLD_SERVICE_UNAVAILABLE'],
+        },
+        { status: 503 },
+      )
+    }
+
+    console.error('Failed to release booking hold', error)
+    return Response.json(
+      {
+        message: 'Unable to release booking hold',
       },
       { status: 500 },
     )

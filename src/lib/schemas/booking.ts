@@ -15,6 +15,15 @@ export const bookingAvailabilityQuerySchema = z.object({
 
 export type BookingAvailabilityQueryInput = z.infer<typeof bookingAvailabilityQuerySchema>
 
+export const bookingHoldReleaseSchema = z
+  .object({
+    serviceId: serviceIdSchema,
+    slot: slotSchema,
+  })
+  .strict()
+
+export type BookingHoldReleaseInput = z.infer<typeof bookingHoldReleaseSchema>
+
 export const bookingHoldRequestSchema = z
   .object({
     serviceId: serviceIdSchema,

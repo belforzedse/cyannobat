@@ -18,6 +18,7 @@ import {
   GlobalLoadingOverlayProvider,
   useGlobalLoadingOverlay,
 } from '@/components/GlobalLoadingOverlayProvider'
+import { useToast } from '@/components/ui/ToastProvider'
 
 const HOLD_TTL_SECONDS = 5 * 60
 
@@ -75,6 +76,7 @@ const BookingPageContent = () => {
     schedulePlaceholderMessage,
   } = useBookingState()
   const { setActivity } = useGlobalLoadingOverlay()
+  const { showToast } = useToast()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -84,6 +86,7 @@ const BookingPageContent = () => {
   const scheduleSectionRef = useRef<HTMLDivElement | null>(null)
   const reasonSectionRef = useRef<HTMLDivElement | null>(null)
   const contactSectionRef = useRef<HTMLDivElement | null>(null)
+  const holdKeyRef = useRef<{ serviceId: string; slot: string } | null>(null)
 
   const sectionAnimation = {
     initial: { opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -12 },
@@ -165,6 +168,44 @@ const BookingPageContent = () => {
     return details
   }, [])
 
+  const releaseHold = useCallback(async () => {
+    if (!holdKeyRef.current) {
+      return
+    }
+
+    const holdKey = holdKeyRef.current
+
+    try {
+      const response = await fetch('/api/hold', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(holdKey),
+      })
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null)
+        console.warn('Failed to release booking hold', {
+          status: response.status,
+          payload,
+        })
+        showToast({
+          variant: 'error',
+          title: 'مشکل در آزادسازی نوبت',
+          description: 'رزرو موقت آزاد نشد. در صورت تکرار، صفحه را تازه‌سازی کنید.',
+        })
+      }
+    } catch (error) {
+      console.error('Failed to release booking hold', error)
+      showToast({
+        variant: 'error',
+        title: 'مشکل در آزادسازی نوبت',
+        description: 'رزرو موقت آزاد نشد. در صورت تکرار، صفحه را تازه‌سازی کنید.',
+      })
+    } finally {
+      holdKeyRef.current = null
+    }
+  }, [showToast])
+
   const handleContinue = useCallback(async () => {
     if (!selectedSchedule) {
       setSubmitError('لطفاً پیش از ادامه، زمان ملاقات را انتخاب کنید.')
@@ -186,6 +227,8 @@ const BookingPageContent = () => {
     setSubmitError(null)
     setValidationErrors([])
     setBookingReference(null)
+
+    holdKeyRef.current = null
 
     try {
       setActivity('booking-submit', true, 'در حال نهایی‌سازی نوبت...')
@@ -220,6 +263,19 @@ const BookingPageContent = () => {
         return
       }
 
+      if (
+        holdPayload &&
+        typeof holdPayload === 'object' &&
+        'hold' in holdPayload &&
+        holdPayload.hold &&
+        typeof holdPayload.hold === 'object'
+      ) {
+        const hold = holdPayload.hold as { serviceId?: unknown; slot?: unknown }
+        if (typeof hold.serviceId === 'string' && typeof hold.slot === 'string') {
+          holdKeyRef.current = { serviceId: hold.serviceId, slot: hold.slot }
+        }
+      }
+
       const bookingResponse = await fetch('/api/book', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -245,6 +301,7 @@ const BookingPageContent = () => {
       const bookingPayload = await bookingResponse.json().catch(() => null)
 
       if (!bookingResponse.ok) {
+        await releaseHold()
         setSubmitError('ثبت نهایی نوبت با خطا مواجه شد. لطفاً دوباره تلاش کنید.')
         setValidationErrors(extractErrorMessages(bookingPayload))
         return
@@ -268,6 +325,7 @@ const BookingPageContent = () => {
       }
     } catch (error) {
       console.error('Failed to complete booking flow', error)
+      await releaseHold()
       setSubmitError('ثبت نوبت با خطا مواجه شد. لطفاً دوباره تلاش کنید.')
     } finally {
       setIsSubmitting(false)
@@ -283,6 +341,7 @@ const BookingPageContent = () => {
     reasonSummary,
     router,
     selectedReasons,
+    releaseHold,
     selectedSchedule,
     setActivity,
   ])
