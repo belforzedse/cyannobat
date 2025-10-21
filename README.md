@@ -64,7 +64,8 @@ The script is idempotent—it updates roles on existing emails and prints creden
 1. Visit `/login` and authenticate with a seeded account.
 2. Patients are redirected to `/account` where they can review upcoming bookings and start new appointments via the booking flow.
 3. Staff (doctor, receptionist, admin roles) are redirected to `/staff`, which surfaces management tools backed by Payload API routes under `src/app/api/staff/*`.
-4. Availability endpoints (`/api/availability`, `/api/hold`, `/api/book`) require Redis to manage slot holds; sample `curl` flows are provided below for smoke testing.
+4. پس از تأیید رزرو، صفحه موفقیت در `/reserve/confirmation?reference=<کد>` جزئیات نوبت آخر کاربر را نشان می‌دهد و لینک بازگشت به حساب را ارائه می‌کند.
+5. Availability endpoints (`/api/availability`, `/api/hold`, `/api/book`) require Redis to manage slot holds; sample `curl` flows are provided below for smoke testing.
 
 ### Booking API smoke tests
 
