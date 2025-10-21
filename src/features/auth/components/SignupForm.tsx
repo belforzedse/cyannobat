@@ -2,6 +2,8 @@
 
 import { useState, type FormEvent } from 'react'
 
+import { isValidIranNationalId } from '@/lib/validators/iran-national-id'
+
 const staffRoles = ['admin', 'doctor', 'receptionist'] as const
 
 type SignupFormProps = {
@@ -18,9 +20,10 @@ const SignupForm = ({
   toggleLabel,
 }: SignupFormProps) => {
   const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
+  const [email] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
+  const [nationalId, setNationalId] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -31,10 +34,17 @@ const SignupForm = ({
 
     const trimmedEmail = email.trim()
     const trimmedPhone = phone.trim()
+    const trimmedNationalId = nationalId.trim()
 
     if (!trimmedEmail && !trimmedPhone) {
       setIsSubmitting(false)
       setErrorMessage('حداقل یکی از فیلدهای ایمیل یا شماره تلفن را وارد کنید.')
+      return
+    }
+
+    if (!isValidIranNationalId(trimmedNationalId)) {
+      setIsSubmitting(false)
+      setErrorMessage('کد ملی نامعتبر است. لطفاً کد ۱۰ رقمی خود را بدون فاصله وارد کنید.')
       return
     }
 
@@ -48,6 +58,7 @@ const SignupForm = ({
           name,
           email: trimmedEmail || undefined,
           phone: trimmedPhone || undefined,
+          nationalId: trimmedNationalId,
           password,
         }),
       })
@@ -102,6 +113,23 @@ const SignupForm = ({
       </label>
 
       <label className="flex flex-col gap-2 text-sm text-foreground">
+        کد ملی
+        <input
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          dir="ltr"
+          maxLength={10}
+          value={nationalId}
+          onChange={(event) => setNationalId(event.target.value)}
+          required
+          className="rounded-xl border border-white/20 bg-white/50 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40 dark:border-white/10 dark:bg-white/10"
+          placeholder="1234567890"
+        />
+        <span className="text-xs text-muted-foreground">کد ملی ۱۰ رقمی بدون خط تیره یا فاصله، مانند 1234567890</span>
+      </label>
+
+      <label className="flex flex-col gap-2 text-sm text-foreground">
         رمز عبور
         <input
           type="password"
@@ -137,7 +165,8 @@ const SignupForm = ({
         ) : null}
 
         <p className="text-xs leading-6 text-muted-foreground">
-          احراز هویت پیامکی در مراحل بعدی فعال می‌شود. تا آن زمان، رمز عبور امن انتخاب کنید و آن را نزد خود نگه دارید.
+          برای فعال‌سازی نوبت‌دهی، احراز هویت پیامکی و ثبت کد ملی هر دو ضروری هستند. تا تکمیل این مراحل، رمز عبور امن
+          انتخاب کنید و آن را نزد خود نگه دارید.
         </p>
       </div>
     </form>
