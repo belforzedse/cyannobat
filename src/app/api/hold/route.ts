@@ -1,4 +1,5 @@
 import type { ZodIssue } from 'zod'
+import { randomUUID } from 'node:crypto'
 import { sql } from 'drizzle-orm'
 import configPromise, { payloadDrizzle } from '@payload-config'
 import { bookingHold, BookingHoldConflictError, BookingHoldStoreError } from '@/lib/redis'
@@ -109,7 +110,15 @@ export const POST = async (request: Request): Promise<Response> => {
     return buildValidationErrorResponse(parsed.error.issues)
   }
 
-  const { serviceId, slot, ttlSeconds, customerId, providerId, metadata } = parsed.data
+  const {
+    serviceId,
+    slot,
+    ttlSeconds,
+    customerId: providedCustomerId,
+    providerId,
+    metadata,
+  } = parsed.data
+  const holdOwnerId = providedCustomerId ?? randomUUID()
   const slotDate = new Date(slot)
 
   if (Number.isNaN(slotDate.getTime())) {
@@ -132,7 +141,7 @@ export const POST = async (request: Request): Promise<Response> => {
       reason: reasons[0],
       serviceId,
       slot: normalizedSlot,
-      userId: customerId ?? 'unknown',
+      userId: holdOwnerId,
     })
 
     return Response.json(
@@ -150,7 +159,7 @@ export const POST = async (request: Request): Promise<Response> => {
       reason: 'PAST_SLOT',
       serviceId,
       slot: normalizedSlot,
-      userId: customerId ?? 'unknown',
+      userId: holdOwnerId,
     })
 
     return Response.json(
@@ -170,7 +179,7 @@ export const POST = async (request: Request): Promise<Response> => {
         reason: 'LEAD_TIME_NOT_MET',
         serviceId,
         slot: normalizedSlot,
-        userId: customerId ?? 'unknown',
+        userId: holdOwnerId,
       })
 
       return Response.json(
@@ -188,7 +197,7 @@ export const POST = async (request: Request): Promise<Response> => {
       reason: 'PROVIDER_NOT_AVAILABLE_FOR_SERVICE',
       serviceId,
       slot: normalizedSlot,
-      userId: customerId ?? 'unknown',
+      userId: holdOwnerId,
     })
 
     return Response.json(
@@ -210,7 +219,7 @@ export const POST = async (request: Request): Promise<Response> => {
         reason: 'ALREADY_BOOKED',
         serviceId,
         slot: normalizedSlot,
-        userId: customerId ?? 'unknown',
+        userId: holdOwnerId,
       })
 
       return Response.json(
@@ -238,7 +247,7 @@ export const POST = async (request: Request): Promise<Response> => {
         reason: 'ALREADY_ON_HOLD',
         serviceId,
         slot: normalizedSlot,
-        userId: customerId ?? 'unknown',
+        userId: holdOwnerId,
       })
 
       return Response.json(
@@ -276,7 +285,7 @@ export const POST = async (request: Request): Promise<Response> => {
       slot: normalizedSlot,
       ttlSeconds,
       details: {
-        customerId,
+        customerId: holdOwnerId,
         providerId,
         metadata,
       },
@@ -342,7 +351,7 @@ export const DELETE = async (request: Request): Promise<Response> => {
     return buildValidationErrorResponse(parsed.error.issues)
   }
 
-  const { serviceId, slot } = parsed.data
+  const { serviceId, slot, customerId } = parsed.data
   const slotDate = new Date(slot)
 
   if (Number.isNaN(slotDate.getTime())) {
@@ -358,6 +367,30 @@ export const DELETE = async (request: Request): Promise<Response> => {
   const normalizedSlot = slotDate.toISOString()
 
   try {
+    const hold = await bookingHold.get({ serviceId, slot: normalizedSlot })
+
+    if (!hold || hold.ttlSeconds <= 0) {
+      return Response.json(
+        {
+          message: 'Unable to release booking hold',
+          reasons: ['HOLD_NOT_FOUND'],
+          released: false,
+        },
+        { status: 404 },
+      )
+    }
+
+    if (typeof hold.customerId !== 'string' || hold.customerId !== customerId) {
+      return Response.json(
+        {
+          message: 'Unable to release booking hold',
+          reasons: ['HOLD_RESERVED_FOR_DIFFERENT_CUSTOMER'],
+          released: false,
+        },
+        { status: 403 },
+      )
+    }
+
     const released = await bookingHold.release({ serviceId, slot: normalizedSlot })
 
     if (!released) {

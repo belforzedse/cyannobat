@@ -19,6 +19,9 @@ export const bookingHoldReleaseSchema = z
   .object({
     serviceId: serviceIdSchema,
     slot: slotSchema,
+    customerId: z
+      .string({ required_error: 'customerId is required' })
+      .min(1, 'customerId is required'),
   })
   .strict()
 
