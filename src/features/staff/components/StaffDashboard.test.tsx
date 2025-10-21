@@ -170,6 +170,7 @@ describe('StaffDashboard interactions', () => {
         user: {
           email: 'newpatient@example.com',
           phone: null,
+          nationalId: '0499370899',
           roles: ['patient'],
         },
       }),
@@ -177,14 +178,15 @@ describe('StaffDashboard interactions', () => {
 
     renderDashboard([baseAppointment], adminUser)
 
-    fireEvent.change(screen.getByLabelText('ایمیل'), { target: { value: 'newpatient@example.com' } })
+    fireEvent.change(screen.getByLabelText(/ایمیل/), { target: { value: 'newpatient@example.com' } })
     fireEvent.change(screen.getByPlaceholderText('09120000000'), { target: { value: '09123456789' } })
+    fireEvent.change(screen.getByLabelText('کد ملی'), { target: { value: '۰۴۹۹۳۷۰۸۹۹' } })
     fireEvent.change(screen.getByLabelText('رمز عبور موقت'), { target: { value: 'examplepass' } })
 
-    const roleSelect = screen.getByLabelText('نقش')
+    const roleSelect = screen.getByLabelText('نقش کاربر')
     fireEvent.change(roleSelect, { target: { value: 'patient' } })
 
-    fireEvent.click(screen.getByRole('button', { name: 'ایجاد حساب' }))
+    fireEvent.click(screen.getByRole('button', { name: 'ایجاد کاربر' }))
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
     const fetchArgs = fetchMock.mock.calls[0] as unknown[]
@@ -195,10 +197,11 @@ describe('StaffDashboard interactions', () => {
     expect(body).toMatchObject({
       email: 'newpatient@example.com',
       phone: '09123456789',
+      nationalId: '0499370899',
       roles: ['patient'],
     })
 
-    await screen.findByText('حساب بیمار برای newpatient@example.com ایجاد شد.')
+    await screen.findByText('کاربر بیمار برای newpatient@example.com با موفقیت ایجاد شد.')
   })
 })
 

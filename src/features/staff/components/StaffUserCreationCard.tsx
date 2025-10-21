@@ -7,6 +7,10 @@ import { useToast } from '@/components/ui/ToastProvider'
 import { useGlobalLoadingOverlay } from '@/components/GlobalLoadingOverlayProvider'
 import type { StaffUser } from '@/features/staff/types'
 import { ASSIGNABLE_ROLES, type AssignableRole, getCreatableRolesForUser } from '@/lib/staff/rolePermissions'
+import {
+  isValidIranNationalId,
+  normalizeIranNationalIdDigits,
+} from '@/lib/validators/iran-national-id'
 
 type StaffUserCreationCardProps = {
   currentUser: StaffUser
@@ -15,6 +19,7 @@ type StaffUserCreationCardProps = {
 type CreatedUser = {
   email?: string | null
   phone?: string | null
+  nationalId?: string | null
   roles: string[]
 }
 
@@ -46,6 +51,7 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
 
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
+  const [nationalId, setNationalId] = useState('')
   const [password, setPassword] = useState('')
   const [selectedRole, setSelectedRole] = useState<AssignableRole | ''>(creatableRoles[0] ?? '')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -75,6 +81,8 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
 
     const trimmedEmail = email.trim()
     const trimmedPhone = phone.trim()
+    const normalizedNationalId = normalizeIranNationalIdDigits(nationalId)
+    const trimmedNationalId = normalizedNationalId.trim()
 
     if (!selectedRole) {
       setFormError('لطفاً یک نقش معتبر انتخاب کنید.')
@@ -91,6 +99,11 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
       return
     }
 
+    if (!isValidIranNationalId(trimmedNationalId)) {
+      setFormError('کد ملی معتبر وارد کنید.')
+      return
+    }
+
     setFormError(null)
     setIsSubmitting(true)
     setActivity('staff-create-user', true, 'در حال ایجاد کاربر جدید...')
@@ -104,6 +117,7 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
         body: JSON.stringify({
           email: trimmedEmail || undefined,
           phone: trimmedPhone,
+          nationalId: trimmedNationalId,
           password,
           roles: [selectedRole],
         }),
@@ -130,6 +144,7 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
 
       setEmail('')
       setPhone('')
+      setNationalId('')
       setPassword('')
       setLastCreatedUser(result.user)
 
@@ -181,6 +196,19 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
               placeholder='09120000000'
+            />
+          </label>
+
+          <label className='flex flex-col gap-2 text-sm'>
+            <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>کد ملی</span>
+            <Input
+              inputMode='numeric'
+              pattern='[0-9]*'
+              maxLength={10}
+              required
+              value={nationalId}
+              onChange={(event) => setNationalId(normalizeIranNationalIdDigits(event.target.value))}
+              placeholder='1234567890'
             />
           </label>
 
@@ -247,6 +275,8 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
           <span>{lastCreatedUser.email ?? '—'}</span>
           <span className='mx-2 text-muted-foreground/60'>•</span>
           <span>{lastCreatedUser.phone ?? '—'}</span>
+          <span className='mx-2 text-muted-foreground/60'>•</span>
+          <span>{lastCreatedUser.nationalId ?? '—'}</span>
           <span className='mx-2 text-muted-foreground/60'>•</span>
           <span>{lastCreatedUser.roles.map((role) => getRoleLabelFa(role)).join('، ')}</span>
         </div>

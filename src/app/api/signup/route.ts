@@ -3,6 +3,10 @@ import { getPayload, type PayloadRequest } from 'payload'
 
 import configPromise from '@payload-config'
 import { extractRoles, userIsStaff } from '@/lib/auth'
+import {
+  isValidIranNationalId,
+  normalizeIranNationalIdDigits,
+} from '@/lib/validators/iran-national-id'
 
 type AuthResult = {
   user: PayloadRequest['user'] | null
@@ -18,7 +22,16 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const parseBody = async (
   request: Request,
-): Promise<{ name: string; phone: string; password: string; email?: string } | NextResponse> => {
+): Promise<
+  | {
+      name: string
+      phone: string
+      password: string
+      nationalId: string
+      email?: string
+    }
+  | NextResponse
+> => {
   let body: unknown
 
   try {
@@ -34,22 +47,30 @@ const parseBody = async (
     )
   }
 
-  const { name, phone, password, email } = body as {
+  const { name, phone, password, nationalId, email } = body as {
     name?: unknown
     phone?: unknown
     password?: unknown
+    nationalId?: unknown
     email?: unknown
   }
 
-  if (typeof name !== 'string' || typeof phone !== 'string' || typeof password !== 'string') {
+  if (
+    typeof name !== 'string' ||
+    typeof phone !== 'string' ||
+    typeof password !== 'string' ||
+    typeof nationalId !== 'string'
+  ) {
     return NextResponse.json(
-      { message: 'Name, phone, and password are required' },
+      { message: 'Name, phone, national ID, and password are required' },
       { status: 400 },
     )
   }
 
   const trimmedName = name.trim()
   const trimmedPhone = phone.trim()
+  const normalizedNationalId = normalizeIranNationalIdDigits(nationalId)
+  const trimmedNationalId = normalizedNationalId.trim()
   const trimmedEmail = typeof email === 'string' ? email.trim().toLowerCase() : undefined
 
   if (!trimmedName) {
@@ -58,6 +79,10 @@ const parseBody = async (
 
   if (!iranPhoneRegex.test(trimmedPhone)) {
     return NextResponse.json({ message: 'Enter a valid Iranian phone number' }, { status: 400 })
+  }
+
+  if (!isValidIranNationalId(trimmedNationalId)) {
+    return NextResponse.json({ message: 'Enter a valid Iranian national ID' }, { status: 400 })
   }
 
   if (password.length < 8) {
@@ -77,7 +102,13 @@ const parseBody = async (
     }
   }
 
-  return { name: trimmedName, phone: trimmedPhone, password, email: trimmedEmail }
+  return {
+    name: trimmedName,
+    phone: trimmedPhone,
+    password,
+    nationalId: trimmedNationalId,
+    email: trimmedEmail,
+  }
 }
 
 const setAuthCookies = (response: NextResponse, auth: AuthResult) => {
@@ -120,7 +151,7 @@ export const POST = async (request: Request) => {
     return parsed
   }
 
-  const { name, phone, password, email } = parsed
+  const { name, phone, password, nationalId, email } = parsed
 
   try {
     const existing = await payload.find({
@@ -135,13 +166,36 @@ export const POST = async (request: Request) => {
     })
 
     if (existing.docs.length > 0) {
+      return NextResponse.json({ message: 'A user with that phone already exists' }, { status: 409 })
+    }
+  } catch (error) {
+    payload.logger.error?.('Failed to check for existing user by phone', error)
+    return NextResponse.json(
+      { message: 'Unable to process signup request at this time.' },
+      { status: 500 },
+    )
+  }
+
+  try {
+    const existingByNationalId = await payload.find({
+      collection: 'users',
+      where: {
+        nationalId: {
+          equals: nationalId,
+        },
+      },
+      limit: 1,
+      depth: 0,
+    })
+
+    if (existingByNationalId.docs.length > 0) {
       return NextResponse.json(
-        { message: 'A user with that phone already exists' },
+        { message: 'A user with that national ID already exists' },
         { status: 409 },
       )
     }
   } catch (error) {
-    payload.logger.error?.('Failed to check for existing user by phone', error)
+    payload.logger.error?.('Failed to check for existing user by national ID', error)
     return NextResponse.json(
       { message: 'Unable to process signup request at this time.' },
       { status: 500 },
@@ -157,6 +211,7 @@ export const POST = async (request: Request) => {
         email: email ?? '',
         name,
         phone,
+        nationalId,
         username: phone,
         roles: ['patient'],
         password,

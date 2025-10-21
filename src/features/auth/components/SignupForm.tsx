@@ -2,7 +2,10 @@
 
 import { useState, type FormEvent } from 'react'
 
-import { isValidIranNationalId } from '@/lib/validators/iran-national-id'
+import {
+  isValidIranNationalId,
+  normalizeIranNationalIdDigits,
+} from '@/lib/validators/iran-national-id'
 
 const staffRoles = ['admin', 'doctor', 'receptionist'] as const
 
@@ -34,7 +37,8 @@ const SignupForm = ({
 
     const trimmedEmail = email.trim()
     const trimmedPhone = phone.trim()
-    const trimmedNationalId = nationalId.trim()
+    const normalizedNationalId = normalizeIranNationalIdDigits(nationalId)
+    const trimmedNationalId = normalizedNationalId.trim()
 
     if (!trimmedEmail && !trimmedPhone) {
       setIsSubmitting(false)
@@ -121,7 +125,7 @@ const SignupForm = ({
           dir="ltr"
           maxLength={10}
           value={nationalId}
-          onChange={(event) => setNationalId(event.target.value)}
+          onChange={(event) => setNationalId(normalizeIranNationalIdDigits(event.target.value))}
           required
           className="rounded-xl border border-white/20 bg-white/50 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40 dark:border-white/10 dark:bg-white/10"
           placeholder="1234567890"

@@ -1,9 +1,32 @@
+const persianDigits = '۰۱۲۳۴۵۶۷۸۹'
+const arabicIndicDigits = '٠١٢٣٤٥٦٧٨٩'
+
+export const normalizeIranNationalIdDigits = (value: string): string => {
+  if (typeof value !== 'string') {
+    return ''
+  }
+
+  return value.replace(/[۰-۹٠-٩]/g, (digit) => {
+    const persianIndex = persianDigits.indexOf(digit)
+    if (persianIndex >= 0) {
+      return String(persianIndex)
+    }
+
+    const arabicIndex = arabicIndicDigits.indexOf(digit)
+    if (arabicIndex >= 0) {
+      return String(arabicIndex)
+    }
+
+    return digit
+  })
+}
+
 export const isValidIranNationalId = (value: string): boolean => {
   if (typeof value !== 'string') {
     return false
   }
 
-  const normalized = value.trim()
+  const normalized = normalizeIranNationalIdDigits(value).trim()
 
   if (!/^\d{10}$/.test(normalized)) {
     return false
