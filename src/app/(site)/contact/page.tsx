@@ -42,27 +42,136 @@ const ContactPage = () => {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof typeof formData, string>>>({})
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
+    if (isSubmitting) return
+
     setSubmitStatus('idle')
+    setErrorMessage(null)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    const trimmedData = {
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      subject: formData.subject.trim(),
+      message: formData.message.trim(),
+    }
 
-    setSubmitStatus('success')
-    setIsSubmitting(false)
+    const errors: Partial<Record<keyof typeof formData, string>> = {}
 
-    // Reset form after success
-    setTimeout(() => {
+    if (!trimmedData.name) {
+      errors.name = 'لطفاً نام خود را وارد کنید.'
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!trimmedData.email) {
+      errors.email = 'لطفاً ایمیل خود را وارد کنید.'
+    } else if (!emailPattern.test(trimmedData.email)) {
+      errors.email = 'ایمیل وارد شده معتبر نیست.'
+    }
+
+    if (!trimmedData.subject) {
+      errors.subject = 'لطفاً موضوع پیام را بنویسید.'
+    }
+
+    if (!trimmedData.message) {
+      errors.message = 'لطفاً متن پیام را وارد کنید.'
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      setSubmitStatus('error')
+      setErrorMessage('لطفاً خطاهای مشخص‌شده را برطرف کنید و دوباره تلاش کنید.')
+      return
+    }
+
+    setFieldErrors({})
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(trimmedData),
+      })
+
+      if (!response.ok) {
+        let errorBody: unknown
+        try {
+          errorBody = await response.json()
+        } catch {
+          // ignore parse error
+        }
+
+        const apiErrors: Partial<Record<keyof typeof formData, string>> = {}
+
+        if (
+          errorBody &&
+          typeof errorBody === 'object' &&
+          Array.isArray((errorBody as { errors?: unknown }).errors)
+        ) {
+          for (const issue of (errorBody as { errors: unknown[] }).errors) {
+            if (
+              issue &&
+              typeof issue === 'object' &&
+              'field' in issue &&
+              'message' in issue &&
+              typeof (issue as { field?: unknown }).field === 'string' &&
+              typeof (issue as { message?: unknown }).message === 'string'
+            ) {
+              const fieldKey = (issue as { field: string }).field
+              if (fieldKey === 'form') continue
+              if (fieldKey in trimmedData) {
+                apiErrors[fieldKey as keyof typeof formData] = (issue as { message: string }).message
+              }
+            }
+          }
+        }
+
+        if (Object.keys(apiErrors).length > 0) {
+          setFieldErrors(apiErrors)
+        }
+
+        const apiMessage =
+          errorBody && typeof errorBody === 'object' && 'message' in errorBody && typeof errorBody.message === 'string'
+            ? errorBody.message
+            : 'ارسال پیام با خطا مواجه شد. لطفاً دوباره تلاش کنید.'
+
+        setSubmitStatus('error')
+        setErrorMessage(apiMessage)
+        return
+      }
+
+      setFieldErrors({})
+      setSubmitStatus('success')
+      setErrorMessage(null)
       setFormData({ name: '', email: '', subject: '', message: '' })
-      setSubmitStatus('idle')
-    }, 3000)
+
+      setTimeout(() => {
+        setSubmitStatus('idle')
+      }, 4000)
+    } catch (error) {
+      console.error('Contact form submission failed', error)
+      setSubmitStatus('error')
+      setErrorMessage('ارسال پیام با خطا مواجه شد. لطفاً اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+    setFieldErrors((prev) => {
+      if (!prev[field]) {
+        return prev
+      }
+
+      const next = { ...prev }
+      delete next[field]
+      return next
+    })
   }
 
   return (
@@ -184,6 +293,7 @@ const ContactPage = () => {
                 placeholder="نام خود را وارد کنید"
                 required
                 disabled={isSubmitting}
+                error={fieldErrors.name}
               />
               <Input
                 label="ایمیل"
@@ -193,6 +303,7 @@ const ContactPage = () => {
                 placeholder="example@email.com"
                 required
                 disabled={isSubmitting}
+                error={fieldErrors.email}
               />
             </div>
 
@@ -203,6 +314,7 @@ const ContactPage = () => {
               placeholder="موضوع پیام خود را بنویسید"
               required
               disabled={isSubmitting}
+              error={fieldErrors.subject}
             />
 
             <Textarea
@@ -213,6 +325,7 @@ const ContactPage = () => {
               rows={6}
               required
               disabled={isSubmitting}
+              error={fieldErrors.message}
             />
 
             <div className="flex flex-col items-end gap-3">
@@ -261,7 +374,7 @@ const ContactPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="text-sm text-destructive"
                 >
-                  خطا در ارسال پیام. لطفاً دوباره تلاش کنید.
+                  {errorMessage ?? 'خطا در ارسال پیام. لطفاً دوباره تلاش کنید.'}
                 </motion.p>
               )}
             </div>

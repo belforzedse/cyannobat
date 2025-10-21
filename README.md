@@ -24,6 +24,10 @@ Copy `.env.example` to `.env` and fill in the required values before running any
 | `REDIS_URL` / `REDIS_*` | Redis credentials for caching and booking holds. Prefer `REDIS_URL`; fallback host/port fields are used when it is absent. |
 | `REDIS_TLS` | Enable TLS when required by your Redis provider. |
 | `NEXT_PUBLIC_APP_URL` | Public URL exposed to clients (used when constructing links client-side). |
+| `CONTACT_DELIVERY_MODE` | Choose `ticket` (default) to log contact submissions in Payload or `email` to send notifications only. |
+| `SUPPORT_TICKETS_COLLECTION` | Optional collection slug used when storing contact requests (`supportTickets` by default). |
+| `SUPPORT_EMAIL_TO` | Destination inbox for contact notifications (used for `email` mode or as a fallback). |
+| `SUPPORT_EMAIL_FROM` | Sender identity used when dispatching contact notification emails. |
 
 > **Note:** Redis must be reachable before invoking APIs that create booking holds, and `DATABASE_URI` must point to an accessible PostgreSQL instance or the Payload boot process will exit with an error.
 
@@ -66,6 +70,48 @@ The script is idempotent—it updates roles on existing emails and prints creden
 3. Staff (doctor, receptionist, admin roles) are redirected to `/staff`, which surfaces management tools backed by Payload API routes under `src/app/api/staff/*`.
 4. پس از تأیید رزرو، صفحه موفقیت در `/reserve/confirmation?reference=<کد>` جزئیات نوبت آخر کاربر را نشان می‌دهد و لینک بازگشت به حساب را ارائه می‌کند.
 5. Availability endpoints (`/api/availability`, `/api/hold`, `/api/book`) require Redis to manage slot holds; sample `curl` flows are provided below for smoke testing.
+
+## Contact form intake
+
+Use the public contact form at `/contact` or call the API directly to notify the support team.
+
+### Endpoint
+
+- **Method:** `POST`
+- **Path:** `/api/contact`
+- **Body:** JSON payload with the following fields:
+
+  | Field | Type | Notes |
+  | --- | --- | --- |
+  | `name` | string | Required. Trimmed and limited to 150 characters. |
+  | `email` | string | Required. Must be a valid email address (max 320 chars). |
+  | `subject` | string | Required. Trimmed, up to 200 characters. |
+  | `message` | string | Required. Trimmed, up to 2000 characters. |
+
+- **Responses:**
+  - `201 Created` when the request is stored in Payload (default `CONTACT_DELIVERY_MODE=ticket`). The JSON response includes a `ticketId`.
+  - `200 OK` when the message is emailed directly or delivered via fallback.
+  - `400 Bad Request` when validation fails. The response contains an `errors` array describing individual fields.
+  - `500 Internal Server Error` when backend services are unavailable.
+
+Example request:
+
+```bash
+curl -X POST http://localhost:3000/api/contact \
+  -H 'content-type: application/json' \
+  -d '{
+    "name": "Sara Karimi",
+    "email": "sara@example.com",
+    "subject": "مشکل در رزرو",
+    "message": "در تکمیل رزرو با خطای 500 مواجه شدم."
+  }'
+```
+
+### Support staff workflow
+
+- With the default `CONTACT_DELIVERY_MODE=ticket`, submissions are saved in the **Support Tickets** collection inside Payload (`/admin` → Support Tickets). Update the `status` field (`new`, `inProgress`, `resolved`) as you respond to each case.
+- When `CONTACT_DELIVERY_MODE=email` is set, or if storing the ticket fails, the system emails `SUPPORT_EMAIL_TO` (using `SUPPORT_EMAIL_FROM` as the sender). Metadata such as IP address, referrer, and user agent are included in both the stored ticket and the email body for auditing.
+- All validation feedback is surfaced back to the frontend so the customer sees inline guidance if fields are empty or invalid.
 
 ### Booking API smoke tests
 
