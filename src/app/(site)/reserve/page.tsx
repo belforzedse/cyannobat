@@ -86,7 +86,7 @@ const BookingPageContent = () => {
   const scheduleSectionRef = useRef<HTMLDivElement | null>(null)
   const reasonSectionRef = useRef<HTMLDivElement | null>(null)
   const contactSectionRef = useRef<HTMLDivElement | null>(null)
-  const holdKeyRef = useRef<{ serviceId: string; slot: string } | null>(null)
+  const holdKeyRef = useRef<{ serviceId: string; slot: string; customerId: string } | null>(null)
 
   const sectionAnimation = {
     initial: { opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -12 },
@@ -270,9 +270,17 @@ const BookingPageContent = () => {
         holdPayload.hold &&
         typeof holdPayload.hold === 'object'
       ) {
-        const hold = holdPayload.hold as { serviceId?: unknown; slot?: unknown }
-        if (typeof hold.serviceId === 'string' && typeof hold.slot === 'string') {
-          holdKeyRef.current = { serviceId: hold.serviceId, slot: hold.slot }
+        const hold = holdPayload.hold as { serviceId?: unknown; slot?: unknown; customerId?: unknown }
+        if (
+          typeof hold.serviceId === 'string' &&
+          typeof hold.slot === 'string' &&
+          typeof hold.customerId === 'string'
+        ) {
+          holdKeyRef.current = {
+            serviceId: hold.serviceId,
+            slot: hold.slot,
+            customerId: hold.customerId,
+          }
         }
       }
 
