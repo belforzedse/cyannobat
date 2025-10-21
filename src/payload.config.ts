@@ -13,6 +13,7 @@ import { Media } from './collections/Media'
 import { Appointments } from './collections/Appointments'
 import { Providers } from './collections/Providers'
 import { Services } from './collections/Services'
+import { SupportTickets } from './collections/SupportTickets'
 import { Users } from './collections/Users'
 
 const filename = fileURLToPath(import.meta.url)
@@ -61,7 +62,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Providers, Services, Appointments, Media],
+  collections: [Users, Providers, Services, Appointments, SupportTickets, Media],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
