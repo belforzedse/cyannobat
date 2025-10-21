@@ -41,9 +41,9 @@ export const POST = async (request: Request) => {
   }
 
   try {
-    const loginData: { email?: string; username?: string; password: string } = trimmedIdentifier.includes('@')
+    const loginData: { email: string; username?: string; password: string } = trimmedIdentifier.includes('@')
       ? { email: trimmedIdentifier, password }
-      : { username: trimmedIdentifier, password }
+      : { email: trimmedIdentifier, username: trimmedIdentifier, password }
 
     const auth = (await payload.login({
       collection: 'users',

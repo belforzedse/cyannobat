@@ -178,6 +178,7 @@ describe('StaffDashboard interactions', () => {
     renderDashboard([baseAppointment], adminUser)
 
     fireEvent.change(screen.getByLabelText('ایمیل'), { target: { value: 'newpatient@example.com' } })
+    fireEvent.change(screen.getByPlaceholderText('09120000000'), { target: { value: '09123456789' } })
     fireEvent.change(screen.getByLabelText('رمز عبور موقت'), { target: { value: 'examplepass' } })
 
     const roleSelect = screen.getByLabelText('نقش')
@@ -193,9 +194,9 @@ describe('StaffDashboard interactions', () => {
     const body = JSON.parse(((fetchArgs[1] as RequestInit)?.body as string) ?? '{}')
     expect(body).toMatchObject({
       email: 'newpatient@example.com',
+      phone: '09123456789',
       roles: ['patient'],
     })
-    expect(body.phone).toBeUndefined()
 
     await screen.findByText('حساب بیمار برای newpatient@example.com ایجاد شد.')
   })

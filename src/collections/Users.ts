@@ -1,5 +1,5 @@
 import type { Access, CollectionBeforeValidateHook, CollectionConfig } from 'payload'
-import { ValidationError } from 'payload/errors'
+import { ValidationError } from 'payload'
 
 import { extractRoles } from '@/lib/auth'
 import { canAssignRoles } from '@/lib/staff/rolePermissions'
@@ -70,7 +70,10 @@ const ensureContactMethod: CollectionBeforeValidateHook = ({ data, originalDoc }
         : ''
 
   if (!phoneCandidate) {
-    throw new ValidationError([{ message: 'Phone number is required.', path: 'phone' }])
+    throw new ValidationError({
+      collection: 'users',
+      errors: [{ message: 'Phone number is required.', path: 'phone' }],
+    })
   }
 
   if (typeof nextData.phone === 'string') {
@@ -117,11 +120,21 @@ export const Users: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
-      validate: (value) => {
+      validate: (value: unknown) => {
         if (typeof value !== 'string' || value.trim().length === 0) return 'Phone number is required'
 
         const iranPhoneRegex = /^(\+98|0)?9\d{9}$/
         return iranPhoneRegex.test(value) || 'Enter a valid Iranian phone number'
+      },
+    },
+    {
+      name: 'username',
+      type: 'text',
+      required: true,
+      unique: true,
+      admin: {
+        readOnly: true,
+        condition: () => false,
       },
     },
     {

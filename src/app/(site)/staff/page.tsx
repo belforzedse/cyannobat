@@ -11,12 +11,27 @@ import type { Appointment, Provider as ProviderDoc, Service, User } from '@/payl
 
 export const dynamic = 'force-dynamic'
 
-const getRelationDoc = <T,>(relation: { relationTo: string; value: string | T } | null | undefined): T | null => {
+type RelationValue<T> =
+  | T
+  | number
+  | string
+  | {
+      relationTo: string
+      value: string | number | T
+    }
+
+const getRelationDoc = <T,>(relation: RelationValue<T> | null | undefined): T | null => {
   if (!relation) return null
-  const { value } = relation
-  if (value && typeof value === 'object') {
-    return value as T
+
+  if (typeof relation === 'object') {
+    if ('relationTo' in relation && 'value' in relation) {
+      const value = relation.value
+      return value && typeof value === 'object' ? (value as T) : null
+    }
+
+    return relation as T
   }
+
   return null
 }
 

@@ -145,20 +145,12 @@ const serviceSchedulingHook: CollectionBeforeValidateHook = async ({ data, origi
 
   if (!data.provider && Array.isArray(service?.providers) && service.providers.length === 1) {
     const [firstProvider] = service.providers
-    const providerValue = firstProvider?.value
+    const providerId = extractRelationshipId(firstProvider)
 
-    if (typeof providerValue === 'string') {
+    if (providerId) {
       data.provider = {
         relationTo: 'providers',
-        value: providerValue,
-      }
-    } else if (providerValue && typeof providerValue === 'object') {
-      const candidate = (providerValue as { id?: unknown }).id
-      if (typeof candidate === 'string' || typeof candidate === 'number') {
-        data.provider = {
-          relationTo: 'providers',
-          value: String(candidate),
-        }
+        value: providerId,
       }
     }
   }

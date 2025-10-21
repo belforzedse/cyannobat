@@ -68,10 +68,10 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
-    media: Media;
     providers: Provider;
     services: Service;
     appointments: Appointment;
+    media: Media;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -79,16 +79,16 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
     providers: ProvidersSelect<false> | ProvidersSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     appointments: AppointmentsSelect<false> | AppointmentsSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   globals: {};
   globalsSelect: {};
@@ -102,35 +102,48 @@ export interface Config {
   };
 }
 export interface UserAuthOperations {
-  forgotPassword: {
-    email: string;
-    password: string;
-  };
-  login: {
-    email: string;
-    password: string;
-  };
+  forgotPassword:
+    | {
+        email: string;
+      }
+    | {
+        username: string;
+      };
+  login:
+    | {
+        email: string;
+        password: string;
+      }
+    | {
+        password: string;
+        username: string;
+      };
   registerFirstUser: {
-    email: string;
     password: string;
+    username: string;
+    email?: string;
   };
-  unlock: {
-    email: string;
-    password: string;
-  };
+  unlock:
+    | {
+        email: string;
+      }
+    | {
+        username: string;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
+  id: number;
   name: string;
   phone: string;
   roles: ('patient' | 'doctor' | 'receptionist' | 'admin')[];
+  updatedAt: string;
+  createdAt: string;
+  email?: string | null;
+  username?: string | null;
   resetPasswordToken?: string | null;
   resetPasswordExpiration?: string | null;
   salt?: string | null;
@@ -148,10 +161,142 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "providers".
+ */
+export interface Provider {
+  id: number;
+  /**
+   * The user account that manages this provider profile.
+   */
+  account: number | User;
+  displayName: string;
+  /**
+   * Auto-generated from the display name. Override as needed.
+   */
+  slug?: string | null;
+  headline?: string | null;
+  bio?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  specialties?:
+    | {
+        label: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  contact?: {
+    email?: string | null;
+    phone?: string | null;
+    website?: string | null;
+  };
+  location: {
+    address?: string | null;
+    city?: string | null;
+    region?: string | null;
+    postalCode?: string | null;
+    country?: string | null;
+    timeZone: string;
+  };
+  availability?: {
+    /**
+     * Default appointment duration in minutes when no service duration is specified.
+     */
+    defaultDurationMinutes?: number | null;
+    windows?:
+      | {
+          day: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+          startTime: string;
+          endTime: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * Services that this provider offers.
+   */
+  services?: (number | Service)[] | null;
+  profileImage?: (number | null) | Media;
+  meta?: {
+    rating?: number | null;
+    reviewCount?: number | null;
+    languages?:
+      | {
+          language: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  title: string;
+  slug?: string | null;
+  category?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Providers who can deliver this service.
+   */
+  providers: (number | Provider)[];
+  durationMinutes: number;
+  bufferMinutesBefore?: number | null;
+  bufferMinutesAfter?: number | null;
+  pricing: {
+    amount: number;
+    currency: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD';
+    /**
+     * Tax rate percentage applied to this service.
+     */
+    taxRate?: number | null;
+  };
+  isActive?: boolean | null;
+  /**
+   * Minimum notice required before a booking can be made.
+   */
+  leadTimeHours?: number | null;
+  instructions?: string | null;
+  media?: (number | Media)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
+  id: number;
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -167,127 +312,17 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "providers".
- */
-export interface Provider {
-  id: string;
-  account: {
-    relationTo: 'users';
-    value: string | User;
-  };
-  displayName: string;
-  slug?: string | null;
-  headline?: string | null;
-  bio?: unknown;
-  specialties?:
-    | {
-        id?: string | null;
-        label: string;
-        description?: string | null;
-      }[]
-    | null;
-  contact?: {
-    email?: string | null;
-    phone?: string | null;
-    website?: string | null;
-  } | null;
-  location?: {
-    address?: string | null;
-    city?: string | null;
-    region?: string | null;
-    postalCode?: string | null;
-    country?: string | null;
-    timeZone?: string | null;
-  } | null;
-  availability?: {
-    defaultDurationMinutes?: number | null;
-    windows?:
-      | {
-          id?: string | null;
-          day?:
-            | 'monday'
-            | 'tuesday'
-            | 'wednesday'
-            | 'thursday'
-            | 'friday'
-            | 'saturday'
-            | 'sunday'
-            | null;
-          startTime?: string | null;
-          endTime?: string | null;
-        }[]
-      | null;
-  } | null;
-  services?:
-    | {
-        relationTo: 'services';
-        value: string | Service;
-      }[]
-    | null;
-  profileImage?: string | Media | null;
-  meta?: {
-    rating?: number | null;
-    reviewCount?: number | null;
-    languages?:
-      | {
-          id?: string | null;
-          language: string;
-        }[]
-      | null;
-  } | null;
-  createdAt: string;
-  updatedAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "services".
- */
-export interface Service {
-  id: string;
-  title: string;
-  slug?: string | null;
-  category?: string | null;
-  description?: unknown;
-  providers?:
-    | {
-        relationTo: 'providers';
-        value: string | Provider;
-      }[]
-    | null;
-  durationMinutes: number;
-  bufferMinutesBefore?: number | null;
-  bufferMinutesAfter?: number | null;
-  pricing?: {
-    amount: number;
-    currency: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD';
-    taxRate?: number | null;
-  } | null;
-  isActive?: boolean | null;
-  leadTimeHours?: number | null;
-  instructions?: string | null;
-  media?: (string | Media)[] | null;
-  createdAt: string;
-  updatedAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "appointments".
  */
 export interface Appointment {
-  id: string;
+  id: number;
+  /**
+   * Optional external reference or confirmation number.
+   */
   reference?: string | null;
-  client: {
-    relationTo: 'users';
-    value: string | User;
-  };
-  provider: {
-    relationTo: 'providers';
-    value: string | Provider;
-  };
-  service: {
-    relationTo: 'services';
-    value: string | Service;
-  };
+  client: number | User;
+  provider: number | Provider;
+  service: number | Service;
   status: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'no_show';
   schedule: {
     start: string;
@@ -296,53 +331,80 @@ export interface Appointment {
     location?: string | null;
     bufferBefore?: number | null;
     bufferAfter?: number | null;
+    /**
+     * Calculated from start and end times.
+     */
     durationMinutes?: number | null;
   };
   pricingSnapshot: {
     amount: number;
     currency: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD';
-    durationMinutes?: number | null;
+    durationMinutes: number;
     taxRate?: number | null;
   };
   clientNotes?: string | null;
+  /**
+   * Visible only to staff users.
+   */
   internalNotes?: string | null;
   cancellation?: {
     cancelledAt?: string | null;
     reason?: string | null;
-  } | null;
+  };
   reminders?:
     | {
-        id?: string | null;
         sentAt?: string | null;
-        channel?: 'email' | 'sms' | 'push' | null;
-        status?: 'scheduled' | 'sent' | 'failed' | null;
+        channel?: ('email' | 'sms' | 'push') | null;
+        status?: ('scheduled' | 'sent' | 'failed') | null;
+        id?: string | null;
       }[]
     | null;
-  metadata?: {
-    [k: string]: unknown;
-  } | null;
-  createdAt: string;
+  /**
+   * Additional structured data synced from integrations.
+   */
+  metadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
+      } | null)
+    | ({
+        relationTo: 'providers';
+        value: number | Provider;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
+      } | null)
+    | ({
+        relationTo: 'appointments';
+        value: number | Appointment;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -352,10 +414,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -375,7 +437,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -386,12 +448,13 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-  email?: T;
   name?: T;
   phone?: T;
   roles?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  username?: T;
   resetPasswordToken?: T;
   resetPasswordExpiration?: T;
   salt?: T;
@@ -408,24 +471,6 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "providers_select".
  */
 export interface ProvidersSelect<T extends boolean = true> {
@@ -437,12 +482,27 @@ export interface ProvidersSelect<T extends boolean = true> {
   specialties?:
     | T
     | {
-        id?: T;
         label?: T;
         description?: T;
+        id?: T;
       };
-  contact?: T;
-  location?: T;
+  contact?:
+    | T
+    | {
+        email?: T;
+        phone?: T;
+        website?: T;
+      };
+  location?:
+    | T
+    | {
+        address?: T;
+        city?: T;
+        region?: T;
+        postalCode?: T;
+        country?: T;
+        timeZone?: T;
+      };
   availability?:
     | T
     | {
@@ -450,10 +510,10 @@ export interface ProvidersSelect<T extends boolean = true> {
         windows?:
           | T
           | {
-              id?: T;
               day?: T;
               startTime?: T;
               endTime?: T;
+              id?: T;
             };
       };
   services?: T;
@@ -466,12 +526,12 @@ export interface ProvidersSelect<T extends boolean = true> {
         languages?:
           | T
           | {
-              id?: T;
               language?: T;
+              id?: T;
             };
       };
-  createdAt?: T;
   updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -497,8 +557,8 @@ export interface ServicesSelect<T extends boolean = true> {
   leadTimeHours?: T;
   instructions?: T;
   media?: T;
-  createdAt?: T;
   updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -540,14 +600,32 @@ export interface AppointmentsSelect<T extends boolean = true> {
   reminders?:
     | T
     | {
-        id?: T;
         sentAt?: T;
         channel?: T;
         status?: T;
+        id?: T;
       };
   metadata?: T;
-  createdAt?: T;
   updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

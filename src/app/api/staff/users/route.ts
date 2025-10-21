@@ -3,7 +3,7 @@ import { ZodError, z } from 'zod'
 
 import { authenticateStaffRequest, unauthorizedResponse } from '@/lib/api/auth'
 import { extractRoles } from '@/lib/auth'
-import { ASSIGNABLE_ROLES, canAssignRoles } from '@/lib/staff/rolePermissions'
+import { ASSIGNABLE_ROLES, canAssignRoles, type AssignableRole } from '@/lib/staff/rolePermissions'
 
 export const dynamic = 'force-dynamic'
 
@@ -69,7 +69,8 @@ export const POST = async (request: Request) => {
     )
   }
 
-  const rolesToAssign = body.roles && body.roles.length > 0 ? body.roles : ['patient']
+  const defaultRoles: NonNullable<CreateUserBody['roles']> = ['patient']
+  const rolesToAssign = body.roles && body.roles.length > 0 ? body.roles : defaultRoles
 
   if (!canAssignRoles(extractRoles(user), rolesToAssign)) {
     return NextResponse.json(
@@ -88,6 +89,7 @@ export const POST = async (request: Request) => {
       collection: 'users',
       data: {
         email: normalizedEmail || undefined,
+        name: normalizedPhone,
         phone: normalizedPhone,
         username: normalizedPhone,
         password: body.password,
@@ -97,7 +99,10 @@ export const POST = async (request: Request) => {
     })
 
     const createdRoles = Array.isArray(created.roles)
-      ? created.roles.filter((role): role is string => typeof role === 'string')
+      ? created.roles.filter(
+          (role): role is AssignableRole =>
+            typeof role === 'string' && (ASSIGNABLE_ROLES as readonly string[]).includes(role),
+        )
       : []
 
     return NextResponse.json(

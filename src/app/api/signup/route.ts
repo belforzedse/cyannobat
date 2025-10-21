@@ -154,7 +154,7 @@ export const POST = async (request: Request) => {
     const created = await payload.create({
       collection: 'users',
       data: {
-        email: email ?? undefined,
+        email: email ?? '',
         name,
         phone,
         username: phone,
@@ -187,10 +187,11 @@ export const POST = async (request: Request) => {
     auth = (await payload.login({
       collection: 'users',
       data: {
+        email: phone,
         username: phone,
         password,
       },
-    } as never)) as AuthResult
+    })) as AuthResult
   } catch (error) {
     payload.logger.error?.('Failed to authenticate user after signup', error)
 
@@ -209,27 +210,32 @@ export const POST = async (request: Request) => {
     }
   }
 
-  if (!auth || !auth.user) {
+  const authUser = auth?.user
+
+  if (!authUser) {
     return NextResponse.json(
       { message: 'Failed to authenticate new user.' },
       { status: 500 },
     )
   }
 
-  const authUser = auth.user as PayloadRequest['user']
-  const roles = extractRoles(authUser)
+  const ensuredAuthUser = authUser as NonNullable<PayloadRequest['user']>
+  const roles = extractRoles(ensuredAuthUser)
 
   const response = NextResponse.json({
     user: {
-      id: String(authUser.id),
-      name: typeof authUser.name === 'string' ? authUser.name : '',
-      phone: typeof (authUser as { phone?: unknown }).phone === 'string' ? authUser.phone : '',
+      id: String(ensuredAuthUser.id),
+      name: typeof ensuredAuthUser.name === 'string' ? ensuredAuthUser.name : '',
+      phone:
+        typeof (ensuredAuthUser as { phone?: unknown }).phone === 'string'
+          ? ensuredAuthUser.phone
+          : '',
       roles,
     },
-    isStaff: userIsStaff(authUser),
+    isStaff: userIsStaff(ensuredAuthUser),
   })
 
-  setAuthCookies(response, auth)
+  setAuthCookies(response, auth as AuthResult)
 
   return response
 }
