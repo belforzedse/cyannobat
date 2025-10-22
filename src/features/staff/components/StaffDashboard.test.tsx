@@ -203,5 +203,124 @@ describe('StaffDashboard interactions', () => {
 
     await screen.findByText('کاربر بیمار برای newpatient@example.com با موفقیت ایجاد شد.')
   })
+
+  it('allows a receptionist to create a new appointment', async () => {
+    const receptionist: StaffUser = {
+      email: 'reception@example.com',
+      roles: ['receptionist'],
+    }
+
+    const createdAppointment: StaffAppointment = {
+      ...baseAppointment,
+      id: 'appointment-2',
+      clientEmail: 'newpatient@example.com',
+    }
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        appointment: createdAppointment,
+      }),
+    } as Response)
+
+    renderDashboard([baseAppointment], receptionist)
+
+    fireEvent.click(screen.getByRole('button', { name: 'رزرو نوبت جدید' }))
+
+    fireEvent.change(screen.getByLabelText('شناسه بیمار'), { target: { value: 'user-1' } })
+    fireEvent.change(screen.getByLabelText('شناسه خدمت'), { target: { value: 'service-1' } })
+    fireEvent.change(screen.getByLabelText('ارائه‌دهنده'), { target: { value: 'provider-1' } })
+    fireEvent.change(screen.getByLabelText('زمان شروع'), { target: { value: '2024-02-01T09:00' } })
+    fireEvent.change(screen.getByLabelText('زمان پایان'), { target: { value: '2024-02-01T09:30' } })
+    fireEvent.change(screen.getByLabelText('منطقه زمانی'), { target: { value: 'UTC' } })
+
+    fireEvent.click(screen.getByRole('button', { name: 'ایجاد نوبت' }))
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
+    const fetchArgs = fetchMock.mock.calls[0] as unknown[]
+    expect(fetchArgs[0]).toBe('/api/staff/appointments')
+    const requestInit = fetchArgs[1] as RequestInit
+    expect(requestInit?.method).toBe('POST')
+    const body = JSON.parse((requestInit?.body as string) ?? '{}')
+    expect(body).toMatchObject({
+      client: 'user-1',
+      service: 'service-1',
+      provider: 'provider-1',
+      schedule: {
+        timeZone: 'UTC',
+      },
+    })
+    expect(typeof body.schedule.start).toBe('string')
+    expect(typeof body.schedule.end).toBe('string')
+
+    await screen.findByText('نوبت با موفقیت ثبت شد.')
+    const newEmailCells = screen.getAllByRole('cell', { name: 'newpatient@example.com' })
+    expect(newEmailCells.length).toBeGreaterThan(0)
+  })
+
+  it('shows validation errors when the create appointment form is invalid', async () => {
+    const receptionist: StaffUser = {
+      email: 'reception@example.com',
+      roles: ['receptionist'],
+    }
+
+    renderDashboard([baseAppointment], receptionist)
+
+    fireEvent.click(screen.getByRole('button', { name: 'رزرو نوبت جدید' }))
+
+    fireEvent.change(screen.getByLabelText('شناسه بیمار'), { target: { value: 'user-1' } })
+    fireEvent.change(screen.getByLabelText('شناسه خدمت'), { target: { value: 'service-1' } })
+    fireEvent.change(screen.getByLabelText('ارائه‌دهنده'), { target: { value: 'provider-1' } })
+    fireEvent.change(screen.getByLabelText('زمان شروع'), { target: { value: '2024-02-01T10:00' } })
+    fireEvent.change(screen.getByLabelText('زمان پایان'), { target: { value: '2024-02-01T09:00' } })
+    fireEvent.change(screen.getByLabelText('منطقه زمانی'), { target: { value: 'UTC' } })
+
+    fireEvent.click(screen.getByRole('button', { name: 'ایجاد نوبت' }))
+
+    expect(fetchMock).not.toHaveBeenCalled()
+    const validationMessages = await screen.findAllByText('بازه زمانی معتبر نیست.')
+    expect(validationMessages.length).toBeGreaterThan(0)
+  })
+
+  it('updates the schedule when saving succeeds', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        appointment: {
+          ...baseAppointment,
+          start: new Date('2024-02-01T09:00:00Z').toISOString(),
+          end: new Date('2024-02-01T09:30:00Z').toISOString(),
+        },
+      }),
+    } as Response)
+
+    renderDashboard([baseAppointment])
+
+    const row = screen.getAllByRole('cell', { name: 'patient@example.com' })[0]?.closest('tr') as HTMLTableRowElement
+    fireEvent.click(within(row).getByRole('button', { name: 'ویرایش زمان' }))
+
+    const startInput = within(row).getByLabelText('زمان شروع جدید') as HTMLInputElement
+    const endInput = within(row).getByLabelText('زمان پایان جدید') as HTMLInputElement
+
+    fireEvent.change(startInput, { target: { value: '2024-02-01T09:00' } })
+    fireEvent.change(endInput, { target: { value: '2024-02-01T09:30' } })
+
+    fireEvent.click(within(row).getByRole('button', { name: 'ذخیره زمان' }))
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
+    const fetchArgs = fetchMock.mock.calls[0] as unknown[]
+    expect(fetchArgs[0]).toBe('/api/staff/appointments/appointment-1')
+    const requestInit = fetchArgs[1] as RequestInit
+    expect(requestInit?.method).toBe('PATCH')
+    const body = JSON.parse((requestInit?.body as string) ?? '{}')
+    expect(body.schedule).toMatchObject({
+      timeZone: 'UTC',
+    })
+    expect(typeof body.schedule.start).toBe('string')
+    expect(typeof body.schedule.end).toBe('string')
+
+    await screen.findByText('زمان نوبت با موفقیت به‌روزرسانی شد.')
+    await waitFor(() => expect(within(row).queryByLabelText('زمان شروع جدید')).not.toBeInTheDocument())
+  })
 })
 
