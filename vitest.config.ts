@@ -6,6 +6,11 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     globals: true,
+    env: {
+      DATABASE_URI:
+        process.env.DATABASE_URI ?? 'postgres://postgres:postgres@localhost:5432/cyannobat_test',
+      PAYLOAD_SECRET: process.env.PAYLOAD_SECRET ?? 'test-secret',
+    },
   },
   resolve: {
     alias: {
