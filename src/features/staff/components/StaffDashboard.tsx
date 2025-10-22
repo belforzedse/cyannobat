@@ -129,7 +129,8 @@ const StaffDashboardContent = ({
     startRefreshTransition(async () => {
       try {
         setErrorMessage(null)
-        const response = await fetch('/api/staff/appointments', {
+        const query = new URLSearchParams({ scope: mode })
+        const response = await fetch(`/api/staff/appointments?${query.toString()}`, {
           cache: 'no-store',
         })
         if (!response.ok) {
@@ -147,7 +148,7 @@ const StaffDashboardContent = ({
         setActivity('staff-refresh', false)
       }
     })
-  }, [setActivity, showToast])
+  }, [mode, setActivity, showToast])
 
   const handleStatusChange = useCallback(
     async (appointmentId: string, status: StaffAppointment['status']) => {

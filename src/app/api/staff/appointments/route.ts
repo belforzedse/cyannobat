@@ -2,7 +2,11 @@ import { NextResponse } from 'next/server'
 import type { Where } from 'payload'
 
 import { authenticateStaffRequest, unauthorizedResponse } from '@/lib/api/auth'
-import { getProviderIdsForUser, shouldFilterAppointmentsForRoles } from '@/features/staff/server/loadStaffData'
+import {
+  getProviderIdsForUser,
+  shouldFilterAppointmentsForRoles,
+} from '@/features/staff/server/loadStaffData'
+import type { DashboardScope } from '@/features/staff/server/loadStaffData'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,6 +25,9 @@ export const GET = async (request: Request) => {
 
   const url = new URL(request.url)
   const status = url.searchParams.get('status')
+  const scopeParam = url.searchParams.get('scope')
+  const scope: DashboardScope | null =
+    scopeParam === 'doctor' || scopeParam === 'receptionist' ? (scopeParam as DashboardScope) : null
   const limit = Number.parseInt(url.searchParams.get('limit') ?? '50', 10)
 
   const now = new Date()
@@ -33,7 +40,9 @@ export const GET = async (request: Request) => {
 
   const filters: Where[] = [baseWhere]
 
-  if (shouldFilterAppointmentsForRoles(roles)) {
+  const enforceProviderFilter = scope === 'doctor' || shouldFilterAppointmentsForRoles(roles)
+
+  if (enforceProviderFilter) {
     const providerIds = await getProviderIdsForUser(payload, user)
 
     if (providerIds.length === 0) {

@@ -134,7 +134,7 @@ export const loadStaffSession = async (
   return { payload, user, roles, currentUser }
 }
 
-type DashboardScope = 'doctor' | 'receptionist'
+export type DashboardScope = 'doctor' | 'receptionist'
 
 type LoadDashboardDataOptions = {
   scope?: DashboardScope
