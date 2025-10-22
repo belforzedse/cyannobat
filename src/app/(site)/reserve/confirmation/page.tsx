@@ -70,7 +70,7 @@ const formatDateTime = (iso: string | null | undefined, timeZone: string | null 
       timeStyle: 'short',
       timeZone: timeZone && timeZone.trim() !== '' ? timeZone : 'UTC',
     }).format(date)
-  } catch (error) {
+  } catch {
     return 'زمان نامشخص'
   }
 }
