@@ -1,143 +1,49 @@
-import { headers } from 'next/headers'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
-import { getPayload } from 'payload'
-
-import configPromise from '@payload-config'
-import { userIsStaff } from '@/lib/auth'
-import StaffDashboard from '@/features/staff/components/StaffDashboard'
-import type { StaffAppointment, StaffProvider, StaffUser } from '@/features/staff/types'
-import type { Appointment, Provider as ProviderDoc, Service, User } from '@/payload-types'
+import { DoctorDashboard, ReceptionistDashboard } from '@/features/staff/components/StaffDashboard'
+import { loadStaffDashboardData, loadStaffSession, shouldFilterAppointmentsForRoles } from '@/features/staff/server/loadStaffData'
 
 export const dynamic = 'force-dynamic'
 
-type RelationValue<T> =
-  | T
-  | number
-  | string
-  | {
-      relationTo: string
-      value: string | number | T
-    }
-
-const getRelationDoc = <T,>(relation: RelationValue<T> | null | undefined): T | null => {
-  if (!relation) return null
-
-  if (typeof relation === 'object') {
-    if ('relationTo' in relation && 'value' in relation) {
-      const value = relation.value
-      return value && typeof value === 'object' ? (value as T) : null
-    }
-
-    return relation as T
-  }
-
-  return null
-}
-
-type PopulatedAppointment = Appointment & {
-  provider?: Appointment['provider']
-  service?: Appointment['service']
-  client?: Appointment['client']
-}
-
-const mapAppointment = (doc: PopulatedAppointment): StaffAppointment => {
-  const schedule = doc?.schedule ?? {}
-  const provider = getRelationDoc<ProviderDoc>(doc.provider)
-  const service = getRelationDoc<Service>(doc.service)
-  const client = getRelationDoc<User>(doc.client)
-
-  return {
-    id: String(doc.id ?? ''),
-    reference: doc.reference ?? null,
-    status: doc.status ?? 'pending',
-    start: schedule.start ?? '',
-    end: schedule.end ?? '',
-    timeZone: schedule.timeZone ?? 'UTC',
-    providerName: provider?.displayName ?? 'نامشخص',
-    serviceTitle: service?.title ?? 'خدمت بدون عنوان',
-    clientEmail: client?.email ?? 'نامشخص',
-    createdAt: doc.createdAt ?? new Date().toISOString(),
-  }
-}
-
-type AvailabilityWindow = NonNullable<NonNullable<ProviderDoc['availability']>['windows']>[number]
-
-const mapProvider = (doc: ProviderDoc): StaffProvider => {
-  const availability: AvailabilityWindow[] = Array.isArray(doc?.availability?.windows)
-    ? (doc.availability.windows as AvailabilityWindow[])
-    : []
-
-  return {
-    id: String(doc.id ?? ''),
-    displayName: doc.displayName ?? 'ارائه‌دهنده',
-    timeZone: doc?.location?.timeZone ?? 'UTC',
-    availability: availability.map((window) => ({
-      day: window?.day ?? 'نامشخص',
-      startTime: window?.startTime ?? '--:--',
-      endTime: window?.endTime ?? '--:--',
-    })),
-  }
-}
-
 const StaffPage = async () => {
-  const payload = await getPayload({
-    config: configPromise,
-  })
+  const { payload, user, roles, currentUser } = await loadStaffSession()
 
-  const headerStore = await headers()
-
-  const authResult = await payload
-    .auth({
-      headers: headerStore,
-    })
-    .catch(() => ({ user: null }))
-
-  const user = authResult?.user
-
-  if (!user || !userIsStaff(user)) {
-    redirect('/staff/login')
+  if (shouldFilterAppointmentsForRoles(roles)) {
+    redirect('/staff/doctor')
   }
 
-  const now = new Date().toISOString()
+  const { appointments, providers } = await loadStaffDashboardData(payload, user, roles)
 
-  const [appointmentResult, providerResult] = await Promise.all([
-    payload.find({
-      collection: 'appointments',
-      where: {
-        'schedule.start': {
-          greater_than_equal: now,
-        },
-      },
-      sort: 'schedule.start',
-      limit: 50,
-      depth: 2,
-      overrideAccess: true,
-    }),
-    payload.find({
-      collection: 'providers',
-      sort: 'displayName',
-      limit: 50,
-      depth: 1,
-      overrideAccess: true,
-    }),
-  ])
-
-  const userRoles = Array.isArray((user as { roles?: unknown }).roles)
-    ? ((user as { roles?: string[] }).roles ?? [])
-    : []
-
-  const currentUser: StaffUser = {
-    email: user.email ?? 'staff',
-    roles: userRoles,
-  }
-
-  const appointments = appointmentResult.docs.map(mapAppointment)
-  const providers = providerResult.docs.map(mapProvider)
+  const canAccessReception = roles.includes('receptionist') || roles.includes('admin')
+  const DashboardComponent = canAccessReception ? ReceptionistDashboard : DoctorDashboard
+  const showRoleSwitcher = canAccessReception && roles.includes('doctor')
 
   return (
     <section className="px-4 py-8 sm:px-10 sm:py-12">
-      <StaffDashboard initialAppointments={appointments} initialProviders={providers} currentUser={currentUser} />
+      {showRoleSwitcher && (
+        <div className="mb-6 flex flex-wrap items-center justify-end gap-3 text-xs text-muted-foreground sm:text-sm">
+          <span>انتخاب پیشخوان:</span>
+          <Link
+            href="/staff/receptionist"
+            className="rounded-full border border-white/20 px-4 py-1 text-foreground transition-colors hover:bg-white/10 dark:border-white/15"
+          >
+            پیشخوان پذیرش
+          </Link>
+          <Link
+            href="/staff/doctor"
+            className="rounded-full border border-white/20 px-4 py-1 text-foreground transition-colors hover:bg-white/10 dark:border-white/15"
+          >
+            پیشخوان پزشک
+          </Link>
+        </div>
+      )}
+
+      <DashboardComponent
+        initialAppointments={appointments}
+        initialProviders={providers}
+        currentUser={currentUser}
+      />
     </section>
   )
 }

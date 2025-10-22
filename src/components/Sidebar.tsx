@@ -121,7 +121,26 @@ const SidebarAccountWidget = React.forwardRef<
     };
   }, []);
 
-  const accountHref = session.status === 'authenticated' && session.isStaff ? '/staff' : '/account';
+  let accountHref = '/account';
+
+  if (session.status === 'authenticated') {
+    if (session.isStaff) {
+      const roles = session.user.roles ?? [];
+      const hasDoctor = roles.includes('doctor');
+      const hasReceptionist = roles.includes('receptionist');
+      const isAdmin = roles.includes('admin');
+
+      if (hasDoctor && !hasReceptionist && !isAdmin) {
+        accountHref = '/staff/doctor';
+      } else if (hasReceptionist || isAdmin) {
+        accountHref = '/staff/receptionist';
+      } else {
+        accountHref = '/staff';
+      }
+    } else {
+      accountHref = '/account';
+    }
+  }
   const containerClassName = "w-full";
 
   if (session.status === "loading") {
