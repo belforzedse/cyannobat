@@ -2,7 +2,7 @@ import React from 'react'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import StaffDashboard from './StaffDashboard'
+import { ReceptionistDashboard } from './StaffDashboard'
 import { ToastProvider } from '@/components/ui/ToastProvider'
 import type { StaffAppointment, StaffProvider, StaffUser } from '@/features/staff/types'
 
@@ -30,13 +30,17 @@ const providers: StaffProvider[] = [
 
 const defaultStaffUser: StaffUser = {
   email: 'staff@example.com',
-  roles: ['staff'],
+  roles: ['receptionist'],
 }
 
 const renderDashboard = (appointments: StaffAppointment[], user: StaffUser = defaultStaffUser) => {
   return render(
     <ToastProvider>
-      <StaffDashboard initialAppointments={appointments} initialProviders={providers} currentUser={user} />
+      <ReceptionistDashboard
+        initialAppointments={appointments}
+        initialProviders={providers}
+        currentUser={user}
+      />
     </ToastProvider>,
   )
 }
@@ -137,7 +141,9 @@ describe('StaffDashboard interactions', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'به‌روزرسانی' }))
 
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/staff/appointments', expect.anything()))
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith('/api/staff/appointments?scope=receptionist', expect.anything()),
+    )
 
     await screen.findByText('فهرست نوبت‌ها به‌روزرسانی شد.')
   })
