@@ -22,9 +22,11 @@ export type StaffProvider = {
   displayName: string
   availability: StaffProviderAvailabilityWindow[]
   timeZone: string
+  accountId: string
 }
 
 export type StaffUser = {
+  id: string
   email: string
   roles: string[]
 }
