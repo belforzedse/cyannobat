@@ -1,7 +1,92 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
+import { ZodError, z } from 'zod'
 
 import { authenticateStaffRequest, unauthorizedResponse } from '@/lib/api/auth'
+import type { StaffAppointment } from '@/features/staff/types'
+
+type RelationRecord = { [key: string]: unknown }
+
+const STATUS_VALUES = ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled', 'no_show'] as const
+
+const getRelationDoc = (relation: unknown): RelationRecord | null => {
+  if (!relation || typeof relation !== 'object') {
+    return null
+  }
+
+  const record = relation as RelationRecord
+
+  if ('relationTo' in record && 'value' in record) {
+    const value = record.value
+    return value && typeof value === 'object' ? (value as RelationRecord) : null
+  }
+
+  return record
+}
+
+const toISODateString = (value: unknown): string => {
+  if (typeof value === 'string') {
+    return value
+  }
+
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString()
+  }
+
+  return new Date().toISOString()
+}
+
+const mapAppointment = (doc: Record<string, unknown>): StaffAppointment => {
+  const schedule = typeof doc.schedule === 'object' && doc.schedule !== null ? (doc.schedule as RelationRecord) : {}
+  const provider = getRelationDoc(doc.provider)
+  const service = getRelationDoc(doc.service)
+  const client = getRelationDoc(doc.client)
+
+  const start = typeof doc.start === 'string' ? doc.start : (schedule.start as string | undefined)
+  const end = typeof doc.end === 'string' ? doc.end : (schedule.end as string | undefined)
+  const timeZone =
+    typeof doc.timeZone === 'string' ? doc.timeZone : (schedule.timeZone as string | undefined) ?? 'UTC'
+
+  return {
+    id: typeof doc.id === 'string' ? doc.id : String(doc.id ?? ''),
+    reference: typeof doc.reference === 'string' ? doc.reference : (doc.reference as string | null | undefined) ?? null,
+    status: typeof doc.status === 'string' ? doc.status : 'pending',
+    start: start ?? '',
+    end: end ?? '',
+    timeZone,
+    providerName: typeof doc.providerName === 'string' ? doc.providerName : (provider?.displayName as string | undefined) ?? 'نامشخص',
+    serviceTitle: typeof doc.serviceTitle === 'string' ? doc.serviceTitle : (service?.title as string | undefined) ?? 'خدمت بدون عنوان',
+    clientEmail: typeof doc.clientEmail === 'string' ? doc.clientEmail : (client?.email as string | undefined) ?? 'نامشخص',
+    createdAt:
+      typeof doc.createdAt === 'string'
+        ? doc.createdAt
+        : toISODateString(doc.createdAt),
+  }
+}
+
+const scheduleUpdateSchema = z
+  .object({
+    start: z.string({ required_error: 'Schedule start is required' }).datetime({ offset: true }),
+    end: z.string({ required_error: 'Schedule end is required' }).datetime({ offset: true }),
+    timeZone: z.string().min(1).optional(),
+  })
+  .refine(
+    (value) => {
+      const start = new Date(value.start)
+      const end = new Date(value.end)
+      return !Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime()) && end.getTime() > start.getTime()
+    },
+    { message: 'Schedule end must be after start', path: ['end'] },
+  )
+
+const updateSchema = z
+  .object({
+    status: z.enum(STATUS_VALUES).optional(),
+    schedule: scheduleUpdateSchema.optional(),
+  })
+  .refine((value) => typeof value.status !== 'undefined' || typeof value.schedule !== 'undefined', {
+    message: 'No updatable fields provided',
+  })
 
 export const dynamic = 'force-dynamic'
 
@@ -16,10 +101,22 @@ export const PATCH = async (
     return unauthorizedResponse()
   }
 
-  let body: unknown
+  let body: z.infer<typeof updateSchema>
+
   try {
-    body = await request.json()
-  } catch {
+    const json = await request.json()
+    body = updateSchema.parse(json)
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        {
+          message: 'Invalid request body',
+          issues: error.flatten(),
+        },
+        { status: 400 },
+      )
+    }
+
     return NextResponse.json(
       {
         message: 'Invalid JSON body',
@@ -28,32 +125,18 @@ export const PATCH = async (
     )
   }
 
-  if (!body || typeof body !== 'object') {
-    return NextResponse.json(
-      {
-        message: 'Request body must be an object',
-      },
-      { status: 400 },
-    )
-  }
-
   const data: Record<string, unknown> = {}
 
-  if ('status' in body && typeof (body as { status?: unknown }).status === 'string') {
-    data.status = (body as { status?: string }).status
+  if (typeof body.status === 'string') {
+    data.status = body.status
   }
 
-  if ('schedule' in body && typeof (body as { schedule?: unknown }).schedule === 'object') {
-    data.schedule = (body as { schedule?: unknown }).schedule
-  }
-
-  if (Object.keys(data).length === 0) {
-    return NextResponse.json(
-      {
-        message: 'No updatable fields provided',
-      },
-      { status: 400 },
-    )
+  if (body.schedule) {
+    data.schedule = {
+      start: body.schedule.start,
+      end: body.schedule.end,
+      ...(body.schedule.timeZone ? { timeZone: body.schedule.timeZone } : {}),
+    }
   }
 
   try {
@@ -61,11 +144,12 @@ export const PATCH = async (
       collection: 'appointments',
       id,
       data,
+      depth: 2,
       overrideAccess: true,
     })
 
     return NextResponse.json({
-      appointment: updated,
+      appointment: mapAppointment(updated as Record<string, unknown>),
     })
   } catch (error) {
     payload.logger.error?.('Failed to update appointment from staff API', error)
