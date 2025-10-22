@@ -25,10 +25,12 @@ const providers: StaffProvider[] = [
     displayName: 'Dr. Example',
     timeZone: 'UTC',
     availability: [],
+    accountId: 'staff-1',
   },
 ]
 
 const defaultStaffUser: StaffUser = {
+  id: 'staff-1',
   email: 'staff@example.com',
   roles: ['receptionist'],
 }
@@ -166,6 +168,7 @@ describe('StaffDashboard interactions', () => {
 
   it('submits user creation request when admin completes the form', async () => {
     const adminUser: StaffUser = {
+      id: 'admin-1',
       email: 'admin@example.com',
       roles: ['admin'],
     }
@@ -212,6 +215,7 @@ describe('StaffDashboard interactions', () => {
 
   it('allows a receptionist to create a new appointment', async () => {
     const receptionist: StaffUser = {
+      id: 'reception-1',
       email: 'reception@example.com',
       roles: ['receptionist'],
     }
@@ -266,6 +270,7 @@ describe('StaffDashboard interactions', () => {
 
   it('shows validation errors when the create appointment form is invalid', async () => {
     const receptionist: StaffUser = {
+      id: 'reception-1',
       email: 'reception@example.com',
       roles: ['receptionist'],
     }

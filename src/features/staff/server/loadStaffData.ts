@@ -7,6 +7,7 @@ import type { Where } from 'payload'
 import configPromise from '@payload-config'
 import { userIsStaff } from '@/lib/auth'
 import type { StaffAppointment, StaffProvider, StaffUser } from '@/features/staff/types'
+import { mapProviderDocToStaffProvider } from '@/features/staff/utils/mapProvider'
 import type { Appointment, Provider as ProviderDoc, Service, User } from '@/payload-types'
 
 type RelationValue<T> =
@@ -75,25 +76,6 @@ const mapAppointment = (doc: PopulatedAppointment): StaffAppointment => {
   }
 }
 
-type AvailabilityWindow = NonNullable<NonNullable<ProviderDoc['availability']>['windows']>[number]
-
-const mapProvider = (doc: ProviderDoc): StaffProvider => {
-  const availability: AvailabilityWindow[] = Array.isArray(doc?.availability?.windows)
-    ? (doc.availability.windows as AvailabilityWindow[])
-    : []
-
-  return {
-    id: String(doc.id ?? ''),
-    displayName: doc.displayName ?? 'ارائه‌دهنده',
-    timeZone: doc?.location?.timeZone ?? 'UTC',
-    availability: availability.map((window) => ({
-      day: window?.day ?? 'نامشخص',
-      startTime: window?.startTime ?? '--:--',
-      endTime: window?.endTime ?? '--:--',
-    })),
-  }
-}
-
 export const loadStaffSession = async (
   options: LoadStaffSessionOptions = {},
 ): Promise<StaffSession> => {
@@ -127,6 +109,7 @@ export const loadStaffSession = async (
   const roles = rawRoles.filter((role): role is string => typeof role === 'string')
 
   const currentUser: StaffUser = {
+    id: String(user.id ?? ''),
     email: user.email ?? 'staff',
     roles,
   }
@@ -230,7 +213,7 @@ export const loadStaffDashboardData = async (
 
   return {
     appointments: appointmentResult.docs.map(mapAppointment),
-    providers: providerDocs.map(mapProvider),
+    providers: providerDocs.map(mapProviderDocToStaffProvider),
   }
 }
 

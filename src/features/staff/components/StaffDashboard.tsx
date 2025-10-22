@@ -13,6 +13,7 @@ import {
   useGlobalLoadingOverlay,
 } from '@/components/GlobalLoadingOverlayProvider'
 import { getRoleLabel } from '@/features/staff/utils/roleLabels'
+import ProviderAvailabilityEditor from './ProviderAvailabilityEditor'
 import StaffUserCreationCard from './StaffUserCreationCard'
 
 type SharedDashboardProps = {
@@ -171,14 +172,14 @@ const searchPlaceholderByMode: Record<DashboardMode, string> = {
 
 const providerCardCopy: Record<DashboardMode, { iconLabel: string; description: string; title: string }> = {
   doctor: {
-    iconLabel: 'برنامه زمانی شما',
-    title: 'برنامه زمانی شما',
-    description: 'مرور بازه‌های زمانی فعال شما. برای تغییر زمان‌ها با تیم پذیرش هماهنگ کنید.',
+    iconLabel: 'بازه‌های زمانی شما',
+    title: 'مدیریت برنامه زمانی',
+    description: 'بازه‌های حضور خود را تنظیم کنید. تغییرات بلافاصله در دسترس تیم پذیرش قرار می‌گیرد.',
   },
   receptionist: {
-    iconLabel: 'بازه‌های زمانی ارائه‌دهندگان',
-    title: 'بازه‌های زمانی ارائه‌دهندگان',
-    description: 'برای تعریف یا ویرایش بازه‌ها، از بخش مدیریت ارائه‌دهندگان استفاده کنید.',
+    iconLabel: 'برنامه ارائه‌دهندگان',
+    title: 'مدیریت بازه‌های ارائه‌دهندگان',
+    description: 'بازه‌های زمانی ارائه‌دهندگان را ویرایش یا اضافه کنید تا تقویم همیشه به‌روز باشد.',
   },
 }
 
@@ -190,7 +191,7 @@ const StaffDashboardContent = ({
 }: StaffDashboardProps) => {
   const prefersReducedMotion = useReducedMotion()
   const [appointments, setAppointments] = useState<StaffAppointment[]>(initialAppointments)
-  const [providers] = useState<StaffProvider[]>(initialProviders)
+  const [providers, setProviders] = useState<StaffProvider[]>(initialProviders)
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [isRefreshing, startRefreshTransition] = useTransition()
@@ -255,6 +256,31 @@ const StaffDashboardContent = ({
       return true
     })
   }, [appointments, filterStatus, searchTerm])
+
+  const refreshProviders = useCallback(async (): Promise<StaffProvider[]> => {
+    setActivity('staff-providers-refresh', true, 'در حال به‌روزرسانی بازه‌های زمانی...')
+
+    try {
+      const response = await fetch('/api/staff/providers', {
+        cache: 'no-store',
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to load providers (${response.status})`)
+      }
+
+      const data = (await response.json()) as { providers?: StaffProvider[] }
+      const nextProviders = Array.isArray(data.providers) ? data.providers : []
+      setProviders(nextProviders)
+      return nextProviders
+    } catch (error) {
+      console.error('Failed to refresh providers from staff dashboard', error)
+      showToast({ description: 'به‌روزرسانی بازه‌های زمانی ممکن نشد.', variant: 'error' })
+      throw error
+    } finally {
+      setActivity('staff-providers-refresh', false)
+    }
+  }, [setActivity, setProviders, showToast])
 
   const handleRefresh = useCallback(() => {
     setActivity('staff-refresh', true, 'در حال به‌روزرسانی نوبت‌ها...')
@@ -1041,46 +1067,11 @@ const StaffDashboardContent = ({
             <p className="text-xs text-muted-foreground">{providerCopy.description}</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {providers.map((provider) => (
-              <Card
-                key={provider.id}
-                variant="subtle"
-                padding="sm"
-                className="flex flex-col gap-3 transition-transform hover:scale-[1.01] sm:p-6"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-semibold text-foreground">{provider.displayName}</span>
-                  <span className="text-[11px] text-muted-foreground">منطقه زمانی: {provider.timeZone}</span>
-                </div>
-                <ul className="space-y-2">
-                  {provider.availability.length > 0 ? (
-                    provider.availability.map((window, index) => (
-                      <li
-                        key={`${provider.id}-${window.day}-${index}`}
-                        className="glass-panel rounded-xl px-3 py-2 text-[11px] text-muted-foreground"
-                      >
-                        <span className="font-semibold text-foreground">{window.day}</span>
-                        <span className="mx-1 text-muted-foreground/60">—</span>
-                        <span>
-                          {window.startTime} تا {window.endTime}
-                        </span>
-                      </li>
-                    ))
-                  ) : (
-                    <li className="rounded-xl border border-dashed border-white/20 px-3 py-2 text-[11px] text-muted-foreground dark:border-white/15">
-                      بازه‌ای ثبت نشده است.
-                    </li>
-                  )}
-                </ul>
-              </Card>
-            ))}
-            {providers.length === 0 && (
-              <div className="col-span-full rounded-2xl border border-dashed border-white/20 bg-white/10 p-6 text-center text-sm text-muted-foreground dark:border-white/10">
-                هنوز پروفایل ارائه‌دهنده‌ای ثبت نشده است.
-              </div>
-            )}
-          </div>
+          <ProviderAvailabilityEditor
+            providers={providers}
+            currentUser={currentUser}
+            onRefreshProviders={refreshProviders}
+          />
         </Card>
       </motion.div>
     </motion.div>
