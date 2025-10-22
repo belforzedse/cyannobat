@@ -141,7 +141,9 @@ describe('StaffDashboard interactions', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'به‌روزرسانی' }))
 
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/staff/appointments', expect.anything()))
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith('/api/staff/appointments?scope=receptionist', expect.anything()),
+    )
 
     await screen.findByText('فهرست نوبت‌ها به‌روزرسانی شد.')
   })
