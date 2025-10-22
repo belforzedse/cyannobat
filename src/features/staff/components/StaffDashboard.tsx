@@ -15,10 +15,16 @@ import {
 import { getRoleLabel } from '@/features/staff/utils/roleLabels'
 import StaffUserCreationCard from './StaffUserCreationCard'
 
-type StaffDashboardProps = {
+type SharedDashboardProps = {
   initialAppointments: StaffAppointment[]
   initialProviders: StaffProvider[]
   currentUser: StaffUser
+}
+
+type DashboardMode = 'doctor' | 'receptionist'
+
+type StaffDashboardProps = SharedDashboardProps & {
+  mode: DashboardMode
 }
 
 const statusOptions: Array<{ value: StaffAppointment['status']; label: string }> = [
@@ -49,7 +55,41 @@ const formatDateTime = (iso: string, timeZone: string) => {
   }
 }
 
-const StaffDashboardContent = ({ initialAppointments, initialProviders, currentUser }: StaffDashboardProps) => {
+const dashboardCopy: Record<DashboardMode, { title: string; description: string }> = {
+  doctor: {
+    title: 'پیشخوان پزشک',
+    description: 'پیگیری نوبت‌های بیماران و به‌روزرسانی وضعیت مراجعه‌های شما.',
+  },
+  receptionist: {
+    title: 'پیشخوان پذیرش',
+    description: 'مدیریت صف نوبت‌ها، هماهنگی ارائه‌دهندگان و پشتیبانی بیماران.',
+  },
+}
+
+const searchPlaceholderByMode: Record<DashboardMode, string> = {
+  doctor: 'ایمیل بیمار یا کد پیگیری',
+  receptionist: 'ایمیل، ارائه‌دهنده یا کد پیگیری',
+}
+
+const providerCardCopy: Record<DashboardMode, { iconLabel: string; description: string; title: string }> = {
+  doctor: {
+    iconLabel: 'برنامه زمانی شما',
+    title: 'برنامه زمانی شما',
+    description: 'مرور بازه‌های زمانی فعال شما. برای تغییر زمان‌ها با تیم پذیرش هماهنگ کنید.',
+  },
+  receptionist: {
+    iconLabel: 'بازه‌های زمانی ارائه‌دهندگان',
+    title: 'بازه‌های زمانی ارائه‌دهندگان',
+    description: 'برای تعریف یا ویرایش بازه‌ها، از بخش مدیریت ارائه‌دهندگان استفاده کنید.',
+  },
+}
+
+const StaffDashboardContent = ({
+  initialAppointments,
+  initialProviders,
+  currentUser,
+  mode,
+}: StaffDashboardProps) => {
   const prefersReducedMotion = useReducedMotion()
   const [appointments, setAppointments] = useState<StaffAppointment[]>(initialAppointments)
   const [providers] = useState<StaffProvider[]>(initialProviders)
@@ -61,6 +101,11 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
   const [failedId, setFailedId] = useState<string | null>(null)
   const { showToast } = useToast()
   const { setActivity } = useGlobalLoadingOverlay()
+
+  const showProviderColumn = mode === 'receptionist'
+  const isAdmin = currentUser.roles.includes('admin')
+  const showUserManagement = mode === 'receptionist' || isAdmin
+  const totalColumns = showProviderColumn ? 7 : 6
 
   const filteredAppointments = useMemo(() => {
     return appointments.filter((appointment) => {
@@ -146,6 +191,9 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
     window.location.href = '/staff/login'
   }, [])
 
+  const copy = dashboardCopy[mode]
+  const providerCopy = providerCardCopy[mode]
+
   return (
     <motion.div
       initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 24 }}
@@ -171,7 +219,7 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
               transition={{ delay: prefersReducedMotion ? 0 : 0.2, duration: prefersReducedMotion ? 0 : 0.5 }}
               className="text-3xl font-bold text-foreground sm:text-4xl"
             >
-              پیشخوان کارکنان
+              {copy.title}
             </motion.h1>
             <motion.p
               initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
@@ -179,7 +227,7 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
               transition={{ delay: prefersReducedMotion ? 0 : 0.3, duration: prefersReducedMotion ? 0 : 0.5 }}
               className="text-sm leading-relaxed text-muted-foreground"
             >
-              مدیریت نوبت‌ها و بازه‌های زمانی از یک داشبورد اختصاصی.
+              {copy.description}
             </motion.p>
           </div>
 
@@ -202,18 +250,20 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
         </Card>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: prefersReducedMotion ? 0 : 0.25, duration: prefersReducedMotion ? 0 : 0.5 }}
-      >
-        <StaffUserCreationCard currentUser={currentUser} />
-      </motion.div>
+      {showUserManagement && (
+        <motion.div
+          initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: prefersReducedMotion ? 0 : 0.2, duration: prefersReducedMotion ? 0 : 0.5 }}
+        >
+          <StaffUserCreationCard currentUser={currentUser} />
+        </motion.div>
+      )}
 
       <motion.div
         initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: prefersReducedMotion ? 0 : 0.4, duration: prefersReducedMotion ? 0 : 0.5 }}
+        transition={{ delay: prefersReducedMotion ? 0 : 0.3, duration: prefersReducedMotion ? 0 : 0.5 }}
       >
         <Card variant="default" padding="lg" className="flex flex-col gap-6 text-right">
           <div className="flex flex-col gap-1 text-right">
@@ -248,7 +298,7 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
                   type="search"
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder="ایمیل، ارائه‌دهنده یا کد پیگیری"
+                  placeholder={searchPlaceholderByMode[mode]}
                   className="glass-panel w-full rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 sm:w-64"
                 />
               </div>
@@ -273,7 +323,7 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
                   <tr>
                     <th className="px-3 py-3 lg:px-4">زمان نوبت</th>
                     <th className="px-3 py-3 lg:px-4">بیمار</th>
-                    <th className="px-3 py-3 lg:px-4">ارائه‌دهنده</th>
+                    {showProviderColumn && <th className="px-3 py-3 lg:px-4">ارائه‌دهنده</th>}
                     <th className="px-3 py-3 lg:px-4">خدمت</th>
                     <th className="px-3 py-3 lg:px-4">کد پیگیری</th>
                     <th className="px-3 py-3 lg:px-4">تاریخ ایجاد</th>
@@ -295,7 +345,7 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
                         </span>
                       </td>
                       <td className="px-3 py-3 text-xs lg:px-4">{appointment.clientEmail}</td>
-                      <td className="px-3 py-3 text-xs lg:px-4">{appointment.providerName}</td>
+                      {showProviderColumn && <td className="px-3 py-3 text-xs lg:px-4">{appointment.providerName}</td>}
                       <td className="px-3 py-3 text-xs lg:px-4">{appointment.serviceTitle}</td>
                       <td className="px-3 py-3 text-xs lg:px-4">{appointment.reference ?? '—'}</td>
                       <td className="px-3 py-3 text-[11px] text-muted-foreground lg:px-4">
@@ -330,7 +380,7 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
                   ))}
                   {filteredAppointments.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="px-4 py-6 text-center text-sm text-muted-foreground">
+                      <td colSpan={totalColumns} className="px-4 py-6 text-center text-sm text-muted-foreground">
                         نوبتی با این شرایط یافت نشد.
                       </td>
                     </tr>
@@ -364,10 +414,12 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
                         <span>{appointment.clientEmail}</span>
                       </div>
 
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs font-semibold text-muted-foreground">ارائه‌دهنده</span>
-                        <span>{appointment.providerName}</span>
-                      </div>
+                      {showProviderColumn && (
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs font-semibold text-muted-foreground">ارائه‌دهنده</span>
+                          <span>{appointment.providerName}</span>
+                        </div>
+                      )}
 
                       <div className="flex flex-col gap-1">
                         <span className="text-xs font-semibold text-muted-foreground">خدمت</span>
@@ -428,17 +480,15 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
       <motion.div
         initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: prefersReducedMotion ? 0 : 0.45, duration: prefersReducedMotion ? 0 : 0.5 }}
+        transition={{ delay: prefersReducedMotion ? 0 : 0.35, duration: prefersReducedMotion ? 0 : 0.5 }}
       >
         <Card variant="default" padding="lg" className="flex flex-col gap-6 text-right">
           <div className="flex flex-col gap-1 text-right">
             <div className="flex w-full items-center justify-between">
-              <GlassIcon icon={Users} size="sm" label="بازه‌های زمانی ارائه‌دهندگان" />
-              <h2 className="text-lg font-semibold text-foreground">بازه‌های زمانی ارائه‌دهندگان</h2>
+              <GlassIcon icon={Users} size="sm" label={providerCopy.iconLabel} />
+              <h2 className="text-lg font-semibold text-foreground">{providerCopy.title}</h2>
             </div>
-            <p className="text-xs text-muted-foreground">
-              برای تعریف بازه‌های جدید یا ویرایش، به بخش مربوطه در سیستم مدیریت مراجعه کنید.
-            </p>
+            <p className="text-xs text-muted-foreground">{providerCopy.description}</p>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -487,10 +537,18 @@ const StaffDashboardContent = ({ initialAppointments, initialProviders, currentU
   )
 }
 
-const StaffDashboard = (props: StaffDashboardProps) => (
+const RoleAwareDashboard = (props: StaffDashboardProps) => (
   <GlobalLoadingOverlayProvider>
     <StaffDashboardContent {...props} />
   </GlobalLoadingOverlayProvider>
 )
 
-export default StaffDashboard
+export const DoctorDashboard = (props: SharedDashboardProps) => (
+  <RoleAwareDashboard {...props} mode="doctor" />
+)
+
+export const ReceptionistDashboard = (props: SharedDashboardProps) => (
+  <RoleAwareDashboard {...props} mode="receptionist" />
+)
+
+export type { SharedDashboardProps as StaffDashboardInputProps }
