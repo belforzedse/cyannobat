@@ -36,31 +36,44 @@ const toISODateString = (value: unknown): string => {
   return new Date().toISOString()
 }
 
-const mapAppointment = (doc: Record<string, unknown>): StaffAppointment => {
-  const schedule = typeof doc.schedule === 'object' && doc.schedule !== null ? (doc.schedule as RelationRecord) : {}
-  const provider = getRelationDoc(doc.provider)
-  const service = getRelationDoc(doc.service)
-  const client = getRelationDoc(doc.client)
+const mapAppointment = (doc: unknown): StaffAppointment => {
+  const record = typeof doc === 'object' && doc !== null ? (doc as Record<string, unknown>) : {}
+  const schedule = typeof record.schedule === 'object' && record.schedule !== null ? (record.schedule as RelationRecord) : {}
+  const provider = getRelationDoc(record.provider)
+  const service = getRelationDoc(record.service)
+  const client = getRelationDoc(record.client)
 
-  const start = typeof doc.start === 'string' ? doc.start : (schedule.start as string | undefined)
-  const end = typeof doc.end === 'string' ? doc.end : (schedule.end as string | undefined)
+  const start = typeof record.start === 'string' ? record.start : (schedule.start as string | undefined)
+  const end = typeof record.end === 'string' ? record.end : (schedule.end as string | undefined)
   const timeZone =
-    typeof doc.timeZone === 'string' ? doc.timeZone : (schedule.timeZone as string | undefined) ?? 'UTC'
+    typeof record.timeZone === 'string' ? record.timeZone : (schedule.timeZone as string | undefined) ?? 'UTC'
 
   return {
-    id: typeof doc.id === 'string' ? doc.id : String(doc.id ?? ''),
-    reference: typeof doc.reference === 'string' ? doc.reference : (doc.reference as string | null | undefined) ?? null,
-    status: typeof doc.status === 'string' ? doc.status : 'pending',
+    id: typeof record.id === 'string' ? record.id : String(record.id ?? ''),
+    reference:
+      typeof record.reference === 'string'
+        ? record.reference
+        : (record.reference as string | null | undefined) ?? null,
+    status: typeof record.status === 'string' ? record.status : 'pending',
     start: start ?? '',
     end: end ?? '',
     timeZone,
-    providerName: typeof doc.providerName === 'string' ? doc.providerName : (provider?.displayName as string | undefined) ?? 'نامشخص',
-    serviceTitle: typeof doc.serviceTitle === 'string' ? doc.serviceTitle : (service?.title as string | undefined) ?? 'خدمت بدون عنوان',
-    clientEmail: typeof doc.clientEmail === 'string' ? doc.clientEmail : (client?.email as string | undefined) ?? 'نامشخص',
+    providerName:
+      typeof record.providerName === 'string'
+        ? record.providerName
+        : (provider?.displayName as string | undefined) ?? 'نامشخص',
+    serviceTitle:
+      typeof record.serviceTitle === 'string'
+        ? record.serviceTitle
+        : (service?.title as string | undefined) ?? 'خدمت بدون عنوان',
+    clientEmail:
+      typeof record.clientEmail === 'string'
+        ? record.clientEmail
+        : (client?.email as string | undefined) ?? 'نامشخص',
     createdAt:
-      typeof doc.createdAt === 'string'
-        ? doc.createdAt
-        : toISODateString(doc.createdAt),
+      typeof record.createdAt === 'string'
+        ? record.createdAt
+        : toISODateString(record.createdAt),
   }
 }
 
@@ -149,7 +162,7 @@ export const PATCH = async (
     })
 
     return NextResponse.json({
-      appointment: mapAppointment(updated as Record<string, unknown>),
+      appointment: mapAppointment(updated),
     })
   } catch (error) {
     payload.logger.error?.('Failed to update appointment from staff API', error)

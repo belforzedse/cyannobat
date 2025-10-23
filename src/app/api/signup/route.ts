@@ -217,7 +217,7 @@ export const POST = async (request: Request) => {
         password,
       },
       overrideAccess: true,
-    })
+    } as Parameters<typeof payload.create>[0])
 
     createdUser = created as PayloadRequest['user']
   } catch (error) {

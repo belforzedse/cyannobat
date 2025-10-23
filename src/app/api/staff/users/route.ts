@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { ZodError, z } from 'zod'
+import type { PayloadRequest } from 'payload'
 
 import { authenticateStaffRequest, unauthorizedResponse } from '@/lib/api/auth'
 import { extractRoles } from '@/lib/auth'
@@ -111,10 +112,12 @@ export const POST = async (request: Request) => {
         roles: rolesToAssign,
       },
       overrideAccess: false,
-    })
+    } as Parameters<typeof payload.create>[0])
 
-    const createdRoles = Array.isArray(created.roles)
-      ? created.roles.filter(
+    const createdUser = created as PayloadRequest['user']
+
+    const createdRoles = Array.isArray(createdUser?.roles)
+      ? createdUser.roles.filter(
           (role): role is AssignableRole =>
             typeof role === 'string' && (ASSIGNABLE_ROLES as readonly string[]).includes(role),
         )
@@ -123,10 +126,10 @@ export const POST = async (request: Request) => {
     return NextResponse.json(
       {
         user: {
-          id: created.id,
-          email: created.email,
-          phone: created.phone,
-          nationalId: (created as { nationalId?: string }).nationalId ?? null,
+          id: createdUser?.id ?? null,
+          email: createdUser?.email ?? null,
+          phone: createdUser?.phone ?? null,
+          nationalId: (createdUser as { nationalId?: string }).nationalId ?? null,
           roles: createdRoles,
         },
       },

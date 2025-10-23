@@ -103,10 +103,26 @@ const createSupportTicket = async (
   data: z.infer<typeof contactSchema>,
   clientDetails: ReturnType<typeof extractClientDetails>,
 ) => {
-  const collection = process.env.SUPPORT_TICKETS_COLLECTION || 'supportTickets'
+  type CreateArgs = Parameters<typeof payload.create>[0]
+  const fallbackCollection = 'supportTickets'
+  const configuredCollection = process.env.SUPPORT_TICKETS_COLLECTION?.trim()
+  const candidateCollection = configuredCollection && configuredCollection.length > 0 ? configuredCollection : fallbackCollection
+
+  const availableCollections = payload.collections as Record<string, unknown> | undefined
+  const resolvedCollection = availableCollections
+    ? (candidateCollection in availableCollections
+        ? (candidateCollection as CreateArgs['collection'])
+        : fallbackCollection in availableCollections
+          ? (fallbackCollection as CreateArgs['collection'])
+          : null)
+    : null
+
+  if (!resolvedCollection) {
+    throw new Error('Support tickets collection is not registered in Payload configuration.')
+  }
 
   const created = await payload.create({
-    collection,
+    collection: resolvedCollection,
     overrideAccess: true,
     data: {
       name: data.name,
@@ -122,7 +138,7 @@ const createSupportTicket = async (
         referer: clientDetails.referer,
       },
     },
-  })
+  } as CreateArgs)
 
   return created?.id ?? null
 }

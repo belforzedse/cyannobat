@@ -95,7 +95,7 @@ const createRedisClient = (): RedisClient => {
 
   if (redisUrl) {
     return new Redis(redisUrl, {
-      lazyConnect: false,
+      lazyConnect: true,
       tls: enableTls ? {} : undefined,
     })
   }
@@ -112,7 +112,7 @@ const createRedisClient = (): RedisClient => {
     username: username && username.length > 0 ? username : undefined,
     password: password && password.length > 0 ? password : undefined,
     db: Number.isNaN(db) ? undefined : db,
-    lazyConnect: false,
+    lazyConnect: true,
     tls: enableTls ? {} : undefined,
   })
 }

@@ -124,7 +124,7 @@ const ProviderAvailabilityEditor = ({
   )
 
   const validateWindows = useCallback((windows: StaffProviderAvailabilityWindow[]): string | null => {
-    const validDays = new Set(DAY_OPTIONS.map((option) => option.value))
+    const validDays = new Set<string>(DAY_OPTIONS.map((option) => option.value))
 
     for (const window of windows) {
       if (!validDays.has(window.day)) {
