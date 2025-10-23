@@ -19,15 +19,18 @@ import { Users } from './collections/Users'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const rawConnectionString = process.env.DATABASE_URI
+const rawConnectionString = process.env.DATABASE_URI?.trim()
+const hasConnectionString = Boolean(rawConnectionString && rawConnectionString.length > 0)
 
-if (!rawConnectionString || rawConnectionString.trim() === '') {
-  throw new Error(
-    'DATABASE_URI environment variable is required to initialize the Payload Postgres adapter.',
+if (!hasConnectionString) {
+  console.warn(
+    'DATABASE_URI environment variable is not defined. Using a placeholder connection string; database operations will fail until it is configured.',
   )
 }
 
-const connectionString = rawConnectionString
+const connectionString = hasConnectionString
+  ? (rawConnectionString as string)
+  : 'postgres://postgres:postgres@localhost:5432/payload-placeholder'
 const projectRoot = process.cwd()
 const migrationsDir = path.resolve(
   projectRoot,
@@ -50,6 +53,9 @@ export const payloadPostgresAdapter = postgresAdapter({
 // Create a direct connection for Drizzle ORM usage
 const pool = new pg.Pool({
   connectionString,
+  max: hasConnectionString ? undefined : 1,
+  idleTimeoutMillis: hasConnectionString ? undefined : 1000,
+  allowExitOnIdle: !hasConnectionString,
 })
 
 export const payloadDrizzle = drizzle(pool)
