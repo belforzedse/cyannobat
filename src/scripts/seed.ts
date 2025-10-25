@@ -13,7 +13,10 @@ async function seed() {
     const adminUser = await payload.create({
       collection: 'users',
       data: {
+        name: 'Admin User',
         email: 'admin@cyannobat.com',
+        phone: '09121234567',
+        nationalId: '0012345678',
         password: 'admin123',
         roles: ['admin'],
       },
@@ -24,7 +27,10 @@ async function seed() {
     const provider1User = await payload.create({
       collection: 'users',
       data: {
+        name: 'Sara Rezaei',
         email: 'sara.rezaei@cyannobat.com',
+        phone: '09123456789',
+        nationalId: '0123456789',
         password: 'provider123',
         roles: ['doctor'],
       },
@@ -33,7 +39,10 @@ async function seed() {
     const provider2User = await payload.create({
       collection: 'users',
       data: {
+        name: 'Ali Karimi',
         email: 'ali.karimi@cyannobat.com',
+        phone: '09123456788',
+        nationalId: '0123456788',
         password: 'provider123',
         roles: ['doctor'],
       },
@@ -42,7 +51,10 @@ async function seed() {
     const provider3User = await payload.create({
       collection: 'users',
       data: {
+        name: 'Maryam Ahmadi',
         email: 'maryam.ahmadi@cyannobat.com',
+        phone: '09123456787',
+        nationalId: '0123456787',
         password: 'provider123',
         roles: ['doctor'],
       },
@@ -53,7 +65,10 @@ async function seed() {
     const clientUser = await payload.create({
       collection: 'users',
       data: {
+        name: 'Client User',
         email: 'client@example.com',
+        phone: '09120000000',
+        nationalId: '0000000000',
         password: 'client123',
         roles: ['patient'],
       },
@@ -260,7 +275,8 @@ async function seed() {
           timeZone: 'Asia/Tehran',
         },
         status: 'confirmed',
-        notes: 'اولین ویزیت - بررسی کامل',
+        clientNotes: 'اولین ویزیت - بررسی کامل',
+        internalNotes: 'Seeded appointment - initial consultation',
       },
     })
 
@@ -276,7 +292,8 @@ async function seed() {
           timeZone: 'Asia/Tehran',
         },
         status: 'pending',
-        notes: 'نوبت دوم - پیگیری درمان',
+        clientNotes: 'نوبت دوم - پیگیری درمان',
+        internalNotes: 'Seeded appointment - follow-up scheduling',
       },
     })
 

@@ -94,7 +94,11 @@
       "Bash(docker-compose exec -T postgres psql -U cyannobat -d cyannobat -c \"SELECT id, email FROM users LIMIT 10;\")",
       "Bash(docker-compose exec -T postgres psql -U cyannobat -d cyannobat -c \"SELECT id, email FROM users WHERE email LIKE ''%yazdan%'' OR email LIKE ''%naderi%'';\")",
       "Bash(mkdir -p src/components/ui)",
-      "Bash(ls -la \"src/app/(site)\")"
+      "Bash(ls -la \"src/app/(site)\")",
+      "Bash(docker-compose up:*)",
+      "Bash(taskkill:*)",
+      "Bash(timeout:*)",
+      "Bash(cmd /c taskkill /F /PID 15364)"
     ],
     "deny": [],
     "ask": []
