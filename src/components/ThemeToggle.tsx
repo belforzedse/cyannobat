@@ -16,7 +16,7 @@ const ThemeToggle = () => {
   }, []);
 
   const buttonClassName =
-    'group relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-white/30 text-foreground shadow-lg backdrop-blur-xl transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-white/10';
+    "group relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-white/30 text-foreground shadow-lg backdrop-blur-xl transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-black/80";
 
   if (!mounted) {
     return (
