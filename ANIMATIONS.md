@@ -215,7 +215,7 @@ Advanced customization:
   /* Enhanced glow */
   box-shadow: 0 12px 40px rgb(var(--shadow-primary)),
               inset 0 2px 10px rgba(255, 255, 255, 0.5),
-              0 0 0 1px rgba(159, 221, 231, 0.3);
+              0 0 0 1px rgba(65, 119, 172, 0.15);
 }
 ```
 

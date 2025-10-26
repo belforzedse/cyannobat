@@ -89,11 +89,11 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   const isDarkMode = mounted && resolvedTheme === 'dark';
 
   const glowPrimary = isDarkMode
-    ? 'rgba(159, 221, 231, 0.7)'
-    : 'rgba(159, 221, 231, 0.85)';
+    ? 'rgba(65, 119, 172, 0.25)'
+    : 'rgba(65, 119, 172, 0.35)';
   const glowSecondary = isDarkMode
-    ? 'rgba(79, 120, 131, 0.6)'
-    : 'rgba(110, 169, 183, 0.75)';
+    ? 'rgba(65, 119, 172, 0.2)'
+    : 'rgba(65, 119, 172, 0.28)';
 
   const generateDisplacementMap = useCallback(() => {
     const rect = containerRef.current?.getBoundingClientRect();

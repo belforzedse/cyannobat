@@ -98,7 +98,10 @@
       "Bash(docker-compose up:*)",
       "Bash(taskkill:*)",
       "Bash(timeout:*)",
-      "Bash(cmd /c taskkill /F /PID 15364)"
+      "Bash(cmd /c taskkill /F /PID 15364)",
+      "Bash(rm:*)",
+      "Bash(test:*)",
+      "Bash(npm run lint)"
     ],
     "deny": [],
     "ask": []

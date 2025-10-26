@@ -25,16 +25,16 @@
 
 :root {
   --bg: 244 247 252;
-  --fg: 24 32 45;
+  --fg: 55 63 75;
   --muted: 225 232 245;
-  --muted-foreground: 83 98 125;
+  --muted-foreground: 55 63 75;
   --card: 255 255 255;
   --border: 206 214 230;
-  --accent: 120 186 255;
-  --accent-strong: 64 130 210;
+  --accent: 65 119 172;
+  --accent-strong: 65 119 172;
   --glass: 255 255 255 / 0.10;
-  --ring: 64 130 210;
-  --shadow-primary: rgba(40, 70, 170, 0.25);
+  --ring: 65 119 172;
+  --shadow-primary: rgba(20, 30, 60, 0.12);
 }
 
 [data-theme='dark'] {
@@ -44,11 +44,11 @@
   --muted-foreground: 170 186 213;
   --card: 22 31 48;
   --border: 59 76 109;
-  --accent: 120 186 255;
-  --accent-strong: 76 145 224;
+  --accent: 125 140 165;
+  --accent-strong: 110 128 155;
   --glass: 22 31 48 / 0.60;
-  --ring: 120 186 255;
-  --shadow-primary: rgba(7, 14, 35, 0.45);
+  --ring: 125 140 165;
+  --shadow-primary: rgba(5, 10, 25, 0.25);
 }
 
 html {
@@ -63,9 +63,9 @@ body {
   color: rgb(var(--fg));
   background-color: rgb(var(--bg));
   background-image:
-    radial-gradient(circle at 20% -10%, rgba(120, 186, 255, 0.45), transparent 50%),
-    radial-gradient(circle at 80% 0%, rgba(64, 130, 210, 0.34), transparent 45%),
-    radial-gradient(circle at 40% 85%, rgba(120, 186, 255, 0.28), transparent 60%),
+    radial-gradient(circle at 20% -10%, rgba(142, 212, 252, 0.2), transparent 50%),
+    radial-gradient(circle at 80% 0%, rgba(155, 182, 255, 0.2), transparent 45%),
+    radial-gradient(circle at 40% 85%, rgba(142, 212, 252, 0.12), transparent 60%),
     linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(70, 94, 130, 0.12));
   background-repeat: no-repeat;
   background-size: cover;
@@ -76,9 +76,9 @@ body {
 [data-theme='dark'] body {
   background-color: rgb(var(--bg));
   background-image:
-    radial-gradient(circle at 20% -10%, rgba(90, 140, 220, 0.28), transparent 50%),
-    radial-gradient(circle at 80% 0%, rgba(70, 110, 190, 0.22), transparent 45%),
-    radial-gradient(circle at 40% 85%, rgba(100, 150, 230, 0.18), transparent 60%),
+    radial-gradient(circle at 20% -10%, rgba(125, 140, 165, 0.1), transparent 50%),
+    radial-gradient(circle at 80% 0%, rgba(110, 128, 155, 0.08), transparent 45%),
+    radial-gradient(circle at 40% 85%, rgba(125, 140, 165, 0.06), transparent 60%),
     linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(32, 42, 68, 0.16));
   background-repeat: no-repeat;
   background-size: cover;
@@ -110,9 +110,9 @@ body {
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(circle at 15% 18%, rgba(120, 186, 255, 0.24), transparent 50%),
-      radial-gradient(circle at 85% 65%, rgba(64, 130, 210, 0.18), transparent 55%),
-      radial-gradient(circle at 50% -10%, rgba(120, 186, 255, 0.12), transparent 55%);
+      radial-gradient(circle at 15% 18%, rgba(65, 119, 172, 0.08), transparent 50%),
+      radial-gradient(circle at 85% 65%, rgba(65, 119, 172, 0.06), transparent 55%),
+      radial-gradient(circle at 50% -10%, rgba(65, 119, 172, 0.04), transparent 55%);
     mix-blend-mode: screen;
     pointer-events: none;
     z-index: -2;
@@ -173,8 +173,8 @@ body {
     inset: -1px;
     border-radius: inherit;
     background:
-      radial-gradient(circle at 30% 30%, rgba(120, 186, 255, 0.22), transparent 50%),
-      radial-gradient(circle at 70% 70%, rgba(64, 130, 210, 0.16), transparent 60%);
+      radial-gradient(circle at 30% 30%, rgba(65, 119, 172, 0.14), transparent 50%),
+      radial-gradient(circle at 70% 70%, rgba(65, 119, 172, 0.1), transparent 60%);
     pointer-events: none;
     opacity: 0;
     transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -188,11 +188,11 @@ body {
       0 12px 40px rgb(var(--shadow-primary)),
       inset 0 2px 10px rgba(255, 255, 255, 0.5),
       inset 0 -2px 10px rgba(0, 0, 0, 0.08),
-      0 0 0 1px rgba(120, 186, 255, 0.28);
+      0 0 0 1px rgba(65, 119, 172, 0.18);
   }
 
   .glass:hover::before {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(120, 186, 255, 0.1) 60%, transparent 100%);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(65, 119, 172, 0.08) 60%, transparent 100%);
   }
 
   .glass:hover::after {
@@ -227,16 +227,16 @@ body {
   }
 
   .glass-pill:hover {
-    border-color: rgba(120, 186, 255, 0.5);
-    background: linear-gradient(135deg, rgba(120, 186, 255, 0.22), rgba(120, 186, 255, 0.12));
-    box-shadow: 0 8px 24px rgba(120, 186, 255, 0.25);
+    border-color: rgba(65, 119, 172, 0.35);
+    background: linear-gradient(135deg, rgba(65, 119, 172, 0.06), rgba(65, 119, 172, 0.08));
+    box-shadow: 0 8px 24px rgba(65, 119, 172, 0.16);
   }
 
   .glass-panel {
     border-radius: 1.5rem;
     border: 1px solid rgb(var(--border) / 0.35);
     background: rgb(var(--card) / 0.82);
-    box-shadow: 0 18px 40px -28px rgba(40, 70, 170, 0.26);
+    box-shadow: 0 18px 40px -28px rgba(30, 50, 140, 0.16);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     transition:
@@ -259,8 +259,8 @@ body {
   }
 
   .glass-panel--active {
-    border-color: rgb(var(--accent) / 0.6);
-    box-shadow: 0 24px 45px -32px rgba(70, 132, 210, 0.48);
+    border-color: rgb(var(--accent) / 0.45);
+    box-shadow: 0 24px 45px -32px rgba(65, 119, 172, 0.12);
   }
 
   .glass-panel--accent {
@@ -285,8 +285,8 @@ body {
 
   .glass-chip--interactive:hover,
   .glass-chip--interactive:focus-visible {
-    border-color: rgb(var(--accent) / 0.55);
-    box-shadow: 0 12px 30px -24px rgba(70, 132, 210, 0.48);
+    border-color: rgb(var(--accent) / 0.45);
+    box-shadow: 0 12px 30px -24px rgba(65, 119, 172, 0.12);
   }
 
   .glass-chip--circle {
@@ -304,17 +304,17 @@ body {
   }
 
   .glass-chip--current {
-    border-color: rgb(var(--accent) / 0.45);
+    border-color: rgb(var(--accent) / 0.35);
     background: rgb(var(--card) / 0.85);
     color: rgb(var(--foreground));
-    box-shadow: 0 10px 26px -20px rgba(70, 132, 210, 0.44);
+    box-shadow: 0 10px 26px -20px rgba(65, 119, 172, 0.28);
   }
 
   .glass-chip--active {
-    border-color: rgb(var(--accent) / 0.65);
-    background: rgb(var(--accent) / 0.24);
+    border-color: rgb(var(--accent) / 0.5);
+    background: rgb(var(--accent) / 0.16);
     color: rgb(var(--accent-strong));
-    box-shadow: 0 18px 36px -28px rgba(70, 132, 210, 0.52);
+    box-shadow: 0 18px 36px -28px rgba(65, 119, 172, 0.35);
   }
 
   .glass-chip__meta {
@@ -328,9 +328,9 @@ body {
   }
 
   [data-theme='dark'] .glass-pill:hover {
-    border-color: rgba(120, 186, 255, 0.5);
-    background: linear-gradient(135deg, rgba(120, 186, 255, 0.22), rgba(120, 186, 255, 0.12));
-    box-shadow: 0 8px 24px rgba(120, 186, 255, 0.2);
+    border-color: rgba(65, 119, 172, 0.45);
+    background: linear-gradient(135deg, rgba(65, 119, 172, 0.18), rgba(65, 119, 172, 0.1));
+    box-shadow: 0 8px 24px rgba(65, 119, 172, 0.14);
   }
 
   [data-theme='dark'] .glass-panel {
@@ -355,8 +355,8 @@ body {
   }
 
   [data-theme='dark'] .glass-panel--active {
-    border-color: rgb(var(--accent) / 0.55);
-    box-shadow: 0 24px 45px -32px rgba(76, 145, 224, 0.5);
+    border-color: rgb(var(--accent) / 0.45);
+    box-shadow: 0 24px 45px -32px rgba(110, 128, 155, 0.3);
   }
 
   [data-theme='dark'] .glass-chip {
@@ -372,17 +372,17 @@ body {
   }
 
   [data-theme='dark'] .glass-chip--current {
-    border-color: rgb(var(--accent) / 0.45);
+    border-color: rgb(var(--accent) / 0.35);
     background: rgb(var(--card) / 0.58);
     color: rgb(var(--foreground));
-    box-shadow: 0 10px 26px -20px rgba(76, 145, 224, 0.44);
+    box-shadow: 0 10px 26px -20px rgba(110, 128, 155, 0.3);
   }
 
   [data-theme='dark'] .glass-chip--active {
-    border-color: rgb(var(--accent) / 0.55);
-    background: rgb(var(--accent) / 0.26);
+    border-color: rgb(var(--accent) / 0.45);
+    background: rgb(var(--accent) / 0.18);
     color: rgb(var(--accent-strong));
-    box-shadow: 0 18px 36px -28px rgba(76, 145, 224, 0.52);
+    box-shadow: 0 18px 36px -28px rgba(110, 128, 155, 0.35);
   }
 
   [data-theme='dark'] .glass {
@@ -409,14 +409,14 @@ body {
       background: rgba(255, 255, 255, 0.94);
       border: 1px solid rgba(206, 214, 230, 0.85);
       box-shadow:
-        0 14px 36px rgba(40, 70, 170, 0.16),
-        0 4px 12px rgba(40, 70, 170, 0.08);
+        0 14px 36px rgba(30, 50, 140, 0.1),
+        0 4px 12px rgba(30, 50, 140, 0.05);
     }
 
     [data-theme='dark'] .glass.glass-fallback,
     [data-theme='dark'] .glass-fallback .glass {
       background: rgba(22, 31, 48, 0.9);
-      border: 1px solid rgba(120, 186, 255, 0.32);
+      border: 1px solid rgba(65, 119, 172, 0.22);
       box-shadow:
         0 18px 48px rgba(7, 14, 35, 0.55),
         0 6px 20px rgba(7, 14, 35, 0.45);
@@ -432,8 +432,8 @@ body {
     .glass.glass-fallback:hover,
     .glass-fallback .glass:hover {
       box-shadow:
-        0 16px 40px rgba(40, 70, 170, 0.2),
-        0 6px 16px rgba(40, 70, 170, 0.12);
+        0 16px 40px rgba(30, 50, 140, 0.12),
+        0 6px 16px rgba(30, 50, 140, 0.08);
     }
 
     [data-theme='dark'] .glass.glass-fallback:hover,
@@ -502,7 +502,7 @@ body {
     background: linear-gradient(135deg, rgb(var(--accent)), rgba(var(--accent), 0.85));
     border: 1px solid rgba(255, 255, 255, 0.4);
     box-shadow:
-      0 8px 32px rgba(120, 186, 255, 0.38),
+      0 8px 32px rgba(65, 119, 172, 0.1),
       inset 0 1px 2px rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(10px);
     /* Smooth transitions for specific properties */
@@ -514,7 +514,7 @@ body {
 
   .btn-primary:hover {
     box-shadow:
-      0 12px 40px rgba(120, 186, 255, 0.48),
+      0 12px 40px rgba(65, 119, 172, 0.12),
       inset 0 1px 2px rgba(255, 255, 255, 0.7);
     background: linear-gradient(135deg, rgb(var(--accent-strong)), rgb(var(--accent)));
   }
@@ -534,13 +534,13 @@ body {
   [data-theme='dark'] .btn-primary {
     color: rgb(15, 23, 42);
     box-shadow:
-      0 8px 32px rgba(120, 186, 255, 0.28),
+      0 8px 32px rgba(65, 119, 172, 0.18),
       inset 0 1px 2px rgba(255, 255, 255, 0.4);
   }
 
   [data-theme='dark'] .btn-primary:hover {
     box-shadow:
-      0 12px 40px rgba(120, 186, 255, 0.36),
+      0 12px 40px rgba(65, 119, 172, 0.24),
       inset 0 1px 2px rgba(255, 255, 255, 0.5);
   }
 
@@ -575,10 +575,10 @@ body {
   }
 
   .btn-secondary:hover {
-    border-color: rgba(120, 186, 255, 0.6);
-    background: linear-gradient(135deg, rgba(120, 186, 255, 0.24), rgba(120, 186, 255, 0.12));
+    border-color: rgba(65, 119, 172, 0.4);
+    background: linear-gradient(135deg, rgba(65, 119, 172, 0.16), rgba(65, 119, 172, 0.08));
     box-shadow:
-      0 8px 28px rgba(120, 186, 255, 0.32),
+      0 8px 28px rgba(65, 119, 172, 0.2),
       inset 0 1px 2px rgba(255, 255, 255, 0.5);
   }
 
@@ -602,10 +602,10 @@ body {
   }
 
   [data-theme='dark'] .btn-secondary:hover {
-    border-color: rgba(120, 186, 255, 0.55);
-    background: linear-gradient(135deg, rgba(120, 186, 255, 0.22), rgba(120, 186, 255, 0.12));
+    border-color: rgba(65, 119, 172, 0.35);
+    background: linear-gradient(135deg, rgba(65, 119, 172, 0.14), rgba(65, 119, 172, 0.08));
     box-shadow:
-      0 8px 28px rgba(120, 186, 255, 0.22),
+      0 8px 28px rgba(65, 119, 172, 0.14),
       inset 0 1px 2px rgba(255, 255, 255, 0.4);
   }
 

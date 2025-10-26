@@ -207,28 +207,7 @@ const HeroPage = () => {
         </motion.section>
       </div>
 
-      {/* Bottom Management Section */}
-      <motion.section
-        variants={bottomSectionVariants}
-        initial="initial"
-        whileInView={reduceMotion ? undefined : 'animate'}
-        viewport={{ once: true, amount: 0.3 }}
-        className="glass relative overflow-hidden px-8 py-10 text-right sm:px-12"
-      >
-        <div
-          className="absolute left-0 top-0 h-32 w-32 -translate-x-12 -translate-y-12 rounded-full bg-accent-strong/20 blur-3xl"
-          aria-hidden
-        />
-        <div className="flex flex-col items-end gap-3">
-          <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">
-            مدیریت هوشمند نوبت‌دهی
-          </h2>
-          <p className="max-w-2xl text-balance text-base leading-8 text-muted-foreground">
-            با داشبورد مدیریتی، گزارش‌های لحظه‌ای و ادغام‌پذیری با سامانه‌های
-            درمانی، تیم شما هر لحظه بر عملکرد مطب و کلینیک نظارت خواهد داشت.
-          </p>
-        </div>
-      </motion.section>
+
     </div>
   );
 };

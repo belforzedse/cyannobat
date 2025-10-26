@@ -3,17 +3,20 @@
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
 import { BOOKING_PATH } from "@/lib/routes";
+import Logo from "./Logo";
+import AccountWidget from "./AccountWidget";
 
 const Header = () => {
   return (
     <header
       role="banner"
-      className="
+      className=" bg-white/50
         glass sticky top-4 z-30 mx-4 rounded-3xl px-4 py-3 sm:px-6 sm:py-4
         flex items-center justify-between gap-3 sm:gap-6 text-right
-        lg:mr-[122px] xl:mr-[122px] 2xl:mr-[122px]
+        shadow-lg shadow-black/5
+        transition-all duration-300 ease-out
         animate-fade-in-down
-        backdrop-blur-md backdrop-saturate-150
+        backdrop-blur-md backdrop-saturate-30
       "
     >
       {/* soft accent glow */}
@@ -31,29 +34,16 @@ const Header = () => {
         "
       />
 
-      {/* brand */}
-      <Link href="/" className="flex items-center gap-2 select-none">
-        <div className="flex flex-col text-right leading-tight">
-          <span className="text-sm font-semibold tracking-tight text-foreground">سایان نوبت</span>
-          <span className="text-xs text-muted-foreground">cyannobat</span>
-        </div>
-      </Link>
+      {/* Logo */}
+      <div className="flex items-center gap-2 select-none">
+        <Logo />
+      </div>
 
       {/* actions */}
       <nav aria-label="primary" className="flex items-center gap-2 sm:gap-3">
-        <Link
-          href="/account"
-          className="
-            glass-pill hidden sm:inline-flex px-5 py-2 text-sm font-medium text-foreground
-            transition-all duration-300 ease-out hover:text-foreground
-            focus-visible:outline-none focus-visible:ring-2
-            focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2
-            focus-visible:ring-offset-background
-          "
-        >
-          حساب کاربری
-        </Link>
+        <AccountWidget />
 
+        <ThemeToggle />
         <Link
           href={BOOKING_PATH}
           className="
@@ -67,8 +57,6 @@ const Header = () => {
         >
           رزرو نوبت
         </Link>
-
-        <ThemeToggle />
       </nav>
     </header>
   );

@@ -10,7 +10,7 @@ This design system follows a **hybrid approach** that balances simplicity with f
 - **Global CSS Classes** (`.glass-*`) for simple, reusable visual patterns
 - **React Components** (`@/components/ui`) for complex, interactive elements with props and validation
 
-This matches the approach used by modern design systems like shadcn/ui and Radix UI.
+This hybrid approach balances simplicity with functionality, allowing for both lightweight CSS utilities and interactive React components.
 
 ---
 
@@ -474,26 +474,26 @@ import { Card, Textarea } from '@/components/ui'
 All colors use CSS custom properties defined in `globals.css`:
 
 ### Light Mode (`:root`)
-- `--bg`: 250 252 255 (Background)
-- `--fg`: 20 24 28 (Foreground text)
-- `--muted`: 231 234 238 (Muted backgrounds)
-- `--muted-foreground`: 55 62 75 (Muted text)
+- `--bg`: 244 247 252 (Background)
+- `--fg`: 55 63 75 (Foreground text - #373F4B)
+- `--muted`: 225 232 245 (Muted backgrounds)
+- `--muted-foreground`: 55 63 75 (Muted text - #373F4B)
 - `--card`: 255 255 255 (Card background)
-- `--border`: 201 205 209 (Borders)
-- `--accent`: 159 221 231 (Primary accent color - Cyan)
-- `--accent-strong`: 110 169 183 (Strong accent)
-- `--ring`: 110 169 183 (Focus rings)
+- `--border`: 206 214 230 (Borders)
+- `--accent`: 65 119 172 (Primary accent color - #4177AC)
+- `--accent-strong`: 65 119 172 (Strong accent)
+- `--ring`: 65 119 172 (Focus rings)
 
 ### Dark Mode (`[data-theme='dark']`)
-- `--bg`: 15 18 25
-- `--fg`: 230 236 242
-- `--muted`: 39 47 63
-- `--muted-foreground`: 195 202 215
-- `--card`: 25 30 40
-- `--border`: 60 70 85
-- `--accent`: 159 221 231
-- `--accent-strong`: 79 120 131
-- `--ring`: 159 221 231
+- `--bg`: 13 19 31
+- `--fg`: 224 232 247
+- `--muted`: 40 53 76
+- `--muted-foreground`: 170 186 213
+- `--card`: 22 31 48
+- `--border`: 59 76 109
+- `--accent`: 125 140 165 (Muted slate blue - adjusted for dark mode)
+- `--accent-strong`: 110 128 155 (Strong accent - dark mode)
+- `--ring`: 125 140 165
 
 ### Usage in Tailwind
 
