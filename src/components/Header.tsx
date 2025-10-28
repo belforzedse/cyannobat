@@ -10,7 +10,7 @@ const Header = () => {
   return (
     <header
       role="banner"
-      className=" bg-white/50
+      className="
         glass sticky top-4 z-30 mx-4 rounded-[20px] px-4 py-2 sm:px-6 sm:py-2
         flex items-center justify-between gap-3 sm:gap-6 text-right
         shadow-lg shadow-black/5
