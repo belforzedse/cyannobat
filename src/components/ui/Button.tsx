@@ -4,7 +4,10 @@ import React, { ButtonHTMLAttributes, forwardRef } from 'react'
 import { motion, type HTMLMotionProps } from 'framer-motion'
 import clsx from 'clsx'
 
-type ButtonVariant = 'primary' | 'secondary' | 'glass-pill'
+import {
+  buttonVariantClasses,
+  type ButtonVariant,
+} from './buttonVariants'
 type ButtonSize = 'sm' | 'md' | 'lg'
 
 interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
@@ -19,8 +22,8 @@ interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'cla
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'px-3 py-1.5 text-xs',
-  md: 'px-4 py-2 text-sm',
+  sm: 'px-4 py-2 text-xs',
+  md: 'px-5 py-2.5 text-sm',
   lg: 'px-6 py-3 text-base',
 }
 
@@ -52,19 +55,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseClasses = clsx(
-      // Use global classes from globals.css
-      variant === 'primary' && 'btn-primary',
-      variant === 'secondary' && 'btn-secondary',
-      variant === 'glass-pill' && 'glass-pill inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium cursor-pointer',
-
-      // Size overrides for glass-pill (primary/secondary have fixed sizes in globals.css)
+      buttonVariantClasses[variant],
       variant === 'glass-pill' && sizeClasses[size],
-
-      // Utility classes
       fullWidth && 'w-full',
       (disabled || isLoading) && 'pointer-events-none',
-
-      // Custom additions
       className
     )
 
