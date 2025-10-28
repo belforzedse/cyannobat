@@ -1,11 +1,25 @@
 'use client'
 
-import { useMemo } from 'react'
+import { KeyboardEvent, useMemo } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import clsx from 'clsx'
 
 import type { AvailabilityDay, AvailabilitySlot } from '@/features/booking/types'
 import { luxuryContainer, luxurySlideFade } from '@/lib/luxuryAnimations'
+import { Card, Chip } from '@/components/ui'
+
+const MotionCard = motion(Card)
+const MotionChip = motion(Chip)
+
+const handleInteractiveKeyDown = (
+  event: KeyboardEvent<HTMLDivElement>,
+  callback: () => void,
+) => {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault()
+    callback()
+  }
+}
 
 type SchedulePickerProps = {
   availability?: AvailabilityDay[]
@@ -133,24 +147,27 @@ const SchedulePicker = ({
         const dayDescription = dayLabelParts.length > 0 ? dayLabelParts.join('، ') : day.date
 
         return (
-          <motion.div
+          <MotionCard
             key={day.date}
+            variant={isActiveDay ? 'accent' : 'muted'}
+            padding="md"
             className={clsx(
-              'glass-panel glass-panel--muted flex h-full flex-col gap-3 rounded-2xl p-4 sm:rounded-3xl',
+              'flex h-full flex-col gap-3 rounded-2xl sm:rounded-3xl',
               reduceInteractiveMotion
                 ? 'transition-opacity duration-200'
                 : 'transition-all duration-300',
               'border-border/35 bg-card/85 shadow-[0_18px_40px_-30px_rgba(31,38,135,0.32)] backdrop-blur-sm',
               'dark:border-border/45 dark:bg-card/70 dark:text-foreground dark:shadow-[0_18px_40px_-30px_rgba(6,16,35,0.68)]',
-              isActiveDay &&
-                'glass-panel--active glass-panel--accent',
             )}
             variants={dayVariants}
           >
-            <button
-              type="button"
+            <Chip
+              role="button"
+              tabIndex={0}
+              interactive
+              variant={isActiveDay ? 'active' : 'default'}
               className={clsx(
-                'glass-chip glass-chip--interactive flex flex-col items-end gap-1 px-3 py-2 text-right',
+                '!flex w-full flex-col items-end gap-1 text-right',
                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/60',
                 reduceInteractiveMotion
                   ? 'transition-opacity duration-150 hover:opacity-95 focus-visible:opacity-95'
@@ -162,18 +179,23 @@ const SchedulePicker = ({
                   ? 'dark:border-border/45 dark:bg-card/60 dark:hover:opacity-95'
                   : 'dark:border-border/45 dark:bg-card/55 dark:hover:border-accent/45 dark:hover:bg-card/65',
                 'dark:text-foreground',
-                isActiveDay && 'border-accent/60 bg-accent/20 text-accent dark:text-accent-foreground',
+                isActiveDay && 'dark:text-accent-foreground',
               )}
               onClick={() => onSelectDay?.(day)}
+              onKeyDown={(event) => handleInteractiveKeyDown(event, () => onSelectDay?.(day))}
               aria-pressed={isActiveDay}
               aria-label={dayDescription}
             >
-              <span className="text-xs font-semibold text-muted-foreground dark:text-slate-300">{weekday || '—'}</span>
-              <span className="text-sm font-bold text-foreground dark:text-white">{label}</span>
+              <span className="self-end text-xs font-semibold text-muted-foreground dark:text-slate-300">
+                {weekday || '—'}
+              </span>
+              <span className="self-end text-sm font-bold text-foreground dark:text-white">{label}</span>
               {day.note ? (
-                <span className="text-[11px] text-accent-strong/80 dark:text-accent-foreground/90">{day.note}</span>
+                <span className="self-end text-[11px] text-accent-strong/80 dark:text-accent-foreground/90">
+                  {day.note}
+                </span>
               ) : null}
-            </button>
+            </Chip>
 
             <div className="flex flex-col gap-2">
               {day.slots.length === 0 ? (
@@ -199,11 +221,14 @@ const SchedulePicker = ({
                     const slotAriaLabel = slotAriaLabelParts.join('، ')
 
                     return (
-                      <motion.button
-                        type="button"
+                      <MotionChip
                         key={slotId}
+                        role="button"
+                        tabIndex={0}
+                        interactive
+                        variant={isSelected ? 'active' : 'default'}
                         className={clsx(
-                          'glass-chip glass-chip--interactive flex flex-col items-end gap-1 px-3 py-2 text-right text-xs font-medium',
+                          '!flex w-full flex-col items-end gap-1 text-right text-xs font-medium',
                           'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/60',
                           reduceInteractiveMotion
                             ? 'transition-opacity duration-150 hover:opacity-95 focus-visible:opacity-95'
@@ -215,30 +240,41 @@ const SchedulePicker = ({
                             ? 'dark:border-border/45 dark:bg-card/60 dark:hover:opacity-95'
                             : 'dark:border-border/45 dark:bg-card/55 dark:hover:border-accent/45 dark:hover:bg-card/65',
                           'dark:text-foreground',
-                          isSelected &&
-                            'border-accent/70 bg-accent/20 text-accent shadow-[0_16px_36px_-28px_rgba(88,175,192,0.6)] dark:text-accent-foreground dark:shadow-[0_18px_40px_-28px_rgba(88,175,192,0.55)]',
+                          isSelected && 'dark:text-accent-foreground',
                         )}
                         onClick={() => {
                           onSelectDay?.(day)
                           onSelectSlot?.(slot, day)
                         }}
+                        onKeyDown={(event) =>
+                          handleInteractiveKeyDown(event, () => {
+                            onSelectDay?.(day)
+                            onSelectSlot?.(slot, day)
+                          })
+                        }
                         aria-pressed={isSelected}
                         aria-label={slotAriaLabel}
                         variants={slotVariants}
                       >
-                        <span className="font-semibold">{formatSlotLabel(slot)}</span>
-                        <span className="text-[10px] text-muted-foreground dark:text-muted-foreground">{slot.providerName}</span>
-                        <span className="text-[10px] text-muted-foreground dark:text-muted-foreground">{slot.serviceName}</span>
+                        <span className="self-end text-sm font-semibold">{formatSlotLabel(slot)}</span>
+                        <span className="self-end text-[10px] text-muted-foreground dark:text-muted-foreground">
+                          {slot.providerName}
+                        </span>
+                        <span className="self-end text-[10px] text-muted-foreground dark:text-muted-foreground">
+                          {slot.serviceName}
+                        </span>
                         {slot.kind === 'virtual' ? (
-                          <span className="text-[10px] text-accent-strong/80 dark:text-accent-foreground/90">مشاوره آنلاین</span>
+                          <span className="self-end text-[10px] text-accent-strong/80 dark:text-accent-foreground/90">
+                            مشاوره آنلاین
+                          </span>
                         ) : null}
-                      </motion.button>
+                      </MotionChip>
                     )
                   })}
                 </motion.div>
               )}
             </div>
-          </motion.div>
+          </MotionCard>
         )
       })}
     </motion.div>
