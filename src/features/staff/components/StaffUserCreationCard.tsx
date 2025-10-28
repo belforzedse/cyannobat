@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 
-import { Button, Card, Input } from '@/components/ui'
+import { Button, Card, Input, Select, type SelectOption } from '@/components/ui'
 import { useToast } from '@/components/ui/ToastProvider'
 import { useGlobalLoadingOverlay } from '@/components/GlobalLoadingOverlayProvider'
 import type { StaffUser } from '@/features/staff/types'
@@ -57,6 +57,14 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [lastCreatedUser, setLastCreatedUser] = useState<CreatedUser | null>(null)
+  const roleOptions = useMemo<SelectOption[]>(
+    () =>
+      creatableRoles.map((role) => ({
+        value: role,
+        label: roleLabelsFa[role],
+      })),
+    [creatableRoles],
+  )
 
   useEffect(() => {
     if (creatableRoles.length === 0) {
@@ -225,25 +233,17 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
             />
           </label>
 
-          <label className='flex flex-col gap-2 text-sm'>
-            <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>نقش کاربر</span>
-            <select
-              className='glass-panel rounded-xl px-3 py-2 text-sm text-foreground ring-offset-background transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-70'
-              value={selectedRole}
-              onChange={(event) => {
-                const role = event.target.value
-                if (isAssignableRole(role) && creatableRoles.includes(role)) {
-                  setSelectedRole(role)
-                }
-              }}
-            >
-              {creatableRoles.map((role) => (
-                <option key={role} value={role}>
-                  {roleLabelsFa[role]}
-                </option>
-              ))}
-            </select>
-          </label>
+          <Select
+            label='نقش کاربر'
+            value={selectedRole}
+            onChange={(event) => {
+              const role = event.target.value
+              if (isAssignableRole(role) && creatableRoles.includes(role)) {
+                setSelectedRole(role)
+              }
+            }}
+            options={roleOptions}
+          />
         </div>
 
         {selectedRole && (
