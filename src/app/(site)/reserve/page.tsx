@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
 
+import { buttonVariantClasses } from '@/components/ui/buttonVariants'
+
 import BookingStepper from '@/features/booking/components/BookingStepper'
 import ScheduleSection from '@/features/booking/components/ScheduleSection'
 import ReasonsSection from '@/features/booking/components/ReasonsSection'
@@ -517,12 +519,12 @@ const BookingPageContent = () => {
           className="flex flex-col items-end gap-2"
         >
           <div className="flex flex-wrap items-center justify-end gap-3">
-            <Link href="/" className="btn-secondary">
+            <Link href="/" className={buttonVariantClasses.secondary}>
               بازگشت
             </Link>
             <motion.button
               type="button"
-              className="btn-primary"
+              className={buttonVariantClasses.primary}
               disabled={isActionDisabled}
               onClick={handleContinue}
               whileHover={prefersReducedMotion || isActionDisabled ? undefined : { y: -3 }}
