@@ -4,7 +4,9 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
-import clsx from 'clsx';
+
+import { cn } from '@/lib/utils';
+import { glassSurfaceClassName } from '@/components/ui/glass';
 import type { LucideIcon } from 'lucide-react';
 import { CalendarDays, Home, LifeBuoy } from "lucide-react";
 import { BOOKING_PATH } from "@/lib/routes";
@@ -142,7 +144,7 @@ const Sidebar = () => {
   const renderItem = (item: NavigationItem, index: number, isMobile: boolean) => {
     const Icon = item.icon;
     const isActive = item.matches?.(pathname ?? "", activeHash) ?? false;
-    const baseClasses = clsx(
+    const baseClasses = cn(
       "group flex h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-medium relative",
       "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
       // Smooth, slow transitions for hover effects
@@ -154,13 +156,13 @@ const Sidebar = () => {
       <div className="relative z-10 flex flex-col items-center justify-center gap-1">
         <Icon
           aria-hidden
-          className={clsx(
+          className={cn(
             "h-5 w-5 transition-colors duration-300 ease-out",
             isActive ? "text-foreground" : "text-current group-hover:text-foreground"
           )}
         />
         <span
-          className={clsx(
+          className={cn(
             "text-[11px] leading-4 font-medium transition-colors duration-300 ease-out",
             isActive ? "text-foreground" : "text-current group-hover:text-foreground"
           )}
@@ -203,10 +205,12 @@ const Sidebar = () => {
   return (
     <nav
       aria-label="پیمایش اصلی و اقدامات سریع"
-      className={clsx(
-        "glass fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-xl items-center gap-2 rounded-[20px] px-3 py-2 shadow-lg backdrop-blur",
-        "lg:inset-auto lg:right-4 lg:top-[90px] lg:h-[calc(100vh-150px)] lg:w-[75px] lg:max-w-none lg:flex-col lg:items-center lg:justify-between lg:gap-8 lg:px-2 lg:py-6  ",
-        "animate-fade-in-up"
+      className={glassSurfaceClassName(
+        cn(
+          "fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-xl items-center gap-2 rounded-[20px] px-3 py-2 shadow-lg backdrop-blur",
+          "lg:inset-auto lg:right-4 lg:top-[90px] lg:h-[calc(100vh-150px)] lg:w-[75px] lg:max-w-none lg:flex-col lg:items-center lg:justify-between lg:gap-8 lg:px-2 lg:py-6",
+          "animate-fade-in-up"
+        )
       )}
     >
       {/* Mobile Navigation */}

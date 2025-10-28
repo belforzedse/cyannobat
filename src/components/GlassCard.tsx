@@ -2,7 +2,9 @@
 
 import type { ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import clsx from 'clsx';
+
+import { cn } from '@/lib/utils';
+import { glassSurfaceClassName } from '@/components/ui/glass';
 import { luxuryPresets } from '@/lib/luxuryAnimations';
 
 interface GlassCardProps {
@@ -24,11 +26,13 @@ const GlassCard = ({ title, description, children, className }: GlassCardProps) 
       whileInView={shouldReduceMotion ? undefined : 'animate'}
       viewport={{ once: true, margin: '-50px' }}
       variants={cardVariants}
-      className={clsx(
-        'glass relative overflow-hidden p-6 text-right group',
-        // Smooth, slow hover lift
-        'transition-transform duration-300 ease-out hover:-translate-y-1',
-        className
+      className={glassSurfaceClassName(
+        cn(
+          'relative overflow-hidden p-6 text-right group',
+          // Smooth, slow hover lift
+          'transition-transform duration-300 ease-out hover:-translate-y-1',
+          className
+        )
       )}
     >
       <div className="relative z-10 flex flex-col gap-3">
@@ -56,14 +60,14 @@ const GlassCard = ({ title, description, children, className }: GlassCardProps) 
       </div>
       {/* Liquid glass glow effects */}
       <div
-        className={clsx(
+        className={cn(
           'pointer-events-none absolute -right-24 top-1/2 h-56 w-56 -translate-y-1/2 rounded-full bg-accent/30 blur-3xl opacity-0',
           !shouldReduceMotion && 'transition-opacity duration-700 ease-out group-hover:opacity-70'
         )}
         aria-hidden
       />
       <div
-        className={clsx(
+        className={cn(
           'pointer-events-none absolute -bottom-28 left-10 h-48 w-48 rounded-full bg-white/20 blur-[120px] opacity-0 dark:bg-white/5',
           !shouldReduceMotion && 'transition-opacity duration-700 ease-out group-hover:opacity-50'
         )}

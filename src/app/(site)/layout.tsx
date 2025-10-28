@@ -4,6 +4,8 @@ import Sidebar from '@/components/Sidebar';
 import ThemeProvider from '@/components/ThemeProvider';
 import AmbientBackground from '@/components/layout/AmbientBackground';
 import PageSection from '@/components/layout/PageSection';
+import { cn } from '@/lib/utils';
+import { glassClasses } from '@/components/ui/glass';
 
 export const metadata = {
   title: 'سایان نوبت | cyannobat',
@@ -13,7 +15,7 @@ export const metadata = {
 const SiteLayout = ({ children }: { children: ReactNode }) => {
   return (
     <ThemeProvider>
-      <div className="relative flex min-h-screen w-full glass-fallback">
+      <div className={cn('relative flex min-h-screen w-full', glassClasses.fallback)}>
         <Sidebar />
         <div className="flex min-h-screen flex-1 flex-col">
           <Header />

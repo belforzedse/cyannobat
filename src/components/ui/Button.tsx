@@ -2,7 +2,8 @@
 
 import React, { ButtonHTMLAttributes, forwardRef } from 'react'
 import { motion, type HTMLMotionProps } from 'framer-motion'
-import clsx from 'clsx'
+
+import { cn } from '@/lib/utils'
 
 import {
   buttonVariantClasses,
@@ -28,7 +29,7 @@ const sizeClasses: Record<ButtonSize, string> = {
 }
 
 /**
- * Unified Button component using global glass classes from globals.css
+ * Unified Button component using shared glassmorphism styles
  *
  * @example
  * ```tsx
@@ -54,7 +55,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const baseClasses = clsx(
+    const baseClasses = cn(
       buttonVariantClasses[variant],
       variant === 'glass-pill' && sizeClasses[size],
       fullWidth && 'w-full',

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 
 import ThemeProvider from '@/components/ThemeProvider'
+import { glassSurfaceClassName } from '@/components/ui/glass'
 
 const AuthLayout = ({ children }: { children: ReactNode }) => {
   return (
@@ -20,7 +21,12 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
             aria-hidden
           />
         </div>
-        <div className='glass glass-fallback relative w-full max-w-lg rounded-[2rem] px-8 py-10 text-right shadow-2xl sm:px-12'>
+        <div
+          className={glassSurfaceClassName(
+            'relative w-full max-w-lg rounded-[2rem] px-8 py-10 text-right shadow-2xl sm:px-12',
+            { fallback: true }
+          )}
+        >
           {children}
         </div>
       </div>

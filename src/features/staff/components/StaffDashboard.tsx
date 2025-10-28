@@ -12,6 +12,8 @@ import {
   GlobalLoadingOverlayProvider,
   useGlobalLoadingOverlay,
 } from '@/components/GlobalLoadingOverlayProvider'
+import { cn } from '@/lib/utils'
+import { glassPanelClassName } from '@/components/ui/glass'
 import { getRoleLabel } from '@/features/staff/utils/roleLabels'
 import ProviderAvailabilityEditor from './ProviderAvailabilityEditor'
 import StaffUserCreationCard from './StaffUserCreationCard'
@@ -907,11 +909,15 @@ const StaffDashboardContent = ({
                 filteredAppointments.map((appointment) => (
                   <div
                     key={appointment.id}
-                    className={`glass-panel rounded-2xl p-4 text-right shadow-sm transition-colors ${
-                      failedId === appointment.id
-                        ? 'border border-red-300/60 bg-red-50 dark:border-red-400/60 dark:bg-red-500/20'
-                        : 'border border-white/10 bg-white/10 dark:border-white/10'
-                    }`}
+                    className={glassPanelClassName(
+                      'default',
+                      cn(
+                        'rounded-2xl p-4 text-right shadow-sm transition-colors',
+                        failedId === appointment.id
+                          ? 'border border-red-300/60 bg-red-50 dark:border-red-400/60 dark:bg-red-500/20'
+                          : 'border border-white/10 bg-white/10 dark:border-white/10'
+                      )
+                    )}
                   >
                     <div className="flex flex-col gap-3 text-sm text-foreground">
                       <div className="flex flex-col gap-1">
