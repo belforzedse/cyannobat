@@ -1,5 +1,6 @@
-import GlassCard from '@/components/GlassCard';
 import GlassIcon from '@/components/GlassIcon';
+import FrostedCard from './FrostedCard/FrostedCard';
+import styles from './StepCard.module.css';
 import type { BookingStep } from '../data/steps';
 
 type StepCardProps = {
@@ -8,16 +9,30 @@ type StepCardProps = {
 };
 
 const StepCard = ({ step, index }: StepCardProps) => {
+  const stepNumber = new Intl.NumberFormat('fa-IR', {
+    minimumIntegerDigits: 2,
+  }).format(index + 1);
+
   return (
-    <GlassCard title={step.title} description={step.description} className="h-full">
-      <div className="mt-4 flex items-center justify-between">
+    <FrostedCard
+      tone="muted"
+      padded={false}
+      className={styles.stepCard}
+      hover={false}
+      aria-label={`${step.title} - ${step.description}`}
+    >
+      <div className={styles.header}>
+        <h3 className={styles.title}>{step.title}</h3>
+        <p className={styles.description}>{step.description}</p>
+      </div>
+      <div className={styles.footer}>
         <GlassIcon icon={step.icon} size="sm" label={step.title} />
-        <div className="flex items-center gap-2 text-sm text-accent">
-          <span className="font-semibold">۰{index + 1}</span>
+        <div className="flex items-center gap-2">
+          <span className={styles.stepNumber}>{stepNumber}</span>
           <span>گام</span>
         </div>
       </div>
-    </GlassCard>
+    </FrostedCard>
   );
 };
 
