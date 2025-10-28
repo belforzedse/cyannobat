@@ -351,10 +351,31 @@ body {
 
   body {
     @apply text-foreground antialiased;
+    font-feature-settings: 'ss02' on, 'kern' 1;
+    letter-spacing: -0.01em;
+    line-height: 1.65;
   }
 
   a {
     @apply text-foreground no-underline;
+    transition: color 200ms ease-out;
+  }
+
+  a:hover {
+    color: var(--color-accent-strong);
+  }
+
+  p {
+    @apply leading-relaxed;
+    color: inherit;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-feature-settings: 'ss01' on, 'kern' 1;
+    letter-spacing: -0.015em;
   }
 
   ::selection {

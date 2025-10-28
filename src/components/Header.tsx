@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import ThemeToggle from "./ThemeToggle";
-import { BOOKING_PATH } from "@/lib/routes";
-import Logo from "./Logo";
-import AccountWidget from "./AccountWidget";
-import { cn } from "@/lib/utils";
-import { glassPillClassName, glassSurfaceClassName } from "./ui/glass";
+import Link from 'next/link';
+
+import AccountWidget from './AccountWidget';
+import Logo from './Logo';
+import ThemeToggle from './ThemeToggle';
+import { glassPillClassName, glassSurfaceClassName } from './ui/glass';
+import { BOOKING_PATH } from '@/lib/routes';
+import { cn } from '@/lib/utils';
 
 const Header = () => {
   return (
@@ -14,12 +15,11 @@ const Header = () => {
       role="banner"
       className={glassSurfaceClassName(
         cn(
-          "sticky top-4 z-30 mx-4 rounded-[20px] px-4 py-2 sm:px-6 sm:py-2",
-          "flex items-center justify-between gap-3 sm:gap-6 text-right",
-          "shadow-lg shadow-black/5",
-          "transition-all duration-300 ease-out",
-          "animate-fade-in-down",
-          "backdrop-blur-md backdrop-saturate-30"
+          'sticky top-6 z-30 mx-4 flex items-center justify-between gap-3 rounded-[20px] px-4 py-2 text-right',
+          'sm:gap-5 sm:px-6 sm:py-2',
+          'lg:mx-auto lg:w-full lg:max-w-6xl lg:pr-[8.5rem] xl:max-w-7xl xl:pr-[10rem] 2xl:max-w-7xl 2xl:pr-[11.5rem]',
+          'shadow-lg shadow-black/5 backdrop-blur-md backdrop-saturate-30',
+          'transition-all duration-300 ease-out animate-fade-in-down'
         )
       )}
     >
@@ -39,12 +39,12 @@ const Header = () => {
       />
 
       {/* Logo */}
-      <div className="flex items-center gap-2 select-none">
+      <div className='flex select-none items-center gap-2'>
         <Logo />
       </div>
 
       {/* actions */}
-      <nav aria-label="primary" className="flex items-center gap-2 sm:gap-3">
+      <nav aria-label='primary' className='flex items-center gap-2 sm:gap-3'>
         <AccountWidget />
 
         <ThemeToggle />
@@ -52,12 +52,12 @@ const Header = () => {
           href={BOOKING_PATH}
           className={glassPillClassName(
             cn(
-              "inline-flex items-center px-3 py-2 text-xs font-medium text-foreground",
-              "sm:px-5 sm:text-sm",
-              "transition-all duration-300 ease-out hover:text-foreground",
-              "focus-visible:outline-none focus-visible:ring-2",
-              "focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2",
-              "focus-visible:ring-offset-background"
+              'inline-flex items-center px-3 py-2 text-xs font-medium text-foreground',
+              'sm:px-5 sm:text-sm',
+              'transition-all duration-300 ease-out hover:text-foreground',
+              'focus-visible:outline-none focus-visible:ring-2',
+              'focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2',
+              'focus-visible:ring-offset-background'
             )
           )}
         >
