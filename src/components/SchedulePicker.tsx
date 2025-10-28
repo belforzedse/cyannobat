@@ -2,11 +2,13 @@
 
 import { KeyboardEvent, useMemo } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import clsx from 'clsx'
+
+import { cn } from '@/lib/utils'
 
 import type { AvailabilityDay, AvailabilitySlot } from '@/features/booking/types'
 import { luxuryContainer, luxurySlideFade } from '@/lib/luxuryAnimations'
 import { Card, Chip } from '@/components/ui'
+import { glassPanelClassName } from '@/components/ui/glass'
 
 const MotionCard = motion(Card)
 const MotionChip = motion(Chip)
@@ -105,7 +107,13 @@ const SchedulePicker = ({
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index} className="glass-panel glass-panel--muted h-44 animate-pulse rounded-2xl p-4 sm:rounded-3xl">
+          <div
+            key={index}
+            className={glassPanelClassName(
+              'muted',
+              'h-44 animate-pulse rounded-2xl p-4 sm:rounded-3xl'
+            )}
+          >
             <div className="h-6 w-2/3 rounded-full bg-card/80 dark:bg-card/65" />
             <div className="mt-6 space-y-2">
               <div className="h-8 rounded-xl bg-card/75 dark:bg-card/55" />
@@ -120,7 +128,12 @@ const SchedulePicker = ({
 
   if (!availability) {
     return (
-      <div className="glass-panel glass-panel--muted border-dashed p-6 text-sm text-muted-foreground">
+      <div
+        className={glassPanelClassName(
+          'muted',
+          'border-dashed p-6 text-sm text-muted-foreground'
+        )}
+      >
         {placeholderMessage ?? 'ابتدا یک روز یا خدمت را انتخاب کنید تا زمان‌های آزاد نمایش داده شود.'}
       </div>
     )
@@ -128,7 +141,12 @@ const SchedulePicker = ({
 
   if (availability.length === 0) {
     return (
-      <div className="glass-panel glass-panel--muted border-dashed p-6 text-sm text-muted-foreground">
+      <div
+        className={glassPanelClassName(
+          'muted',
+          'border-dashed p-6 text-sm text-muted-foreground'
+        )}
+      >
         {emptyMessage ?? 'در حال حاضر زمانی در دسترس نیست. لطفاً به زودی دوباره سر بزنید.'}
       </div>
     )
@@ -151,7 +169,7 @@ const SchedulePicker = ({
             key={day.date}
             variant={isActiveDay ? 'accent' : 'muted'}
             padding="md"
-            className={clsx(
+            className={cn(
               'flex h-full flex-col gap-3 rounded-2xl sm:rounded-3xl',
               reduceInteractiveMotion
                 ? 'transition-opacity duration-200'

@@ -2,7 +2,7 @@
  * CyanNobat UI Component Library
  *
  * Unified design system components following the hybrid approach:
- * - Simple primitives use global .glass-* classes from globals.css
+ * - Simple primitives rely on shared glass styles exported from ./glass
  * - Complex components are React components with props and validation
  *
  * Usage:

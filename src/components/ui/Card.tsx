@@ -1,13 +1,15 @@
 'use client'
 
 import React, { HTMLAttributes, forwardRef } from 'react'
-import clsx from 'clsx'
 
-type CardVariant = 'default' | 'muted' | 'subtle' | 'active' | 'accent' | 'compact'
+import { cn } from '@/lib/utils'
+import { glassPanelClassName, type GlassPanelVariant } from './glass'
+
+type CardVariant = GlassPanelVariant
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   /**
-   * Visual variant using global .glass-panel classes
+   * Visual variant using shared glass panel styles
    * - default: Standard glass panel
    * - muted: More transparent (.glass-panel--muted)
    * - subtle: Very transparent (.glass-panel--subtle)
@@ -34,7 +36,7 @@ const paddingClasses: Record<Exclude<CardProps['padding'], undefined>, string> =
 }
 
 /**
- * Unified Card component using global .glass-panel classes
+ * Unified Card component powered by shared glass panel styles
  * Replaces custom inline card styling across components
  *
  * @example
@@ -61,24 +63,10 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     },
     ref
   ) => {
-    const cardClasses = clsx(
-      // Base glass-panel class from globals.css
-      'glass-panel',
-
-      // Variant modifiers (also from globals.css)
-      variant === 'muted' && 'glass-panel--muted',
-      variant === 'subtle' && 'glass-panel--subtle',
-      variant === 'active' && 'glass-panel--active',
-      variant === 'accent' && 'glass-panel--accent',
-      variant === 'compact' && 'glass-panel--compact',
-
-      // Padding
+    const cardClasses = cn(
+      glassPanelClassName(variant),
       paddingClasses[padding],
-
-      // Animation (use CSS animation from globals.css)
       animate && 'animate-fade-in-up',
-
-      // Custom overrides
       className
     )
 
