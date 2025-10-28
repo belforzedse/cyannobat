@@ -527,36 +527,6 @@ body {
     }
   }
 
-  .hero-title {
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    background: linear-gradient(180deg, #9fd4ff 0%, #63a8ff 52%, #2f6de6 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    position: relative;
-  }
-
-  .hero-title::after {
-    content: '';
-    display: inline-block;
-    vertical-align: middle;
-    width: clamp(80px, 14vw, 160px);
-    height: 6px;
-    margin-inline-start: 0.6rem;
-    border-radius: 9999px;
-    background: linear-gradient(90deg, rgba(86, 154, 222, 0.95), rgba(36, 132, 255, 0.72), rgba(120, 190, 255, 0.65));
-    box-shadow: 0 8px 22px rgba(86, 154, 222, 0.38);
-  }
-
-  .sidebar-card p {
-    color: rgb(var(--muted-foreground));
-  }
-
-  .sidebar-card h3 {
-    color: rgb(var(--fg));
-    font-weight: 700;
-  }
 }
 
 @layer utilities {
