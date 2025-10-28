@@ -6,7 +6,7 @@ import { RefreshCw, LogOut, Loader2, Calendar, Users, Plus, X, Edit3 } from 'luc
 
 import type { StaffAppointment, StaffProvider, StaffUser } from '@/features/staff/types'
 import { useToast } from '@/components/ui/ToastProvider'
-import { Card, Button, Input } from '@/components/ui'
+import { Card, Button, Input, Select, type SelectOption } from '@/components/ui'
 import GlassIcon from '@/components/GlassIcon'
 import {
   GlobalLoadingOverlayProvider,
@@ -28,13 +28,18 @@ type StaffDashboardProps = SharedDashboardProps & {
   mode: DashboardMode
 }
 
-const statusOptions: Array<{ value: StaffAppointment['status']; label: string }> = [
+const appointmentStatusOptions: SelectOption[] = [
   { value: 'pending', label: 'در انتظار' },
   { value: 'confirmed', label: 'تایید شده' },
   { value: 'in_progress', label: 'در حال انجام' },
   { value: 'completed', label: 'تکمیل شده' },
   { value: 'cancelled', label: 'لغو شده' },
   { value: 'no_show', label: 'عدم حضور' },
+]
+
+const statusFilterOptions: SelectOption[] = [
+  { value: 'all', label: 'همه وضعیت‌ها' },
+  ...appointmentStatusOptions,
 ]
 
 type UnknownRecord = Record<string, unknown>
@@ -228,6 +233,14 @@ const StaffDashboardContent = ({
     })
     return map
   }, [providers])
+  const providerOptions = useMemo<SelectOption[]>(
+    () =>
+      providers.map((provider) => ({
+        value: provider.id,
+        label: provider.displayName,
+      })),
+    [providers],
+  )
 
   const upsertAppointment = useCallback((appointment: StaffAppointment) => {
     setAppointments((current) => {
@@ -577,32 +590,22 @@ const StaffDashboardContent = ({
                 }
                 autoComplete="off"
               />
-              <div className="flex flex-col gap-1">
-                <label htmlFor="create-provider-select" className="text-right text-sm font-medium text-foreground">
-                  ارائه‌دهنده
-                </label>
-                <select
-                  id="create-provider-select"
-                  value={createForm.providerId}
-                  onChange={(event) => {
-                    const nextProvider = event.target.value
-                    const provider = providerLookup.get(nextProvider)
-                    setCreateForm((previous) => ({
-                      ...previous,
-                      providerId: nextProvider,
-                      timeZone: provider?.timeZone ?? previous.timeZone,
-                    }))
-                  }}
-                  className="glass-panel rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
-                >
-                  <option value="">یک ارائه‌دهنده را انتخاب کنید</option>
-                  {providers.map((provider) => (
-                    <option key={provider.id} value={provider.id}>
-                      {provider.displayName}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <Select
+                id="create-provider-select"
+                label="ارائه‌دهنده"
+                value={createForm.providerId}
+                onChange={(event) => {
+                  const nextProvider = event.target.value
+                  const provider = providerLookup.get(nextProvider)
+                  setCreateForm((previous) => ({
+                    ...previous,
+                    providerId: nextProvider,
+                    timeZone: provider?.timeZone ?? previous.timeZone,
+                  }))
+                }}
+                options={providerOptions}
+                placeholder="یک ارائه‌دهنده را انتخاب کنید"
+              />
               <Input
                 label="زمان شروع"
                 type="datetime-local"
@@ -729,32 +732,21 @@ const StaffDashboardContent = ({
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-muted-foreground">وضعیت نوبت</label>
-                <select
-                  value={filterStatus}
-                  onChange={(event) => setFilterStatus(event.target.value)}
-                  className="glass-panel rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
-                >
-                  <option value="all">همه وضعیت‌ها</option>
-                  {statusOptions.map((status) => (
-                    <option key={status.value} value={status.value}>
-                      {status.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <Select
+                label="وضعیت نوبت"
+                value={filterStatus}
+                onChange={(event) => setFilterStatus(event.target.value)}
+                options={statusFilterOptions}
+              />
 
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-muted-foreground">جستجوی سریع</label>
-                <input
-                  type="search"
-                  value={searchTerm}
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder={searchPlaceholderByMode[mode]}
-                  className="glass-panel w-full rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 sm:w-64"
-                />
-              </div>
+              <Input
+                label="جستجوی سریع"
+                type="search"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder={searchPlaceholderByMode[mode]}
+                className="sm:w-64"
+              />
             </div>
 
               <div className="flex items-center justify-end gap-2">
@@ -877,20 +869,17 @@ const StaffDashboardContent = ({
                       </td>
                       <td className="px-3 py-3 lg:px-4">
                         <div className="flex items-center gap-2">
-                          <select
+                          <Select
+                            aria-label="تغییر وضعیت نوبت"
                             value={appointment.status}
                             onChange={(event) =>
                               handleStatusChange(appointment.id, event.target.value as StaffAppointment['status'])
                             }
                             disabled={updatingId === appointment.id}
-                            className="glass-panel rounded-full px-3 py-1 text-xs font-semibold text-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none focus:ring-2 focus:ring-accent/40"
-                          >
-                            {statusOptions.map((status) => (
-                              <option key={status.value} value={status.value}>
-                                {status.label}
-                              </option>
-                            ))}
-                          </select>
+                            options={appointmentStatusOptions}
+                            fullWidth={false}
+                            className="min-w-[140px] text-xs font-semibold"
+                          />
                           {updatingId === appointment.id && (
                             <Loader2
                               data-testid={`status-spinner-${appointment.id}`}
@@ -1017,20 +1006,16 @@ const StaffDashboardContent = ({
                       <div className="flex flex-col gap-2">
                         <span className="text-xs font-semibold text-muted-foreground">وضعیت</span>
                         <div className="flex items-center justify-between gap-3">
-                          <select
+                          <Select
+                            aria-label="تغییر وضعیت نوبت"
                             value={appointment.status}
                             onChange={(event) =>
                               handleStatusChange(appointment.id, event.target.value as StaffAppointment['status'])
                             }
                             disabled={updatingId === appointment.id}
-                            className="glass-panel flex-1 rounded-full px-3 py-2 text-xs font-semibold text-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none focus:ring-2 focus:ring-accent/40"
-                          >
-                            {statusOptions.map((status) => (
-                              <option key={status.value} value={status.value}>
-                                {status.label}
-                              </option>
-                            ))}
-                          </select>
+                            options={appointmentStatusOptions}
+                            className="flex-1 text-xs font-semibold"
+                          />
                           {updatingId === appointment.id && (
                             <Loader2
                               data-testid={`status-spinner-${appointment.id}`}
