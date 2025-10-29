@@ -1,27 +1,77 @@
 :root {
   --bg: #edf3ff;
+  --bg-rgb: 237 243 255;
   --fg: #2c3a4c;
+  --fg-rgb: 44 58 76;
   --muted: #dae6f7;
+  --muted-rgb: 218 230 247;
   --muted-foreground: #4e5e78;
+  --muted-foreground-rgb: 78 94 120;
   --card: #ffffff;
+  --card-rgb: 255 255 255;
   --border: #cdd7e8;
+  --border-rgb: 205 215 232;
   --accent: #569ade;
+  --accent-rgb: 86 154 222;
+  --accent-foreground: #1e293b;
+  --accent-foreground-rgb: 30 41 59;
   --accent-strong: #3684d2;
+  --accent-strong-rgb: 54 132 210;
   --glass: #ffffffc7;
+  --glass-rgb: 255 255 255;
   --ring: #3684d2;
+  --ring-rgb: 54 132 210;
   --shadow-primary: #2A4A7D29;
+  --shadow-glass: 0 30px 80px -35px rgba(15, 23, 42, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  --shadow-glass-soft: 0 18px 46px -28px rgba(42, 74, 125, 0.28);
+  --shadow-glass-strong: 0 38px 72px -28px rgba(54, 132, 210, 0.45);
+
+  --radius-4xl: 2rem;
+  --radius-3xl: 1.75rem;
+  --radius-lg: 1.5rem;
+  --radius-md: 1.25rem;
+  --radius-sm: 1rem;
+  --radius-glass: 1.75rem;
+  --radius-surface: 1.5rem;
+  --radius-chip: 999px;
+  --radius-pill: 9999px;
+
+  --space-glass-xs: 0.75rem;
+  --space-glass-sm: 1rem;
+  --space-glass-md: 1.5rem;
+  --space-glass-lg: 2rem;
+  --space-section-gap: 3rem;
+
+  --ease-glass: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-glass-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-glass-soft: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 [data-theme='dark'] {
   --bg: #060a18;
+  --bg-rgb: 6 10 24;
   --fg: #dce8ff;
+  --fg-rgb: 220 232 255;
   --muted: #142034;
+  --muted-rgb: 20 32 52;
   --muted-foreground: #98aecd;
+  --muted-foreground-rgb: 152 174 205;
   --card: #0c1626;
+  --card-rgb: 12 22 38;
   --border: #283e62;
+  --border-rgb: 40 62 98;
   --accent: #2484ff;
+  --accent-rgb: 36 132 255;
+  --accent-foreground: #f5f9ff;
+  --accent-foreground-rgb: 245 249 255;
   --accent-strong: #78beff;
+  --accent-strong-rgb: 120 190 255;
   --glass: #0c1626c2;
+  --glass-rgb: 12 22 38;
   --ring: #52a4ff;
+  --ring-rgb: 82 164 255;
   --shadow-primary: #02061CB8;
+  --shadow-glass: 0 28px 64px -32px rgba(2, 6, 28, 0.88), inset 0 1px 0 rgba(120, 190, 255, 0.18);
+  --shadow-glass-soft: 0 20px 50px -30px rgba(2, 6, 28, 0.65);
+  --shadow-glass-strong: 0 34px 72px -30px rgba(36, 132, 255, 0.5);
 }
