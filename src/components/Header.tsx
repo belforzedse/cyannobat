@@ -15,7 +15,7 @@ const Header = () => {
       as="header"
       role="banner"
       className={clsx(
-        "bg-white/50 sticky top-4 z-30 mx-4 flex items-center justify-between gap-3 rounded-[20px] px-4 py-2 text-right shadow-lg shadow-black/5 transition-all duration-300 ease-out sm:gap-6 sm:px-6 sm:py-2 backdrop-blur-md backdrop-saturate-30",
+        "bg-white/50 sticky top-4 z-30 mx-4 flex items-center justify-between gap-3 rounded-[20px] px-4 py-2 text-right shadow-lg shadow-black/5 transition-all duration-300 ease-glass sm:gap-6 sm:px-6 sm:py-2 backdrop-blur-md backdrop-saturate-30",
         animations.fadeInDown
       )}
     >
@@ -47,7 +47,7 @@ const Header = () => {
         <GlassPill
           as={Link}
           href={BOOKING_PATH}
-          className="inline-flex items-center px-3 py-2 text-xs font-medium text-foreground transition-all duration-300 ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:px-5 sm:text-sm"
+          className="inline-flex items-center px-3 py-2 text-xs font-medium text-foreground transition-all duration-300 ease-glass hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:px-5 sm:text-sm"
         >
           رزرو نوبت
         </GlassPill>

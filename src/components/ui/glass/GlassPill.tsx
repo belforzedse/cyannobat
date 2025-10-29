@@ -19,7 +19,7 @@ const basePillClasses = [
   'bg-[linear-gradient(145deg,rgba(255,255,255,0.7),rgba(255,255,255,0.4))]',
   'shadow-[0_14px_32px_-22px_rgba(42,74,125,0.38),inset_0_1px_0_rgba(255,255,255,0.6)]',
   'backdrop-blur-[16px]',
-  'transition-[box-shadow,border-color,background,transform] duration-[250ms] ease-[cubic-bezier(0.16,1,0.3,1)]'
+  'transition-[box-shadow,border-color,background,transform] duration-[250ms] ease-glass'
 ].join(' ')
 
 const interactivePillClasses = [

@@ -25,7 +25,7 @@ const basePanelClasses = [
   'bg-[linear-gradient(160deg,color-mix(in_srgb,var(--card)_90%,transparent),color-mix(in_srgb,var(--card)_75%,transparent))]',
   'shadow-[0_28px_70px_-32px_rgba(42,74,125,0.42)]',
   'backdrop-blur-[24px] backdrop-saturate-[1.35]',
-  'transition-[background-color,border-color,box-shadow,transform] duration-[350ms] ease-[cubic-bezier(0.16,1,0.3,1)]',
+  'transition-[background-color,border-color,box-shadow,transform] duration-[350ms] ease-glass',
   'text-foreground'
 ].join(' ')
 

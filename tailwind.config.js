@@ -1,19 +1,5 @@
 import animate from 'tailwindcss-animate';
 
-const withOpacity = (variable) => ({ opacityValue }) => {
-  if (opacityValue === undefined || opacityValue === null) {
-    return `var(${variable})`;
-  }
-
-  const numericOpacity = Number(opacityValue);
-
-  if (Number.isNaN(numericOpacity) || numericOpacity >= 1) {
-    return `var(${variable})`;
-  }
-
-  return `color-mix(in srgb, var(${variable}) calc(${numericOpacity} * 100%), transparent)`;
-};
-
 /** @type {import('tailwindcss').Config} */
 const config = {
   darkMode: ['class', '[data-theme="dark"]'],
@@ -21,35 +7,55 @@ const config = {
   theme: {
     extend: {
       colors: {
-        background: withOpacity('--bg'),
-        foreground: withOpacity('--fg'),
+        background: 'rgb(var(--bg-rgb) / <alpha-value>)',
+        foreground: 'rgb(var(--fg-rgb) / <alpha-value>)',
         muted: {
-          DEFAULT: withOpacity('--muted'),
-          foreground: withOpacity('--muted-foreground'),
+          DEFAULT: 'rgb(var(--muted-rgb) / <alpha-value>)',
+          foreground: 'rgb(var(--muted-foreground-rgb) / <alpha-value>)',
         },
-        card: withOpacity('--card'),
-        border: withOpacity('--border'),
+        card: 'rgb(var(--card-rgb) / <alpha-value>)',
+        border: 'rgb(var(--border-rgb) / <alpha-value>)',
         accent: {
-          DEFAULT: withOpacity('--accent'),
-          foreground: withOpacity('--fg'),
+          DEFAULT: 'rgb(var(--accent-rgb) / <alpha-value>)',
+          foreground: 'rgb(var(--accent-foreground-rgb) / <alpha-value>)',
         },
-        'accent-strong': withOpacity('--accent-strong'),
+        'accent-strong': 'rgb(var(--accent-strong-rgb) / <alpha-value>)',
+        ring: 'rgb(var(--ring-rgb) / <alpha-value>)',
       },
       borderRadius: {
-        '3xl': '1.75rem',
-        '4xl': '2rem',
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        '4xl': 'var(--radius-4xl)',
+        '3xl': 'var(--radius-3xl)',
+        glass: 'var(--radius-glass)',
+        surface: 'var(--radius-surface)',
+        chip: 'var(--radius-chip)',
+        pill: 'var(--radius-pill)',
+        lg: 'var(--radius-lg)',
+        md: 'var(--radius-md)',
+        sm: 'var(--radius-sm)',
       },
       boxShadow: {
-        glass: '0 30px 80px -35px rgba(15, 23, 42, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45)',
+        glass: 'var(--shadow-glass)',
+        'glass-soft': 'var(--shadow-glass-soft)',
+        'glass-strong': 'var(--shadow-glass-strong)',
+        primary: 'var(--shadow-primary)',
       },
       backdropBlur: {
         glass: '20px',
       },
       fontFamily: {
         vazir: ['var(--font-vazirmatn)', 'sans-serif'],
+      },
+      spacing: {
+        'glass-xs': 'var(--space-glass-xs)',
+        'glass-sm': 'var(--space-glass-sm)',
+        'glass-md': 'var(--space-glass-md)',
+        'glass-lg': 'var(--space-glass-lg)',
+        'section-gap': 'var(--space-section-gap)',
+      },
+      transitionTimingFunction: {
+        glass: 'var(--ease-glass)',
+        'glass-emphasized': 'var(--ease-glass-emphasized)',
+        'glass-soft': 'var(--ease-glass-soft)',
       },
     },
   },

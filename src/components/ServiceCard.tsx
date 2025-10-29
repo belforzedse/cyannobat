@@ -53,8 +53,8 @@ const ServiceCard = ({
       {...buttonProps}
       aria-pressed={isSelected}
       className={clsx(
-        'group relative overflow-hidden rounded-[1.6rem] border px-5 py-5 text-right transition-all duration-300 ease-out',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+        'group relative overflow-hidden rounded-[1.6rem] border px-5 py-5 text-right transition-all duration-300 ease-glass',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         'bg-white/60 shadow-[0_12px_35px_rgba(31,38,135,0.18)] backdrop-blur-xl',
         'hover:shadow-[0_20px_45px_-20px_rgba(88,175,192,0.65)]',
         'dark:bg-white/10 dark:shadow-[0_16px_36px_rgba(8,12,24,0.5)]',
