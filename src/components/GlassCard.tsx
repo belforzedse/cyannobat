@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import clsx from 'clsx';
 import { luxuryPresets } from '@/lib/luxuryAnimations';
+import { GlassSurface } from '@/components/ui/glass';
 
 interface GlassCardProps {
   title?: string;
@@ -19,14 +20,15 @@ const GlassCard = ({ title, description, children, className }: GlassCardProps) 
   const cardVariants = shouldReduceMotion ? undefined : luxuryPresets.whisper('up');
 
   return (
-    <motion.article
+    <GlassSurface
+      as={motion.article}
+      interactive={!shouldReduceMotion}
       initial={shouldReduceMotion ? undefined : 'initial'}
       whileInView={shouldReduceMotion ? undefined : 'animate'}
       viewport={{ once: true, margin: '-50px' }}
       variants={cardVariants}
       className={clsx(
-        'glass relative overflow-hidden p-6 text-right group',
-        // Smooth, slow hover lift
+        'relative overflow-hidden p-6 text-right group',
         'transition-transform duration-300 ease-out hover:-translate-y-1',
         className
       )}
@@ -69,7 +71,7 @@ const GlassCard = ({ title, description, children, className }: GlassCardProps) 
         )}
         aria-hidden
       />
-    </motion.article>
+    </GlassSurface>
   );
 };
 

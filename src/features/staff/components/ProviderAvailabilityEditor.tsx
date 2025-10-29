@@ -5,6 +5,8 @@ import { Plus, X } from 'lucide-react'
 
 import { useToast } from '@/components/ui/ToastProvider'
 import { Button, Card, Input, Select } from '@/components/ui'
+import { glassPanelStyles } from '@/components/ui/glass'
+import { cn } from '@/lib/utils'
 import { useGlobalLoadingOverlay } from '@/components/GlobalLoadingOverlayProvider'
 import type {
   StaffProvider,
@@ -367,7 +369,7 @@ const ProviderAvailabilityEditor = ({
                   provider.availability.map((window, index) => (
                     <div
                       key={`${provider.id}-${window.day}-${index}`}
-                      className="glass-panel rounded-xl px-3 py-2"
+                      className={cn(glassPanelStyles(), 'rounded-xl px-3 py-2')}
                     >
                       <span className="font-semibold text-foreground">
                         {DAY_LABEL_LOOKUP[window.day] ?? window.day}

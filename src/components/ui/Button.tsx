@@ -4,6 +4,8 @@ import React, { ButtonHTMLAttributes, forwardRef } from 'react'
 import { motion, type HTMLMotionProps } from 'framer-motion'
 import clsx from 'clsx'
 
+import { glassPillStyles } from './glass'
+
 type ButtonVariant = 'primary' | 'secondary' | 'glass-pill'
 type ButtonSize = 'sm' | 'md' | 'lg'
 
@@ -25,7 +27,7 @@ const sizeClasses: Record<ButtonSize, string> = {
 }
 
 /**
- * Unified Button component using global glass classes from globals.css
+ * Unified Button component using Tailwind primitives and GlassPill styling
  *
  * @example
  * ```tsx
@@ -52,19 +54,15 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseClasses = clsx(
-      // Use global classes from globals.css
       variant === 'primary' && 'btn-primary',
       variant === 'secondary' && 'btn-secondary',
-      variant === 'glass-pill' && 'glass-pill inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium cursor-pointer',
-
-      // Size overrides for glass-pill (primary/secondary have fixed sizes in globals.css)
+      variant === 'glass-pill' && [
+        glassPillStyles({ interactive: !(disabled || isLoading) }),
+        'px-5 py-2.5 text-sm font-medium text-foreground'
+      ],
       variant === 'glass-pill' && sizeClasses[size],
-
-      // Utility classes
       fullWidth && 'w-full',
       (disabled || isLoading) && 'pointer-events-none',
-
-      // Custom additions
       className
     )
 

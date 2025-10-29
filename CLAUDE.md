@@ -164,15 +164,15 @@ const result = await payloadDrizzle.execute(
 ## UI & Design System
 
 ### Glassmorphic Components
-The `.glass` class in `styles/globals.css` provides:
-- Backdrop blur with glassmorphic effect
-- Gradient borders and inset shadows
-- Hover states with accent color highlights
-- Dark/light theme support via CSS custom properties
+The glass aesthetic now lives inside `@/components/ui/glass` as typed primitives:
+- `GlassSurface` – hero/section shell with layered gradients
+- `GlassPanel` – content-friendly panel with `variant`, `state`, and `density` props
+- `GlassChip` – chip/badge primitive with tone + shape variants
+- `GlassPill` – pill-shaped CTA shell (also exposed via `<Button variant="glass-pill">`)
 
-Component utilities:
-- `.glass` - Standard rounded glass container (2rem border-radius)
-- `.glass-pill` - Fully rounded glass button/container (9999px border-radius)
+Use the accompanying style helpers (`glassPanelStyles`, etc.) when you need the class string for native inputs.
+
+Legacy gradient buttons are still available as global classes:
 - `.btn-primary` - Accent gradient button with glow effects
 - `.btn-secondary` - Glass variant button
 
@@ -243,6 +243,6 @@ Implements special first-user creation logic (`isFirstUserCreation` access contr
 - The project uses `import.meta.url` (ESM) - avoid CommonJS patterns
 - Sharp is required for image processing and must be installed as a dependency
 - Admin panel routing is handled by Payload's catch-all `[[...segments]]` route
-- When adding UI components, follow the glassmorphic design system (use `.glass` and `.glass-pill` classes)
+- When adding UI components, reuse the primitives in `@/components/ui/glass` (`GlassSurface`, `GlassPanel`, etc.)
 - Ensure RTL compatibility when working with text and layout—test with Persian content
 - Tailwind config includes custom color tokens; use `accent`, `accent-strong`, etc. instead of arbitrary colors

@@ -1,19 +1,21 @@
 'use client'
 
 import React, { HTMLAttributes, forwardRef } from 'react'
-import clsx from 'clsx'
+
+import { GlassPanel, type GlassPanelDensity, type GlassPanelVariant } from './glass'
+import { cn } from '@/lib/utils'
 
 type CardVariant = 'default' | 'muted' | 'subtle' | 'active' | 'accent' | 'compact'
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   /**
-   * Visual variant using global .glass-panel classes
+   * Visual variant mapped to the GlassPanel primitive
    * - default: Standard glass panel
-   * - muted: More transparent (.glass-panel--muted)
-   * - subtle: Very transparent (.glass-panel--subtle)
-   * - active: Accent border (.glass-panel--active)
-   * - accent: Accent background (.glass-panel--accent)
-   * - compact: Smaller border radius (.glass-panel--compact)
+   * - muted: More transparent surface
+   * - subtle: Very transparent surface
+   * - active: Accent border emphasis
+   * - accent: Accent background treatment
+   * - compact: Smaller border radius
    */
   variant?: CardVariant
   /**
@@ -34,7 +36,7 @@ const paddingClasses: Record<Exclude<CardProps['padding'], undefined>, string> =
 }
 
 /**
- * Unified Card component using global .glass-panel classes
+ * Unified Card component built on the GlassPanel primitive
  * Replaces custom inline card styling across components
  *
  * @example
@@ -61,31 +63,24 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     },
     ref
   ) => {
-    const cardClasses = clsx(
-      // Base glass-panel class from globals.css
-      'glass-panel',
-
-      // Variant modifiers (also from globals.css)
-      variant === 'muted' && 'glass-panel--muted',
-      variant === 'subtle' && 'glass-panel--subtle',
-      variant === 'active' && 'glass-panel--active',
-      variant === 'accent' && 'glass-panel--accent',
-      variant === 'compact' && 'glass-panel--compact',
-
-      // Padding
-      paddingClasses[padding],
-
-      // Animation (use CSS animation from globals.css)
-      animate && 'animate-fade-in-up',
-
-      // Custom overrides
-      className
-    )
+    const panelVariant: GlassPanelVariant =
+      variant === 'muted' || variant === 'subtle' || variant === 'accent'
+        ? variant
+        : 'default'
+    const panelState = variant === 'active' ? 'active' : 'default'
+    const panelDensity: GlassPanelDensity = variant === 'compact' ? 'compact' : 'default'
 
     return (
-      <div ref={ref} className={cardClasses} {...props}>
+      <GlassPanel
+        ref={ref}
+        variant={panelVariant}
+        state={panelState}
+        density={panelDensity}
+        className={cn(paddingClasses[padding], animate && 'animate-fade-in-up', className)}
+        {...props}
+      >
         {children}
-      </div>
+      </GlassPanel>
     )
   }
 )

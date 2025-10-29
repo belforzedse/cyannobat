@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
+import { GlassSurface } from '@/components/ui/glass'
 
 import BookingStepper from '@/features/booking/components/BookingStepper'
 import ScheduleSection from '@/features/booking/components/ScheduleSection'
@@ -357,11 +358,12 @@ const BookingPageContent = () => {
   const isActionDisabled = isContinueDisabled || isSubmitting
 
   return (
-    <motion.section
+    <GlassSurface
+      as={motion.section}
       initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: 'easeOut' }}
-      className="glass glass-fallback relative flex min-h-dvh flex-col gap-6 overflow-hidden px-4 py-6 text-right sm:gap-12 sm:px-12 sm:py-12 lg:px-16"
+      className="relative flex min-h-dvh flex-col gap-6 overflow-hidden px-4 py-6 text-right sm:gap-12 sm:px-12 sm:py-12 lg:px-16"
     >
       <div
         aria-hidden
@@ -552,7 +554,7 @@ const BookingPageContent = () => {
           </div>
         </motion.div>
       )}
-    </motion.section>
+    </GlassSurface>
   )
 }
 

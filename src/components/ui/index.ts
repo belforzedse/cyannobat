@@ -2,8 +2,8 @@
  * CyanNobat UI Component Library
  *
  * Unified design system components following the hybrid approach:
- * - Simple primitives use global .glass-* classes from globals.css
- * - Complex components are React components with props and validation
+ * - Glass primitives live in ./glass and are built with Tailwind utilities
+ * - Form and layout components are React components with props and validation
  *
  * Usage:
  * ```tsx
@@ -20,3 +20,6 @@ export { Select, type SelectProps, type SelectOption } from './Select'
 // Layout components
 export { Card, type CardProps, type CardVariant } from './Card'
 export { Chip, type ChipProps, type ChipVariant } from './Chip'
+
+// Glass primitives
+export * from './glass'

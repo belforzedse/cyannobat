@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
-import Logo from '@/components/Logo';
 import ThemeProvider from '@/components/ThemeProvider';
 
 export const metadata = {
@@ -12,7 +11,7 @@ export const metadata = {
 const SiteLayout = ({ children }: { children: ReactNode }) => {
   return (
     <ThemeProvider>
-      <div className="relative flex min-h-screen w-full glass-fallback">
+      <div className="relative flex min-h-screen w-full">
         <Sidebar />
         <div className="flex min-h-screen flex-1 flex-col">
           <Header />

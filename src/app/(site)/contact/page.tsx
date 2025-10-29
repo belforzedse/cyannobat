@@ -7,6 +7,7 @@ import { Mail, Phone, MapPin, Send, CheckCircle2 } from 'lucide-react'
 
 import { Card, Button, Input, Textarea } from '@/components/ui'
 import GlassIcon from '@/components/GlassIcon'
+import { GlassSurface } from '@/components/ui/glass'
 
 const contactMethods = [
   {
@@ -182,7 +183,7 @@ const ContactPage = () => {
       className="relative flex flex-col gap-8"
     >
       {/* Header Section */}
-      <div className="glass relative overflow-hidden px-8 py-12 text-right sm:px-12 lg:px-16">
+      <GlassSurface className="relative overflow-hidden px-8 py-12 text-right sm:px-12 lg:px-16">
         <div
           aria-hidden
           className="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full bg-accent/25 blur-[140px] sm:-left-16 dark:bg-accent/35"
@@ -223,7 +224,7 @@ const ContactPage = () => {
           سوالات، پیشنهادات یا نیاز به راهنمایی دارید؟ تیم پشتیبانی سایان نوبت آماده کمک به شماست. از طریق فرم زیر یا
           راه‌های ارتباطی دیگر با ما در تماس باشید.
         </motion.p>
-      </div>
+      </GlassSurface>
 
       {/* Contact Methods Grid */}
       <div className="grid gap-4 sm:grid-cols-3">
