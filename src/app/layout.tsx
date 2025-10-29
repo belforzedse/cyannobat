@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import '@styles/globals.css'
+import '@styles/tokens.css'
+import '@styles/reset.css'
 
 import { ToastProvider } from '@/components/ui/ToastProvider'
 

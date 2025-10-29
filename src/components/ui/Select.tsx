@@ -3,6 +3,8 @@
 import { SelectHTMLAttributes, forwardRef, useId } from 'react'
 import clsx from 'clsx'
 
+import animations from '../animations.module.css'
+
 interface SelectOption {
   value: string
   label: string
@@ -148,7 +150,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
         {error && (
           <p
             id={`${generatedId}-error`}
-            className="animate-fade-in text-right text-xs text-red-500"
+            className={clsx(animations.fadeIn, 'text-right text-xs text-red-500')}
           >
             {error}
           </p>

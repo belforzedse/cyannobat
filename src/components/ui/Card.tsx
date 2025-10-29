@@ -4,6 +4,7 @@ import React, { HTMLAttributes, forwardRef } from 'react'
 
 import { GlassPanel, type GlassPanelDensity, type GlassPanelVariant } from './glass'
 import { cn } from '@/lib/utils'
+import animations from '../animations.module.css'
 
 type CardVariant = 'default' | 'muted' | 'subtle' | 'active' | 'accent' | 'compact'
 
@@ -76,7 +77,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
         variant={panelVariant}
         state={panelState}
         density={panelDensity}
-        className={cn(paddingClasses[padding], animate && 'animate-fade-in-up', className)}
+        className={cn(paddingClasses[padding], animate && animations.fadeInUp, className)}
         {...props}
       >
         {children}

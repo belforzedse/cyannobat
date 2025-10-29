@@ -2,6 +2,8 @@
 
 import clsx from 'clsx';
 
+import styles from './LiquidBlob.module.css';
+
 interface LiquidBlobProps {
   /** Position from top (percentage or pixels) */
   top?: string;
@@ -56,6 +58,7 @@ const LiquidBlob = ({
         'absolute rounded-full blur-3xl pointer-events-none',
         sizeClasses[size],
         variantClasses[variant],
+        styles.liquidMorph,
         className
       )}
       style={{
@@ -63,8 +66,7 @@ const LiquidBlob = ({
         left,
         right,
         bottom,
-        animation: `liquid-morph ${animationDuration} ease-in-out infinite`,
-        willChange: 'transform',
+        animationDuration,
       }}
       aria-hidden
     />

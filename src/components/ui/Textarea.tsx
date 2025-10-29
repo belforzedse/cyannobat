@@ -3,6 +3,8 @@
 import { TextareaHTMLAttributes, forwardRef, useState, useId } from 'react'
 import clsx from 'clsx'
 
+import animations from '../animations.module.css'
+
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string
   error?: string
@@ -112,7 +114,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             {error && (
               <p
                 id={`${generatedId}-error`}
-                className="animate-fade-in text-right text-xs text-red-500"
+                className={clsx(animations.fadeIn, 'text-right text-xs text-red-500')}
               >
                 {error}
               </p>
