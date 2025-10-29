@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 
-import { ReceptionistDashboard } from '@/features/staff/components/StaffDashboard'
+import { ReceptionistDashboard } from '@/features/staff/dashboard/StaffDashboard'
 import { loadStaffDashboardData, loadStaffSession } from '@/features/staff/server/loadStaffData'
 
 export const dynamic = 'force-dynamic'
