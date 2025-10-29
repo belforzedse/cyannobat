@@ -6,6 +6,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import GlassCard from '@/components/GlassCard';
 import { Button } from '@/components/ui';
 import GlassIcon from '@/components/GlassIcon';
+import { GlassSurface } from '@/components/ui/glass';
 import { Calendar, Search, CheckCircle2 } from 'lucide-react';
 import { BOOKING_PATH } from '@/lib/routes';
 import { luxuryContainer, luxurySlideFade } from '@/lib/luxuryAnimations';
@@ -100,14 +101,6 @@ const HeroPage = () => {
     delayIn: 0.5,
   });
 
-  const bottomSectionVariants = configureSlideFade('up', {
-    distance: 32,
-    duration: 1.0,
-    scale: 0.96,
-    blur: 0,            // No blur for scroll-triggered (performance)
-    delayIn: 0,
-  });
-
   return (
     <div className="flex flex-col gap-16 pb-12">
       <div className="flex flex-col gap-12 lg:grid lg:grid-cols-[1fr_minmax(260px,360px)] lg:items-stretch">
@@ -146,11 +139,12 @@ const HeroPage = () => {
         </motion.section>
 
         {/* Hero Card Section */}
-        <motion.section
+        <GlassSurface
+          as={motion.section}
           variants={heroCardVariants}
           initial="initial"
           animate="animate"
-          className="glass order-1 relative flex h-full min-h-[420px] flex-col overflow-hidden px-8 pb-16 pt-20 text-right sm:px-12 lg:order-1 lg:px-20"
+          className="order-1 relative flex h-full min-h-[420px] flex-col overflow-hidden px-8 pb-16 pt-20 text-right sm:px-12 lg:order-1 lg:px-20"
         >
           <div
             className="absolute inset-x-0 -top-32 h-64 bg-gradient-to-b from-accent/50 via-transparent to-transparent"
@@ -204,7 +198,7 @@ const HeroPage = () => {
               </Link>
             </motion.div>
           </div>
-        </motion.section>
+        </GlassSurface>
       </div>
 
 

@@ -5,19 +5,14 @@ import ThemeToggle from "./ThemeToggle";
 import { BOOKING_PATH } from "@/lib/routes";
 import Logo from "./Logo";
 import AccountWidget from "./AccountWidget";
+import { GlassSurface, GlassPill } from '@/components/ui/glass';
 
 const Header = () => {
   return (
-    <header
+    <GlassSurface
+      as="header"
       role="banner"
-      className=" bg-white/50
-        glass sticky top-4 z-30 mx-4 rounded-[20px] px-4 py-2 sm:px-6 sm:py-2
-        flex items-center justify-between gap-3 sm:gap-6 text-right
-        shadow-lg shadow-black/5
-        transition-all duration-300 ease-out
-        animate-fade-in-down
-        backdrop-blur-md backdrop-saturate-30
-      "
+      className="bg-white/50 sticky top-4 z-30 mx-4 flex items-center justify-between gap-3 rounded-[20px] px-4 py-2 text-right shadow-lg shadow-black/5 transition-all duration-300 ease-out animate-fade-in-down sm:gap-6 sm:px-6 sm:py-2 backdrop-blur-md backdrop-saturate-30"
     >
       {/* soft accent glow */}
       <div
@@ -44,21 +39,15 @@ const Header = () => {
         <AccountWidget />
 
         <ThemeToggle />
-        <Link
+        <GlassPill
+          as={Link}
           href={BOOKING_PATH}
-          className="
-            glass-pill inline-flex items-center px-3 py-2 text-xs font-medium text-foreground
-            sm:px-5 sm:text-sm
-            transition-all duration-300 ease-out hover:text-foreground
-            focus-visible:outline-none focus-visible:ring-2
-            focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2
-            focus-visible:ring-offset-background
-          "
+          className="inline-flex items-center px-3 py-2 text-xs font-medium text-foreground transition-all duration-300 ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:px-5 sm:text-sm"
         >
           رزرو نوبت
-        </Link>
+        </GlassPill>
       </nav>
-    </header>
+    </GlassSurface>
   );
 };
 

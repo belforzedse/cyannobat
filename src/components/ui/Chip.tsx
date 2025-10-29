@@ -1,18 +1,19 @@
 'use client'
 
 import { HTMLAttributes, forwardRef } from 'react'
-import clsx from 'clsx'
+
+import { GlassChip, type GlassChipTone, type GlassChipShape } from './glass'
 
 type ChipVariant = 'default' | 'muted' | 'current' | 'active' | 'circle'
 
 interface ChipProps extends HTMLAttributes<HTMLDivElement> {
   /**
-   * Visual variant using global .glass-chip classes
+   * Visual variant mapped to GlassChip tone/shape options
    * - default: Standard glass chip
-   * - muted: Lighter color (.glass-chip--muted)
-   * - current: Current selection state (.glass-chip--current)
-   * - active: Active/selected state (.glass-chip--active)
-   * - circle: Circular chip (.glass-chip--circle)
+   * - muted: Lighter glass tone
+   * - current: Current selection state
+   * - active: Accent/selected state
+   * - circle: Circular chip
    */
   variant?: ChipVariant
   /**
@@ -34,7 +35,7 @@ interface ChipProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * Unified Chip component using global .glass-chip classes
+ * Unified Chip component built on the GlassChip primitive
  * Used for tags, time slots, status indicators, etc.
  *
  * @example
@@ -58,36 +59,37 @@ const Chip = forwardRef<HTMLDivElement, ChipProps>(
     },
     ref
   ) => {
-    const chipClasses = clsx(
-      // Base glass-chip class from globals.css
-      'glass-chip',
-
-      // Variant modifiers
-      variant === 'muted' && 'glass-chip--muted',
-      variant === 'current' && 'glass-chip--current',
-      variant === 'active' && 'glass-chip--active',
-      variant === 'circle' && 'glass-chip--circle',
-
-      // Interactive state
-      interactive && 'glass-chip--interactive cursor-pointer',
-
-      // Layout
-      'inline-flex items-center justify-center gap-2',
-      variant !== 'circle' && 'px-3 py-2 text-sm',
-
-      // Custom overrides
-      className
-    )
+    const toneMap: Record<ChipVariant, GlassChipTone> = {
+      default: 'default',
+      muted: 'muted',
+      current: 'current',
+      active: 'active',
+      circle: 'default'
+    }
+    const shapeMap: Record<ChipVariant, GlassChipShape> = {
+      default: 'default',
+      muted: 'default',
+      current: 'default',
+      active: 'default',
+      circle: 'circle'
+    }
 
     return (
-      <div ref={ref} className={chipClasses} {...props}>
+      <GlassChip
+        ref={ref}
+        tone={toneMap[variant]}
+        shape={shapeMap[variant]}
+        interactive={interactive}
+        className={className}
+        {...props}
+      >
         {leftIcon && <span className="inline-flex">{leftIcon}</span>}
         <span className="inline-flex flex-col items-center gap-0.5">
           {children}
-          {meta && <span className="glass-chip__meta">{meta}</span>}
+          {meta && <span className="text-[0.7rem] text-muted-foreground">{meta}</span>}
         </span>
         {rightIcon && <span className="inline-flex">{rightIcon}</span>}
-      </div>
+      </GlassChip>
     )
   }
 )

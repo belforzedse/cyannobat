@@ -3,6 +3,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
 
 import { Button, Card, Input } from '@/components/ui'
+import { glassPanelStyles } from '@/components/ui/glass'
+import { cn } from '@/lib/utils'
 import { useToast } from '@/components/ui/ToastProvider'
 import { useGlobalLoadingOverlay } from '@/components/GlobalLoadingOverlayProvider'
 import type { StaffUser } from '@/features/staff/types'
@@ -228,7 +230,10 @@ const StaffUserCreationCard = ({ currentUser }: StaffUserCreationCardProps) => {
           <label className='flex flex-col gap-2 text-sm'>
             <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>نقش کاربر</span>
             <select
-              className='glass-panel rounded-xl px-3 py-2 text-sm text-foreground ring-offset-background transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-70'
+              className={cn(
+                glassPanelStyles(),
+                'rounded-xl px-3 py-2 text-sm text-foreground ring-offset-background transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-70'
+              )}
               value={selectedRole}
               onChange={(event) => {
                 const role = event.target.value

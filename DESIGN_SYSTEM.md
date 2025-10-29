@@ -1,717 +1,145 @@
 # CyanNobat Design System
 
-**Version**: 1.0
-**Architecture**: Hybrid (Global Classes + React Components)
+**Version**: 2.0
+**Architecture**: Layered Primitives + React Components
 
 ## Overview
 
-This design system follows a **hybrid approach** that balances simplicity with functionality:
+CyanNobat's UI is composed of two complementary layers:
 
-- **Global CSS Classes** (`.glass-*`) for simple, reusable visual patterns
-- **React Components** (`@/components/ui`) for complex, interactive elements with props and validation
+- **Glass Primitives** (`@/components/ui/glass`) – typed building blocks that encapsulate the glassmorphic look using Tailwind utilities.
+- **UI Components** (`@/components/ui`) – higher level controls and layouts that compose primitives with behaviour, validation, and animation.
 
-This hybrid approach balances simplicity with functionality, allowing for both lightweight CSS utilities and interactive React components.
+This split keeps the glass aesthetic consistent while giving product teams fully typed components for day‑to‑day work.
 
 ---
 
 ## Architecture Decisions
 
-### Why Hybrid?
+### Why layered primitives?
 
-1. **Performance**: Global classes are lightweight and don't increase bundle size
-2. **Developer Experience**: React components provide TypeScript safety and autocomplete
-3. **Consistency**: Centralized styling prevents the 60+ inline class anti-patterns
-4. **Flexibility**: Easy to extend without modifying the core system
+1. **Consistency** – every glass container uses the same tokens, gradients, and transitions.
+2. **Type Safety** – primitives and components expose typed variants (no more stringly‑typed `.glass-panel--accent`).
+3. **Customization** – Tailwind utilities remain available via `className` when a screen needs bespoke spacing or layout.
+4. **Performance** – variants are compiled CSS classes; no runtime style recalculation is required.
 
-### When to Use What?
+### When to use what?
 
-| Pattern | Use Global Class | Use React Component |
-|---------|------------------|---------------------|
-| Simple container/card | ✅ `.glass-panel` | ❌ |
-| Button with loading state | ❌ | ✅ `<Button isLoading>` |
-| Form input with validation | ❌ | ✅ `<Input error="...">` |
-| Status chip/badge | ✅ `.glass-chip` or `<Chip>` | Either works |
-| Complex stepper UI | ❌ | ✅ Custom component |
-
----
-
-## Global Classes (from `globals.css`)
-
-These classes are defined in `styles/globals.css` under `@layer components`.
-
-### Container Classes
-
-#### `.glass`
-Main glassmorphic container with blur, shadows, and elastic hover effects.
-
-```tsx
-<div className="glass p-6">
-  {/* Content */}
-</div>
-```
-
-**Features**:
-- 2rem border radius
-- Backdrop blur + saturation
-- Elastic spring transitions
-- Hover state with enhanced blur
-- Fully dark mode compatible
-
-#### `.glass-pill`
-Fully rounded pill-shaped glass container. Perfect for buttons, badges, tags.
-
-```tsx
-<button className="glass-pill px-5 py-2">
-  Click me
-</button>
-```
-
-#### `.glass-panel` + Variants
-The workhorse for cards and sections. Lighter blur than `.glass`, better for content.
-
-```tsx
-<div className="glass-panel glass-panel--muted p-6">
-  {/* Content */}
-</div>
-```
-
-**Variants**:
-- `.glass-panel--muted` - More transparent (74% opacity)
-- `.glass-panel--subtle` - Very transparent (68% opacity)
-- `.glass-panel--compact` - Smaller border radius
-- `.glass-panel--active` - Accent border with shadow
-- `.glass-panel--accent` - Accent background color
-
-#### `.glass-chip` + Variants
-Small chips for tags, time slots, selections.
-
-```tsx
-<div className="glass-chip glass-chip--interactive px-3 py-2">
-  10:00
-</div>
-```
-
-**Variants**:
-- `.glass-chip--interactive` - Hover/focus states
-- `.glass-chip--circle` - Circular chip (36px × 36px)
-- `.glass-chip--muted` - Lighter color
-- `.glass-chip--current` - Current selection
-- `.glass-chip--active` - Active/selected state
-
-**Utility**:
-- `.glass-chip__meta` - Small metadata text inside chips
-
-### Button Classes
-
-#### `.btn-primary`
-Primary action button with gradient background and glow effects.
-
-```tsx
-<button className="btn-primary">
-  تایید نهایی
-</button>
-```
-
-**Features**:
-- Gradient background (accent → accent-strong)
-- Glow shadow on hover
-- `translateY(-3px)` lift effect
-- Disabled state with reduced opacity
-- Elastic spring transition (`cubic-bezier(0.34, 1.56, 0.64, 1)`)
-
-#### `.btn-secondary`
-Secondary glass button for less prominent actions.
-
-```tsx
-<button className="btn-secondary">
-  انصراف
-</button>
-```
+| Pattern | Use Glass Primitive | Use UI Component |
+|---------|--------------------|------------------|
+| Hero / layout shell | ✅ `GlassSurface` | ❌ |
+| Content card or panel | ✅ `GlassPanel` | ✅ `<Card>` (wraps `GlassPanel` + padding helpers) |
+| Status chip / slot | ✅ `GlassChip` | ✅ `<Chip>` for icon/meta ergonomics |
+| Action button | ✅ `GlassPill` (for raw links) | ✅ `<Button>` for loading states |
+| Form field with validation | ❌ | ✅ `<Input>`, `<Select>`, `<Textarea>` |
 
 ---
 
-## React Components (`@/components/ui`)
+## Glass Primitives (`@/components/ui/glass`)
+
+All primitives are polymorphic (accept an `as` prop) and export helper style functions when you only need the class string.
+
+### `<GlassSurface>`
+High fidelity surface used for hero cards and shells.
+
+```tsx
+import { GlassSurface } from '@/components/ui/glass'
+
+<GlassSurface className="relative overflow-hidden p-8">
+  {/* content */}
+</GlassSurface>
+```
+
+**Options**:
+- `interactive?: boolean` (default `true`) – enables hover lift/shine.
+
+### `<GlassPanel>`
+Content friendly container used for cards, modals, and muted sheets.
+
+```tsx
+<GlassPanel variant="muted" className="p-6">
+  <h3 className="text-lg font-semibold">عنوان</h3>
+  <p className="text-sm text-muted-foreground">توضیحات کارت</p>
+</GlassPanel>
+```
+
+**Variants**:
+- `variant`: `'default' | 'muted' | 'subtle' | 'accent'`
+- `state`: `'default' | 'active'`
+- `density`: `'default' | 'compact'`
+
+### `<GlassChip>`
+Interactive chip/badge primitive for slot pickers and status tags.
+
+```tsx
+<GlassChip tone="active" interactive className="px-3 py-2 text-xs">
+  ۱۰:۳۰ تا ۱۱:۰۰
+</GlassChip>
+```
+
+**Variants**:
+- `tone`: `'default' | 'muted' | 'current' | 'active'`
+- `shape`: `'default' | 'circle'`
+- `interactive`: hover + focus animation toggle.
+
+### `<GlassPill>`
+Rounded pill container for CTA links or icon badges.
+
+```tsx
+<GlassPill as={Link} href="/reserve" className="px-4 py-2 text-sm font-medium">
+  رزرو نوبت
+</GlassPill>
+```
+
+**Variants**:
+- `interactive?: boolean` – opt out when the parent handles motion.
+
+> Need the classes only? Import `glassSurfaceStyles`, `glassPanelStyles`, `glassChipStyles`, or `glassPillStyles` to style native form elements.
+
+---
+
+## Button Tokens
+
+`styles/globals.css` still exposes `.btn-primary` and `.btn-secondary` for the legacy gradient buttons. They are consumed by `<Button variant="primary|secondary">` and can be reused in Payload rich text renders when necessary.
+
+---
+
+## UI Components (`@/components/ui`)
 
 Import from `@/components/ui`:
 
 ```tsx
-import { Button, Input, Card, Chip } from '@/components/ui'
+import { Button, Card, Chip, Input, Select, Textarea } from '@/components/ui'
 ```
 
 ### `<Button>`
+Unified button component that wraps the gradient tokens and `GlassPill` styles.
 
-Unified button component wrapping global button classes.
-
-**Props**:
+**Props**
 - `variant`: `'primary' | 'secondary' | 'glass-pill'`
-- `size`: `'sm' | 'md' | 'lg'` (for glass-pill variant)
-- `isLoading`: Shows spinner
-- `leftIcon`, `rightIcon`: Icon elements
-- `fullWidth`: Stretch to container width
-- `disableAnimation`: Disable Framer Motion
-
-**Examples**:
-
-```tsx
-// Primary action
-<Button variant="primary">تایید</Button>
-
-// With loading state
-<Button variant="primary" isLoading>
-  در حال ارسال...
-</Button>
-
-// With icon
-<Button variant="secondary" leftIcon={<CheckIcon />}>
-  تایید شده
-</Button>
-
-// Glass pill style
-<Button variant="glass-pill" size="sm">
-  انتخاب
-</Button>
-```
-
-**Animation Strategy**:
-- `primary` and `secondary` use CSS transitions from globals.css
-- `glass-pill` uses Framer Motion for `whileHover` and `whileTap`
-- Respects `prefers-reduced-motion`
-
----
-
-### `<Input>`
-
-Consolidated input component replacing `BookingInput` and inline patterns.
-
-**Props**:
-- `label`: Field label
-- `error`: Error message (shows below input)
-- `helperText`: Helper text (shows below input)
-- `leftIcon`, `rightIcon`: Icon elements
-- `fullWidth`: Default `true`
-- All standard `<input>` props
-
-**Examples**:
-
-```tsx
-// Basic input
-<Input
-  label="نام"
-  placeholder="نام خود را وارد کنید"
-/>
-
-// With validation
-<Input
-  type="email"
-  label="ایمیل"
-  error={emailError}
-/>
-
-// With icon
-<Input
-  leftIcon={<SearchIcon />}
-  placeholder="جستجو..."
-/>
-```
-
-**Styling**:
-- Matches `.glass-panel` aesthetic
-- Consistent hover/focus states
-- Error state with red border
-- RTL-aware (text-right)
-
----
-
-### `<Textarea>`
-
-Textarea component matching `<Input>` styling. Replaces the 60+ class inline pattern from `ContactSection`.
-
-**Props**:
-- `label`, `error`, `helperText`: Same as `<Input>`
-- `showCharCount`: Shows character counter
-- `maxLength`: Maximum characters
-- All standard `<textarea>` props
-
-**Example**:
-
-```tsx
-<Textarea
-  label="توضیحات"
-  rows={4}
-  maxLength={500}
-  showCharCount
-  helperText="توضیحات اضافی خود را وارد کنید"
-/>
-```
-
----
-
-### `<Select>`
-
-Select dropdown matching `<Input>` styling. Replaces `BookingSelect`.
-
-**Props**:
-- `label`, `error`, `helperText`: Same as `<Input>`
-- `options`: Array of `{ value, label, disabled? }`
-- `placeholder`: Placeholder option
-- All standard `<select>` props
-
-**Example**:
-
-```tsx
-<Select
-  label="انتخاب سرویس"
-  options={[
-    { value: '1', label: 'سرویس A' },
-    { value: '2', label: 'سرویس B' },
-    { value: '3', label: 'سرویس C', disabled: true }
-  ]}
-  placeholder="یک سرویس انتخاب کنید"
-/>
-```
-
----
+- `size`: `'sm' | 'md' | 'lg'` (applies to glass pill)
+- `isLoading`: show spinner + disables hover motion
+- `leftIcon`, `rightIcon`, `fullWidth`, `disableAnimation`
 
 ### `<Card>`
-
-Wrapper for `.glass-panel` with React props for easier composition.
-
-**Props**:
-- `variant`: `'default' | 'muted' | 'subtle' | 'active' | 'accent' | 'compact'`
-- `padding`: `'none' | 'sm' | 'md' | 'lg'`
-- `animate`: Apply fade-in-up animation on mount
-
-**Examples**:
-
-```tsx
-// Basic card
-<Card padding="md">
-  <h3>عنوان</h3>
-  <p>محتوا</p>
-</Card>
-
-// Accent card with animation
-<Card variant="accent" animate>
-  <p>اعلان مهم</p>
-</Card>
-
-// Muted card (more transparent)
-<Card variant="muted" padding="lg">
-  {/* Background content */}
-</Card>
-```
-
-**When to use**:
-- Use `<Card>` when you need dynamic variants or padding
-- Use `.glass-panel` directly for static containers
-
----
+Layout primitive built on `GlassPanel`. Handles padding presets and the `animate` entrance class.
 
 ### `<Chip>`
+User friendly wrapper around `GlassChip` that adds icon slots and optional `meta` text.
 
-Wrapper for `.glass-chip` with React props.
+### `<Input>`, `<Select>`, `<Textarea>`
+Glass-inspired form controls with consistent focus rings, helper text, and error messaging.
 
-**Props**:
-- `variant`: `'default' | 'muted' | 'current' | 'active' | 'circle'`
-- `interactive`: Enable hover/focus states
-- `meta`: Small metadata text
-- `leftIcon`, `rightIcon`: Icon elements
-
-**Examples**:
-
-```tsx
-// Time slot chip
-<Chip variant="default" interactive>
-  10:00
-</Chip>
-
-// Selected chip
-<Chip variant="active">
-  انتخاب شده
-</Chip>
-
-// Circle chip with metadata
-<Chip variant="circle" meta="5">
-  A
-</Chip>
-```
+### `<ToastProvider>`
+Shared context for app toasts (unchanged).
 
 ---
 
-## Animation Strategy (Hybrid Approach)
+## Usage Notes
 
-Following the user's preference for **Hybrid: Framer for complex, CSS for simple**.
+- Prefer primitives inside layouts/feature components; they keep the glass aesthetic cohesive.
+- Reach for UI components when you need accessibility, keyboard support, loading states, or helper copy.
+- Tailwind utilities still work with primitives. Use `className` to adjust spacing, radius, or layout as required.
+- When composing motion components (`framer-motion`), pass them through the `as` prop (`<GlassPanel as={motion.div} ...>`).
 
-### CSS Animations (globals.css)
-
-Use for simple, performance-critical animations:
-
-```tsx
-// Fade in
-<div className="animate-fade-in">...</div>
-
-// Fade in with upward motion
-<div className="animate-fade-in-up">...</div>
-
-// Fade in with downward motion
-<div className="animate-fade-in-down">...</div>
-
-// Slide in from right
-<div className="animate-slide-in-right">...</div>
-```
-
-**Keyframes available**:
-- `fade-in` - Simple opacity fade
-- `fade-in-up` - Fade + translateY(20px) + scale(0.95)
-- `fade-in-down` - Fade + translateY(-20px)
-- `slide-in-right` - Fade + translateX(30px)
-- `liquid-morph` - Blob morphing animation
-
-**Accessibility**: All animations respect `prefers-reduced-motion: reduce` and disable automatically.
-
-### Framer Motion
-
-Use for complex, interactive animations:
-
-```tsx
-import { motion } from 'framer-motion'
-
-// Gesture-aware button
-<motion.button
-  whileHover={{ scale: 1.05, y: -3 }}
-  whileTap={{ scale: 0.98 }}
-  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
->
-  Click me
-</motion.button>
-
-// Stagger children animation
-<motion.div
-  initial="hidden"
-  animate="visible"
-  variants={{
-    visible: {
-      transition: { staggerChildren: 0.1 }
-    }
-  }}
->
-  {items.map(item => (
-    <motion.div
-      key={item.id}
-      variants={{
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0 }
-      }}
-    >
-      {item.content}
-    </motion.div>
-  ))}
-</motion.div>
-```
-
-**When to use Framer Motion**:
-- Multi-step animations with orchestration
-- Gesture-based interactions (drag, swipe)
-- Layout animations (`layout` prop)
-- Exit animations with `AnimatePresence`
-
-**When NOT to use Framer Motion**:
-- Simple fade-ins on mount → Use CSS `animate-fade-in`
-- Hover scale/translate → Use CSS if possible
-- Static animations without user interaction
-
----
-
-## Migration Guide
-
-### Before (Inconsistent)
-
-```tsx
-// ❌ Multiple approaches for the same pattern
-// BookingSummary.tsx
-<div className="rounded-2xl border border-white/20 bg-white/35 backdrop-blur-lg p-6">
-  {/* Content */}
-</div>
-
-// ServiceSection.tsx
-const cardClasses = 'rounded-2xl sm:rounded-3xl border border-white/25 bg-white/45 dark:bg-white/10 dark:border-white/15 p-5'
-<div className={cardClasses}>
-  {/* Content */}
-</div>
-
-// ContactSection.tsx (60+ classes!)
-<textarea className="mt-2 min-h-[100px] w-full rounded-xl border border-white/20 bg-white/50 px-4 py-3 text-right text-sm text-foreground placeholder:text-muted-foreground transition-colors duration-200 hover:border-white/30 hover:bg-white/60 focus:border-accent focus:bg-white/70 focus:outline-none focus:ring-2 focus:ring-accent/40 dark:border-white/12 dark:bg-white/10..." />
-```
-
-### After (Unified)
-
-```tsx
-// ✅ Consistent design system
-import { Card, Textarea } from '@/components/ui'
-
-// BookingSummary.tsx
-<Card padding="md">
-  {/* Content */}
-</Card>
-
-// ServiceSection.tsx
-<Card variant="muted" padding="lg">
-  {/* Content */}
-</Card>
-
-// ContactSection.tsx
-<Textarea
-  label="توضیحات"
-  rows={4}
-  helperText="توضیحات خود را وارد کنید"
-/>
-```
-
----
-
-## Color System
-
-All colors use CSS custom properties defined in `globals.css`:
-
-### Light Mode (`:root`)
-- `--bg`: 244 247 252 (Background)
-- `--fg`: 55 63 75 (Foreground text - #373F4B)
-- `--muted`: 225 232 245 (Muted backgrounds)
-- `--muted-foreground`: 55 63 75 (Muted text - #373F4B)
-- `--card`: 255 255 255 (Card background)
-- `--border`: 206 214 230 (Borders)
-- `--accent`: 65 119 172 (Primary accent color - #4177AC)
-- `--accent-strong`: 65 119 172 (Strong accent)
-- `--ring`: 65 119 172 (Focus rings)
-
-### Dark Mode (`[data-theme='dark']`)
-- `--bg`: 13 19 31
-- `--fg`: 224 232 247
-- `--muted`: 40 53 76
-- `--muted-foreground`: 170 186 213
-- `--card`: 22 31 48
-- `--border`: 59 76 109
-- `--accent`: 125 140 165 (Muted slate blue - adjusted for dark mode)
-- `--accent-strong`: 110 128 155 (Strong accent - dark mode)
-- `--ring`: 125 140 165
-
-### Usage in Tailwind
-
-```tsx
-// Using semantic color tokens
-<div className="bg-background text-foreground border-border">
-  <p className="text-muted-foreground">Muted text</p>
-  <button className="bg-accent hover:bg-accent-strong">
-    Action
-  </button>
-</div>
-```
-
-### Usage in Custom CSS
-
-```css
-.my-component {
-  background: rgb(var(--card) / 0.8);
-  color: rgb(var(--foreground));
-  border: 1px solid rgb(var(--border) / 0.4);
-}
-
-.my-component:hover {
-  border-color: rgb(var(--accent) / 0.6);
-}
-```
-
----
-
-## Typography
-
-### Font Family
-- **Primary**: Peyda (Persian-optimized)
-- **Fallback**: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif
-
-### Font Weights
-- Regular: 400
-- Medium: 500
-- Bold: 700
-
-### Text Direction
-All text components default to RTL (`text-right`) for Persian support.
-
----
-
-## Accessibility
-
-### Focus Indicators
-All interactive elements have visible focus rings defined globally:
-
-```css
-:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 2px rgba(var(--ring) / 0.8),
-    0 0 0 4px rgba(255, 255, 255, 0.35);
-}
-```
-
-### Motion Preferences
-All animations respect `prefers-reduced-motion: reduce`:
-
-```css
-@media (prefers-reduced-motion: reduce) {
-  .animate-fade-in,
-  .animate-fade-in-up,
-  .glass,
-  /* ... */ {
-    animation: none;
-    transition: none;
-    transform: none;
-  }
-}
-```
-
-### Form Accessibility
-All form components include:
-- Proper `<label>` associations
-- `aria-invalid` for error states
-- `aria-describedby` for error/helper text
-- Unique auto-generated IDs
-
----
-
-## Best Practices
-
-### DO ✅
-
-1. **Use the design system components**:
-   ```tsx
-   import { Button, Input, Card } from '@/components/ui'
-   ```
-
-2. **Leverage global classes for simple containers**:
-   ```tsx
-   <div className="glass-panel glass-panel--muted p-6">
-   ```
-
-3. **Use Tailwind for layout and spacing**:
-   ```tsx
-   <Card className="mt-4 sm:mt-6" padding="md">
-   ```
-
-4. **Compose components for complex UIs**:
-   ```tsx
-   <Card variant="accent" padding="lg">
-     <Input label="نام" />
-     <Button variant="primary">ارسال</Button>
-   </Card>
-   ```
-
-### DON'T ❌
-
-1. **Don't duplicate glassmorphic styles inline**:
-   ```tsx
-   // ❌ Bad
-   <div className="rounded-xl border border-white/20 bg-white/50 backdrop-blur-md">
-
-   // ✅ Good
-   <div className="glass-panel">
-   ```
-
-2. **Don't create 60+ class inline strings**:
-   ```tsx
-   // ❌ Bad
-   <input className="w-full rounded-xl border border-white/20 bg-white/50 px-4 py-2.5 text-right text-sm text-foreground placeholder:text-muted-foreground transition-colors duration-200 hover:border-white/30 hover:bg-white/60 focus:border-accent focus:bg-white/70 focus:outline-none focus:ring-2 focus:ring-accent/40 dark:border-white/12 dark:bg-white/10..." />
-
-   // ✅ Good
-   <Input />
-   ```
-
-3. **Don't mix animation approaches inconsistently**:
-   ```tsx
-   // ❌ Bad - inline animation style
-   <div style={{ animation: 'fade-in 0.6s ease-out' }}>
-
-   // ✅ Good - CSS animation class
-   <div className="animate-fade-in">
-
-   // ✅ Also good - Framer Motion for complex interactions
-   <motion.div animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-   ```
-
-4. **Don't hardcode colors** - use CSS variables:
-   ```tsx
-   // ❌ Bad
-   <div className="bg-[#9FDDE7]">
-
-   // ✅ Good
-   <div className="bg-accent">
-   ```
-
----
-
-## Component Checklist
-
-When creating new components, ensure:
-
-- [ ] Uses design system components from `@/components/ui`
-- [ ] Or uses global `.glass-*` classes if simple container
-- [ ] Colors use CSS custom properties (`--bg`, `--accent`, etc.)
-- [ ] Animations use CSS classes or Framer Motion (not inline styles)
-- [ ] Dark mode works via CSS variables (no JS theme checks)
-- [ ] RTL support for text (`text-right` by default)
-- [ ] Accessibility: focus states, ARIA attributes, semantic HTML
-- [ ] Respects `prefers-reduced-motion`
-- [ ] TypeScript types exported
-
----
-
-## File Structure
-
-```
-src/
-├── components/
-│   └── ui/                    # Design system components
-│       ├── Button.tsx
-│       ├── Input.tsx
-│       ├── Textarea.tsx
-│       ├── Select.tsx
-│       ├── Card.tsx
-│       ├── Chip.tsx
-│       └── index.ts           # Barrel export
-├── styles/
-│   └── globals.css            # Global classes + CSS variables
-└── ...
-
-DESIGN_SYSTEM.md               # This file
-CLAUDE.md                      # Project overview
-```
-
----
-
-## Roadmap
-
-Future enhancements:
-
-- [ ] Toast/notification component
-- [ ] Modal/dialog component
-- [ ] Dropdown menu component
-- [ ] Date picker component
-- [ ] Loading skeleton component
-- [ ] Badge component
-- [ ] Avatar component
-- [ ] Tabs component
-- [ ] Accordion component
-- [ ] Table component
-
----
-
-## Questions?
-
-See `CLAUDE.md` for project overview and architecture details.
-
-For component API documentation, check the TypeScript types:
-
-```tsx
-import { ButtonProps } from '@/components/ui'
-```
-
-All components are fully typed with JSDoc comments.
+Happy shipping ✨

@@ -7,6 +7,8 @@ import { RefreshCw, LogOut, Loader2, Calendar, Users, Plus, X, Edit3 } from 'luc
 import type { StaffAppointment, StaffProvider, StaffUser } from '@/features/staff/types'
 import { useToast } from '@/components/ui/ToastProvider'
 import { Card, Button, Input } from '@/components/ui'
+import { glassPanelStyles } from '@/components/ui/glass'
+import { cn } from '@/lib/utils'
 import GlassIcon from '@/components/GlassIcon'
 import {
   GlobalLoadingOverlayProvider,
@@ -593,7 +595,10 @@ const StaffDashboardContent = ({
                       timeZone: provider?.timeZone ?? previous.timeZone,
                     }))
                   }}
-                  className="glass-panel rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
+                  className={cn(
+                    glassPanelStyles(),
+                    'rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/40'
+                  )}
                 >
                   <option value="">یک ارائه‌دهنده را انتخاب کنید</option>
                   {providers.map((provider) => (
@@ -734,7 +739,10 @@ const StaffDashboardContent = ({
                 <select
                   value={filterStatus}
                   onChange={(event) => setFilterStatus(event.target.value)}
-                  className="glass-panel rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
+                  className={cn(
+                    glassPanelStyles(),
+                    'rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/40'
+                  )}
                 >
                   <option value="all">همه وضعیت‌ها</option>
                   {statusOptions.map((status) => (
@@ -752,7 +760,10 @@ const StaffDashboardContent = ({
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
                   placeholder={searchPlaceholderByMode[mode]}
-                  className="glass-panel w-full rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 sm:w-64"
+                  className={cn(
+                    glassPanelStyles(),
+                    'w-full rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 sm:w-64'
+                  )}
                 />
               </div>
             </div>
@@ -883,7 +894,10 @@ const StaffDashboardContent = ({
                               handleStatusChange(appointment.id, event.target.value as StaffAppointment['status'])
                             }
                             disabled={updatingId === appointment.id}
-                            className="glass-panel rounded-full px-3 py-1 text-xs font-semibold text-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none focus:ring-2 focus:ring-accent/40"
+                            className={cn(
+                              glassPanelStyles(),
+                              'rounded-full px-3 py-1 text-xs font-semibold text-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none focus:ring-2 focus:ring-accent/40'
+                            )}
                           >
                             {statusOptions.map((status) => (
                               <option key={status.value} value={status.value}>
@@ -918,11 +932,13 @@ const StaffDashboardContent = ({
                 filteredAppointments.map((appointment) => (
                   <div
                     key={appointment.id}
-                    className={`glass-panel rounded-2xl p-4 text-right shadow-sm transition-colors ${
+                    className={cn(
+                      glassPanelStyles(),
+                      'rounded-2xl p-4 text-right shadow-sm transition-colors',
                       failedId === appointment.id
                         ? 'border border-red-300/60 bg-red-50 dark:border-red-400/60 dark:bg-red-500/20'
                         : 'border border-white/10 bg-white/10 dark:border-white/10'
-                    }`}
+                    )}
                   >
                     <div className="flex flex-col gap-3 text-sm text-foreground">
                       <div className="flex flex-col gap-1">
@@ -1023,7 +1039,10 @@ const StaffDashboardContent = ({
                               handleStatusChange(appointment.id, event.target.value as StaffAppointment['status'])
                             }
                             disabled={updatingId === appointment.id}
-                            className="glass-panel flex-1 rounded-full px-3 py-2 text-xs font-semibold text-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none focus:ring-2 focus:ring-accent/40"
+                            className={cn(
+                              glassPanelStyles(),
+                              'flex-1 rounded-full px-3 py-2 text-xs font-semibold text-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none focus:ring-2 focus:ring-accent/40'
+                            )}
                           >
                             {statusOptions.map((status) => (
                               <option key={status.value} value={status.value}>

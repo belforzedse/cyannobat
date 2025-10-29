@@ -3,6 +3,8 @@
 import React from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 
+import { GlassSurface } from '@/components/ui/glass'
+
 import useSmoothLoading from '@/hooks/useSmoothLoading'
 
 interface GlobalLoadingOverlayProps {
@@ -45,7 +47,12 @@ const GlobalLoadingOverlay = ({
           className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm dark:bg-black/40"
           style={{ pointerEvents: 'none' }}
         >
-          <motion.div {...panelTransitions} className="glass flex flex-col items-center gap-4 px-8 py-6">
+          <GlassSurface
+            as={motion.div}
+            interactive={false}
+            {...panelTransitions}
+            className="flex flex-col items-center gap-4 px-8 py-6"
+          >
             {/* Loading Spinner */}
             <div className="relative h-12 w-12">
               <div className="absolute inset-0 rounded-full border-4 border-accent/20" />
@@ -58,7 +65,7 @@ const GlobalLoadingOverlay = ({
 
             {/* Loading Message */}
             {message && <p className="text-sm font-medium text-foreground">{message}</p>}
-          </motion.div>
+          </GlassSurface>
         </motion.div>
       )}
     </AnimatePresence>

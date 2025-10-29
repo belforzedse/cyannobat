@@ -8,6 +8,7 @@ import clsx from 'clsx';
 import type { LucideIcon } from 'lucide-react';
 import { CalendarDays, Home, LifeBuoy } from "lucide-react";
 import { BOOKING_PATH } from "@/lib/routes";
+import { GlassSurface } from '@/components/ui/glass';
 
 type NavigationGroup = 'main' | 'actions';
 
@@ -201,11 +202,12 @@ const Sidebar = () => {
     desktopMainItems.some((item) => item.matches?.(pathname ?? "", activeHash) ?? false);
 
   return (
-    <nav
+    <GlassSurface
+      as="nav"
       aria-label="پیمایش اصلی و اقدامات سریع"
       className={clsx(
-        "glass fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-xl items-center gap-2 rounded-[20px] px-3 py-2 shadow-lg backdrop-blur",
-        "lg:inset-auto lg:right-4 lg:top-[90px] lg:h-[calc(100vh-150px)] lg:w-[75px] lg:max-w-none lg:flex-col lg:items-center lg:justify-between lg:gap-8 lg:px-2 lg:py-6  ",
+        "fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-xl items-center gap-2 rounded-[20px] px-3 py-2 shadow-lg backdrop-blur",
+        "lg:inset-auto lg:right-4 lg:top-[90px] lg:h-[calc(100vh-150px)] lg:w-[75px] lg:max-w-none lg:flex-col lg:items-center lg:justify-between lg:gap-8 lg:px-2 lg:py-6",
         "animate-fade-in-up"
       )}
     >
@@ -280,7 +282,7 @@ const Sidebar = () => {
           )}
         </div>
       </div>
-    </nav>
+    </GlassSurface>
   );
 };
 
