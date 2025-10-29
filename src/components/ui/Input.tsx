@@ -3,6 +3,8 @@
 import React, { InputHTMLAttributes, forwardRef, useId } from 'react'
 import clsx from 'clsx'
 
+import animations from '../animations.module.css'
+
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string
   error?: string
@@ -115,7 +117,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {error && (
           <p
             id={`${generatedId}-error`}
-            className="animate-fade-in text-right text-xs text-red-500"
+            className={clsx(animations.fadeIn, 'text-right text-xs text-red-500')}
           >
             {error}
           </p>
