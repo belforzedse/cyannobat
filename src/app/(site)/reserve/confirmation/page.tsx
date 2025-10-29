@@ -1,11 +1,12 @@
 import React from 'react'
-import Link from 'next/link'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 
 import { getPayload } from 'payload'
 
 import configPromise from '@payload-config'
+import { Button } from '@/components/ui/Button'
 import type { Appointment, Provider as ProviderDoc, Service } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
@@ -85,11 +86,15 @@ const MissingReferenceNotice = () => {
         برای مشاهده جزئیات نوبت به کد پیگیری نیاز داریم. لطفاً از صفحه رزرو وارد شوید یا حساب کاربری خود را بررسی کنید.
       </p>
       <div className='mt-8 flex flex-wrap justify-end gap-3'>
-        <Link className='btn-secondary inline-flex items-center justify-center px-5 py-2 text-sm font-medium' href='/reserve'>
-          شروع رزرو جدید
+        <Link href='/reserve'>
+          <Button variant='secondary' size='sm' className='px-5 py-2 text-sm'>
+            شروع رزرو جدید
+          </Button>
         </Link>
-        <Link className='btn-primary inline-flex items-center justify-center px-5 py-2 text-sm font-semibold' href='/account'>
-          مشاهده حساب کاربری
+        <Link href='/account'>
+          <Button variant='primary' size='sm' className='px-5 py-2 text-sm'>
+            مشاهده حساب کاربری
+          </Button>
         </Link>
       </div>
     </section>
@@ -106,11 +111,15 @@ const MissingAppointmentNotice = ({ reference }: { reference: string }) => {
         کد پیگیری <span className='font-semibold text-slate-900 dark:text-white'>{reference}</span> در سابقه نوبت‌های شما یافت نشد. ممکن است رزرو هنوز ثبت نشده یا با حساب دیگری ایجاد شده باشد.
       </p>
       <div className='mt-8 flex flex-wrap justify-end gap-3'>
-        <Link className='btn-secondary inline-flex items-center justify-center px-5 py-2 text-sm font-medium' href='/reserve'>
-          بازگشت به رزرو
+        <Link href='/reserve'>
+          <Button variant='secondary' size='sm' className='px-5 py-2 text-sm'>
+            بازگشت به رزرو
+          </Button>
         </Link>
-        <Link className='btn-primary inline-flex items-center justify-center px-5 py-2 text-sm font-semibold' href='/account'>
-          مراجعه به حساب کاربری
+        <Link href='/account'>
+          <Button variant='primary' size='sm' className='px-5 py-2 text-sm'>
+            مراجعه به حساب کاربری
+          </Button>
         </Link>
       </div>
     </section>
@@ -245,11 +254,15 @@ const ConfirmationPage = async ({ searchParams }: ConfirmationPageProps) => {
       </dl>
 
       <div className='flex flex-wrap justify-end gap-3'>
-        <Link className='btn-secondary inline-flex items-center justify-center px-5 py-2 text-sm font-medium' href='/reserve'>
-          رزرو نوبت جدید
+        <Link href='/reserve'>
+          <Button variant='secondary' size='sm' className='px-5 py-2 text-sm'>
+            رزرو نوبت جدید
+          </Button>
         </Link>
-        <Link className='btn-primary inline-flex items-center justify-center px-5 py-2 text-sm font-semibold' href='/account'>
-          مشاهده نوبت‌ها در حساب
+        <Link href='/account'>
+          <Button variant='primary' size='sm' className='px-5 py-2 text-sm'>
+            مشاهده نوبت‌ها در حساب
+          </Button>
         </Link>
       </div>
     </section>
