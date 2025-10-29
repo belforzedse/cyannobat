@@ -21,8 +21,8 @@ export interface GlassPanelStyleOptions {
 }
 
 const basePanelClasses = [
-  'relative rounded-[1.5rem] border border-[rgb(var(--border-rgb)/0.45)]',
-  'bg-[linear-gradient(160deg,rgba(var(--card-rgb),0.9),rgba(var(--card-rgb),0.75))]',
+  'relative rounded-[1.5rem] border border-border/45',
+  'bg-[linear-gradient(160deg,color-mix(in_srgb,var(--card)_90%,transparent),color-mix(in_srgb,var(--card)_75%,transparent))]',
   'shadow-[0_28px_70px_-32px_rgba(42,74,125,0.42)]',
   'backdrop-blur-[24px] backdrop-saturate-[1.35]',
   'transition-[background-color,border-color,box-shadow,transform] duration-[350ms] ease-[cubic-bezier(0.16,1,0.3,1)]',
@@ -31,13 +31,13 @@ const basePanelClasses = [
 
 const variantClasses: Record<GlassPanelVariant, string> = {
   default: '',
-  muted: 'bg-[linear-gradient(160deg,rgba(var(--card-rgb),0.82),rgba(var(--card-rgb),0.68))] dark:bg-[linear-gradient(160deg,rgba(var(--card-rgb),0.82),rgba(var(--card-rgb),0.65))] dark:text-[color:var(--muted-foreground)]',
-  subtle: 'bg-[rgba(var(--card-rgb),0.7)] dark:bg-[rgba(var(--card-rgb),0.6)]',
+  muted: 'bg-[linear-gradient(160deg,color-mix(in_srgb,var(--card)_82%,transparent),color-mix(in_srgb,var(--card)_68%,transparent))] dark:bg-[linear-gradient(160deg,color-mix(in_srgb,var(--card)_82%,transparent),color-mix(in_srgb,var(--card)_65%,transparent))] dark:text-[color:var(--muted-foreground)]',
+  subtle: 'bg-[color-mix(in_srgb,var(--card)_70%,transparent)] dark:bg-[color-mix(in_srgb,var(--card)_60%,transparent)]',
   accent: [
-    'border-[rgb(var(--accent-rgb)/0.55)]',
-    'bg-[linear-gradient(165deg,rgba(var(--accent-rgb),0.22),rgba(var(--card-rgb),0.78))]',
+    'border-accent/55',
+    'bg-[linear-gradient(165deg,color-mix(in_srgb,var(--accent)_22%,transparent),color-mix(in_srgb,var(--card)_78%,transparent))]',
     'text-[color:var(--fg)]',
-    'dark:bg-[linear-gradient(170deg,rgba(var(--accent-rgb),0.22),rgba(var(--card-rgb),0.74))]',
+    'dark:bg-[linear-gradient(170deg,color-mix(in_srgb,var(--accent)_22%,transparent),color-mix(in_srgb,var(--card)_74%,transparent))]',
     'dark:text-[color:var(--accent-strong)]'
   ].join(' ')
 }
@@ -45,9 +45,9 @@ const variantClasses: Record<GlassPanelVariant, string> = {
 const stateClasses: Record<GlassPanelState, string> = {
   default: '',
   active: [
-    'border-[rgb(var(--accent-rgb)/0.4)] shadow-[0_36px_76px_-34px_rgba(86,154,222,0.32)]',
+    'border-accent/40 shadow-[0_36px_76px_-34px_rgba(86,154,222,0.32)]',
     '-translate-y-0.5',
-    'dark:border-[rgb(var(--accent-rgb)/0.5)]',
+    'dark:border-accent/50',
     'dark:shadow-[0_42px_96px_-38px_rgba(36,132,255,0.4)]'
   ].join(' ')
 }
@@ -58,8 +58,8 @@ const densityClasses: Record<GlassPanelDensity, string> = {
 }
 
 const darkBaseOverrides = [
-  'dark:border-[rgb(var(--border-rgb)/0.6)]',
-  'dark:bg-[linear-gradient(160deg,rgba(var(--card-rgb),0.9),rgba(var(--card-rgb),0.72))]',
+  'dark:border-border/60',
+  'dark:bg-[linear-gradient(160deg,color-mix(in_srgb,var(--card)_90%,transparent),color-mix(in_srgb,var(--card)_72%,transparent))]',
   'dark:shadow-[0_36px_90px_-36px_rgba(2,6,28,0.78)]'
 ].join(' ')
 

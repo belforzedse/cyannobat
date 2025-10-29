@@ -1,5 +1,19 @@
 import animate from 'tailwindcss-animate';
 
+const withOpacity = (variable) => ({ opacityValue }) => {
+  if (opacityValue === undefined || opacityValue === null) {
+    return `var(${variable})`;
+  }
+
+  const numericOpacity = Number(opacityValue);
+
+  if (Number.isNaN(numericOpacity) || numericOpacity >= 1) {
+    return `var(${variable})`;
+  }
+
+  return `color-mix(in srgb, var(${variable}) calc(${numericOpacity} * 100%), transparent)`;
+};
+
 /** @type {import('tailwindcss').Config} */
 const config = {
   darkMode: ['class', '[data-theme="dark"]'],
@@ -7,19 +21,19 @@ const config = {
   theme: {
     extend: {
       colors: {
-        background: 'rgb(var(--bg-rgb) / <alpha-value>)',
-        foreground: 'rgb(var(--fg-rgb) / <alpha-value>)',
+        background: withOpacity('--bg'),
+        foreground: withOpacity('--fg'),
         muted: {
-          DEFAULT: 'rgb(var(--muted-rgb) / <alpha-value>)',
-          foreground: 'rgb(var(--muted-foreground-rgb) / <alpha-value>)',
+          DEFAULT: withOpacity('--muted'),
+          foreground: withOpacity('--muted-foreground'),
         },
-        card: 'rgb(var(--card-rgb) / <alpha-value>)',
-        border: 'rgb(var(--border-rgb) / <alpha-value>)',
+        card: withOpacity('--card'),
+        border: withOpacity('--border'),
         accent: {
-          DEFAULT: 'rgb(var(--accent-rgb) / <alpha-value>)',
-          foreground: 'rgb(var(--fg-rgb) / <alpha-value>)',
+          DEFAULT: withOpacity('--accent'),
+          foreground: withOpacity('--fg'),
         },
-        'accent-strong': 'rgb(var(--accent-strong-rgb) / <alpha-value>)',
+        'accent-strong': withOpacity('--accent-strong'),
       },
       borderRadius: {
         '3xl': '1.75rem',
