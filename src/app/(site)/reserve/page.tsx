@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
+import { Button } from '@/components/ui/Button'
 import { GlassSurface } from '@/components/ui/glass'
 
 import BookingStepper from '@/features/booking/components/BookingStepper'
@@ -519,20 +520,28 @@ const BookingPageContent = () => {
           className="flex flex-col items-end gap-2"
         >
           <div className="flex flex-wrap items-center justify-end gap-3">
-            <Link href="/" className="btn-secondary">
-              بازگشت
+            <Link href="/">
+              <Button
+                variant="secondary"
+                size="md"
+                disableAnimation={prefersReducedMotion}
+              >
+                بازگشت
+              </Button>
             </Link>
-            <motion.button
+            <Button
               type="button"
-              className="btn-primary"
+              variant="primary"
+              size="md"
               disabled={isActionDisabled}
               onClick={handleContinue}
+              disableAnimation={prefersReducedMotion}
               whileHover={prefersReducedMotion || isActionDisabled ? undefined : { y: -3 }}
               whileTap={prefersReducedMotion || isActionDisabled ? undefined : { scale: 0.97 }}
               transition={{ type: 'spring', stiffness: 320, damping: 22 }}
             >
               {isSubmitting ? 'در حال ثبت...' : 'ادامه'}
-            </motion.button>
+            </Button>
           </div>
           <div className="flex max-w-xl flex-col items-end gap-1 text-right" aria-live="polite">
             {isSubmitting && (
