@@ -108,7 +108,7 @@ const AccountWidget = React.forwardRef<HTMLAnchorElement, AccountWidgetProps>(
     }
 
     const buttonClassName = clsx(
-      "group relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-white text-foreground  backdrop-blur-xl transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-black/80",
+      "group relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-white text-foreground  backdrop-blur-xl transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-black/80",
       className
     );
 

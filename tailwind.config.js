@@ -7,19 +7,19 @@ const config = {
   theme: {
     extend: {
       colors: {
-        background: 'rgb(var(--bg) / <alpha-value>)',
-        foreground: 'rgb(var(--fg) / <alpha-value>)',
+        background: 'rgb(var(--bg-rgb) / <alpha-value>)',
+        foreground: 'rgb(var(--fg-rgb) / <alpha-value>)',
         muted: {
-          DEFAULT: 'rgb(var(--muted) / <alpha-value>)',
-          foreground: 'rgb(var(--muted-foreground) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--muted-rgb) / <alpha-value>)',
+          foreground: 'rgb(var(--muted-foreground-rgb) / <alpha-value>)',
         },
-        card: 'rgb(var(--card) / <alpha-value>)',
-        border: 'rgb(var(--border) / <alpha-value>)',
+        card: 'rgb(var(--card-rgb) / <alpha-value>)',
+        border: 'rgb(var(--border-rgb) / <alpha-value>)',
         accent: {
-          DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
-          foreground: 'rgb(var(--fg) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--accent-rgb) / <alpha-value>)',
+          foreground: 'rgb(var(--fg-rgb) / <alpha-value>)',
         },
-        'accent-strong': 'rgb(var(--accent-strong) / <alpha-value>)',
+        'accent-strong': 'rgb(var(--accent-strong-rgb) / <alpha-value>)',
       },
       borderRadius: {
         '3xl': '1.75rem',

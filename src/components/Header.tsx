@@ -51,7 +51,7 @@ const Header = () => {
             sm:px-5 sm:text-sm
             transition-all duration-300 ease-out hover:text-foreground
             focus-visible:outline-none focus-visible:ring-2
-            focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2
+            focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2
             focus-visible:ring-offset-background
           "
         >
