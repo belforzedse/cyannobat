@@ -20,8 +20,8 @@ export interface GlassChipStyleOptions {
 }
 
 const baseChipClasses = [
-  'inline-flex items-center justify-center gap-2 rounded-[1rem] border border-[rgb(var(--border-rgb)/0.45)]',
-  'bg-[linear-gradient(145deg,rgba(var(--card-rgb),0.82),rgba(var(--card-rgb),0.72))]',
+  'inline-flex items-center justify-center gap-2 rounded-[1rem] border border-border/45',
+  'bg-[linear-gradient(145deg,color-mix(in_srgb,var(--card)_82%,transparent),color-mix(in_srgb,var(--card)_72%,transparent))]',
   'text-[color:var(--fg)]',
   'shadow-[0_16px_32px_-26px_rgba(42,74,125,0.3)]',
   'backdrop-blur-[16px] backdrop-saturate-[1.1]',
@@ -30,15 +30,15 @@ const baseChipClasses = [
 
 const toneClasses: Record<GlassChipTone, string> = {
   default: '',
-  muted: 'bg-[rgba(var(--card-rgb),0.7)] text-[color:var(--muted-foreground)] dark:bg-[rgba(var(--card-rgb),0.5)]',
+  muted: 'bg-[color-mix(in_srgb,var(--card)_70%,transparent)] text-[color:var(--muted-foreground)] dark:bg-[color-mix(in_srgb,var(--card)_50%,transparent)]',
   current: [
-    'border-[rgb(var(--accent-rgb)/0.42)]',
-    'bg-[rgba(var(--card-rgb),0.85)]',
+    'border-accent/42',
+    'bg-[color-mix(in_srgb,var(--card)_85%,transparent)]',
     'shadow-[0_20px_42px_-30px_rgba(86,154,222,0.36)]'
   ].join(' '),
   active: [
-    'border-[rgb(var(--accent-rgb)/0.5)]',
-    'bg-[rgba(var(--accent-rgb),0.18)]',
+    'border-accent/50',
+    'bg-[color-mix(in_srgb,var(--accent)_18%,transparent)]',
     'text-[color:var(--accent-strong)]',
     'shadow-[0_24px_48px_-32px_rgba(86,154,222,0.38)]'
   ].join(' ')
@@ -51,13 +51,13 @@ const shapeClasses: Record<GlassChipShape, string> = {
 
 const interactiveClasses = [
   'cursor-pointer',
-  'hover:-translate-y-0.5 hover:border-[rgb(var(--accent-rgb)/0.45)] hover:shadow-[0_20px_40px_-28px_rgba(86,154,222,0.3)]',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--accent-rgb),0.45)] focus-visible:ring-offset-2 focus-visible:ring-offset-background'
+  'hover:-translate-y-0.5 hover:border-accent/45 hover:shadow-[0_20px_40px_-28px_rgba(86,154,222,0.3)]',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
 ].join(' ')
 
 const darkBaseOverrides = [
-  'dark:border-[rgb(var(--border-rgb)/0.55)]',
-  'dark:bg-[linear-gradient(150deg,rgba(var(--card-rgb),0.7),rgba(var(--card-rgb),0.58))]',
+  'dark:border-border/55',
+  'dark:bg-[linear-gradient(150deg,color-mix(in_srgb,var(--card)_70%,transparent),color-mix(in_srgb,var(--card)_58%,transparent))]',
   'dark:text-[color:var(--fg)]',
   'dark:shadow-[0_20px_40px_-28px_rgba(2,6,28,0.7)]'
 ].join(' ')
@@ -65,8 +65,8 @@ const darkBaseOverrides = [
 const darkToneOverrides: Record<GlassChipTone, string> = {
   default: '',
   muted: 'dark:text-[color:var(--muted-foreground)]',
-  current: 'dark:border-[rgb(var(--accent-rgb)/0.45)] dark:bg-[rgba(var(--card-rgb),0.62)] dark:shadow-[0_24px_48px_-30px_rgba(36,132,255,0.32)]',
-  active: 'dark:border-[rgb(var(--accent-rgb)/0.5)] dark:bg-[rgba(var(--accent-rgb),0.22)] dark:shadow-[0_30px_56px_-32px_rgba(36,132,255,0.4)]'
+  current: 'dark:border-accent/45 dark:bg-[color-mix(in_srgb,var(--card)_62%,transparent)] dark:shadow-[0_24px_48px_-30px_rgba(36,132,255,0.32)]',
+  active: 'dark:border-accent/50 dark:bg-[color-mix(in_srgb,var(--accent)_22%,transparent)] dark:shadow-[0_30px_56px_-32px_rgba(36,132,255,0.4)]'
 }
 
 export const glassChipStyles = ({

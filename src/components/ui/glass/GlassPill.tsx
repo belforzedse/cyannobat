@@ -24,8 +24,8 @@ const basePillClasses = [
 
 const interactivePillClasses = [
   'cursor-pointer',
-  'hover:border-[rgb(var(--accent-rgb)/0.4)]',
-  'hover:bg-[linear-gradient(145deg,rgba(255,255,255,0.78),rgba(var(--accent-rgb),0.18))]',
+  'hover:border-accent/40',
+  'hover:bg-[linear-gradient(145deg,rgba(255,255,255,0.78),color-mix(in_srgb,var(--accent)_18%,transparent))]',
   'hover:shadow-[0_22px_42px_-26px_rgba(86,154,222,0.32),0_12px_30px_-20px_rgba(42,74,125,0.32)]',
   'hover:-translate-y-0.5'
 ].join(' ')

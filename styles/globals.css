@@ -24,50 +24,30 @@
 }
 
 :root {
-  --bg: #EDF3FF;
-  --bg-rgb: 237 243 255;
-  --fg: #2C3A4C;
-  --fg-rgb: 44 58 76;
-  --muted: #DAE6F7;
-  --muted-rgb: 218 230 247;
-  --muted-foreground: #4E5E78;
-  --muted-foreground-rgb: 78 94 120;
-  --card: #FFFFFF;
-  --card-rgb: 255 255 255;
-  --border: #CDD7E8;
-  --border-rgb: 205 215 232;
-  --accent: #569ADE;
-  --accent-rgb: 86 154 222;
-  --accent-strong: #3684D2;
-  --accent-strong-rgb: 54 132 210;
-  --glass: #FFFFFFC7;
-  --glass-rgb: 255 255 255;
-  --ring: #3684D2;
-  --ring-rgb: 54 132 210;
+  --bg: #edf3ff;
+  --fg: #2c3a4c;
+  --muted: #dae6f7;
+  --muted-foreground: #4e5e78;
+  --card: #ffffff;
+  --border: #cdd7e8;
+  --accent: #569ade;
+  --accent-strong: #3684d2;
+  --glass: #ffffffc7;
+  --ring: #3684d2;
   --shadow-primary: #2A4A7D29;
 }
 
 [data-theme='dark'] {
-  --bg: #060A18;
-  --bg-rgb: 6 10 24;
-  --fg: #DCE8FF;
-  --fg-rgb: 220 232 255;
+  --bg: #060a18;
+  --fg: #dce8ff;
   --muted: #142034;
-  --muted-rgb: 20 32 52;
-  --muted-foreground: #98AECD;
-  --muted-foreground-rgb: 152 174 205;
-  --card: #0C1626;
-  --card-rgb: 12 22 38;
-  --border: #283E62;
-  --border-rgb: 40 62 98;
-  --accent: #2484FF;
-  --accent-rgb: 36 132 255;
-  --accent-strong: #78BEFF;
-  --accent-strong-rgb: 120 190 255;
-  --glass: #0C1626C2;
-  --glass-rgb: 12 22 38;
-  --ring: #52A4FF;
-  --ring-rgb: 82 164 255;
+  --muted-foreground: #98aecd;
+  --card: #0c1626;
+  --border: #283e62;
+  --accent: #2484ff;
+  --accent-strong: #78beff;
+  --glass: #0c1626c2;
+  --ring: #52a4ff;
   --shadow-primary: #02061CB8;
 }
 
@@ -154,7 +134,7 @@ body {
   }
 
   ::selection {
-    background: rgba(var(--accent-strong-rgb) / 0.45);
+    background: color-mix(in srgb, var(--accent-strong) 45%, transparent);
     color: var(--fg);
   }
 }
@@ -295,7 +275,7 @@ body {
 
 :focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(var(--ring-rgb) / 0.85), 0 0 0 6px rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 85%, transparent), 0 0 0 6px rgba(255, 255, 255, 0.25);
 }
 
 button:focus-visible {
