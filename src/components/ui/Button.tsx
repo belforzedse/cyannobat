@@ -50,8 +50,9 @@ const buttonVariants = cva(
   }
 )
 
-type ButtonVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
-type ButtonSize = NonNullable<VariantProps<typeof buttonVariants>['size']>
+type ButtonVariantsConfig = VariantProps<typeof buttonVariants>
+type ButtonVariant = NonNullable<ButtonVariantsConfig['variant']>
+type ButtonSize = NonNullable<ButtonVariantsConfig['size']>
 
 const visualVariantClassNames: Partial<Record<ButtonVariant, string>> = {
   primary: styles.primary,
@@ -59,9 +60,10 @@ const visualVariantClassNames: Partial<Record<ButtonVariant, string>> = {
   ghost: styles.ghost,
 }
 
-interface ButtonProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'>,
-    VariantProps<typeof buttonVariants> {
+interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
+  variant?: ButtonVariant
+  size?: ButtonSize
+  fullWidth?: boolean
   isLoading?: boolean
   leftIcon?: React.ReactNode
   rightIcon?: React.ReactNode

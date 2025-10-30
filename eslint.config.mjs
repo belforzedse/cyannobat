@@ -1,8 +1,11 @@
 import { FlatCompat } from "@eslint/eslintrc";
+import { createRequire } from "module";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import jsxA11y from "eslint-plugin-jsx-a11y";
 import tailwindcss from "eslint-plugin-tailwindcss";
+
+const require = createRequire(import.meta.url);
+const jsxA11y = require("eslint-plugin-jsx-a11y");
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

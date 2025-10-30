@@ -39,7 +39,8 @@ const reasonMessages: Record<string, string> = {
 }
 
 const BookingPageContent = () => {
-  const prefersReducedMotion = useReducedMotion()
+  const reducedMotionSetting = useReducedMotion()
+  const prefersReducedMotion = reducedMotionSetting ?? false
   const router = useRouter()
   const {
     services,
