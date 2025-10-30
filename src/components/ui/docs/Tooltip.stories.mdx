@@ -1,0 +1,47 @@
+import { Button } from '../Button'
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from '../Tooltip'
+
+const TooltipPreview = ({ tone, size, label, children }) => (
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <Button variant="ghost">{label}</Button>
+    </TooltipTrigger>
+    <TooltipContent tone={tone} size={size}>
+      {children}
+    </TooltipContent>
+  </Tooltip>
+)
+
+# Tooltip
+
+Lightweight tooltip with tone and size variants. Wrap triggers in `TooltipTrigger` and render the text inside `TooltipContent`.
+
+```tsx
+<TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <Button variant="ghost">Hover me</Button>
+    </TooltipTrigger>
+    <TooltipContent tone="accent">کلیک برای جزئیات بیشتر</TooltipContent>
+  </Tooltip>
+</TooltipProvider>
+```
+
+<TooltipProvider delayDuration={120}>
+  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+    <TooltipPreview tone="muted" size="sm" label="Muted">
+      راهنمایی ساده
+    </TooltipPreview>
+    <TooltipPreview tone="accent" size="md" label="Accent">
+      اقدام پیشنهادی
+    </TooltipPreview>
+    <TooltipPreview tone="inverted" size="md" label="Inverted">
+      مناسب سطوح روشن
+    </TooltipPreview>
+  </div>
+</TooltipProvider>

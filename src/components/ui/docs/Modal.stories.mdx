@@ -1,0 +1,68 @@
+import * as React from 'react'
+
+import { Button } from '../Button'
+import {
+  Modal,
+  ModalTrigger,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalDescription,
+  ModalBody,
+  ModalFooter,
+  ModalClose,
+} from '../Modal'
+
+const DemoModal = ({ tone, size }) => {
+  const [open, setOpen] = React.useState(false)
+
+  return (
+    <Modal open={open} onOpenChange={setOpen}>
+      <ModalTrigger asChild>
+        <Button variant="secondary">نمایش {tone ?? 'surface'}</Button>
+      </ModalTrigger>
+      <ModalContent tone={tone} size={size}>
+        <ModalClose />
+        <ModalHeader>
+          <ModalTitle>رزرو وقت مشاوره</ModalTitle>
+          <ModalDescription>یک بازه زمانی مناسب انتخاب کنید و درخواست خود را ثبت نمایید.</ModalDescription>
+        </ModalHeader>
+        <ModalBody>
+          <p>در صورت نیاز می‌توانید جزئیات بیشتری در توضیحات سفارش ارائه کنید. تیم ما در کمتر از ۲۴ ساعت پاسخ خواهد داد.</p>
+        </ModalBody>
+        <ModalFooter>
+          <ModalClose asChild icon={false}>
+            <Button variant="ghost">انصراف</Button>
+          </ModalClose>
+          <Button>تایید و ارسال</Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  )
+}
+
+# Modal
+
+Glassmorphic dialog wrapper powered by Radix Dialog. Customize the tone for different emphasis and size to match content density.
+
+```tsx
+<Modal>
+  <ModalTrigger asChild>
+    <Button>Open modal</Button>
+  </ModalTrigger>
+  <ModalContent tone="accent" size="lg">
+    <ModalHeader>
+      <ModalTitle>عنوان</ModalTitle>
+      <ModalDescription>توضیحی کوتاه درباره محتوا</ModalDescription>
+    </ModalHeader>
+    <ModalBody>محتوای اصلی</ModalBody>
+    <ModalFooter>عملیات</ModalFooter>
+  </ModalContent>
+</Modal>
+```
+
+<div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+  <DemoModal tone="surface" size="md" />
+  <DemoModal tone="muted" size="sm" />
+  <DemoModal tone="accent" size="lg" />
+</div>
