@@ -164,6 +164,8 @@ showToast({
 - Prefer primitives inside layouts/feature components; they keep the glass aesthetic cohesive.
 - Reach for UI components when you need accessibility, keyboard support, loading states, or helper copy.
 - Tailwind utilities still work with primitives. Use `className` to adjust spacing, radius, or layout as required.
+- ESLint will warn on custom class names that fall outside the Tailwind design tokens—run `pnpm lint` while iterating and address any `:focus-visible` warnings flagged by the shared lint rules.
+- Apply the shared Prettier profile with `pnpm format` so component diffs stay consistent (2-space indent, single quotes).
 - When composing motion components (`framer-motion`), pass them through the `as` prop (`<GlassPanel as={motion.div} ...>`).
 
 Happy shipping ✨

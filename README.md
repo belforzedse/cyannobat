@@ -53,6 +53,22 @@ docker-compose up --build
 
 Once running, Payload admin is available at `/admin` and the booking experience at `/`.
 
+## Linting and formatting
+
+Lint checks now include Tailwind CSS conventions and accessibility guardrails. Run the linter before committing to catch issues like unsupported custom class names or missing `:focus-visible` handling:
+
+```bash
+pnpm lint
+```
+
+Use Prettier to apply the shared 2-space, single-quote formatting profile:
+
+```bash
+pnpm format
+```
+
+The CI workflow also runs `pnpm lint`, so keeping these commands green locally prevents avoidable failures on pull requests.
+
 ## Seeding sample users
 
 Populate demo patient, doctor, and receptionist accounts to exercise staff features:
