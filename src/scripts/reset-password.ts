@@ -1,8 +1,11 @@
 import { getPayload } from 'payload'
-import config from '../payload.config.js'
+import path from 'path'
 
 const resetPassword = async () => {
-  const payload = await getPayload({ config })
+  const configPath = path.resolve(process.cwd(), 'src/payload.config.ts')
+  const payload = await getPayload({
+    config: (await import(configPath)).default,
+  })
 
   try {
     const userId = '12' // admin@cyannobat.com
