@@ -13,6 +13,7 @@
 
 // Form components
 export { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from './Button'
+export { FieldShell, type FieldShellProps } from './FieldShell'
 export { Input, type InputProps } from './Input'
 export { Textarea, type TextareaProps } from './Textarea'
 export { Select, type SelectProps, type SelectOption } from './Select'
