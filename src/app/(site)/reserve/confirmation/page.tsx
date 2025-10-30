@@ -12,9 +12,9 @@ import type { Appointment, Provider as ProviderDoc, Service } from '@/payload-ty
 export const dynamic = 'force-dynamic'
 
 type ConfirmationPageProps = {
-  searchParams?: Promise<{
+  searchParams?: {
     reference?: string | string[] | undefined
-  }>
+  }
 }
 
 type PopulatedAppointment = Appointment & {
@@ -127,8 +127,7 @@ const MissingAppointmentNotice = ({ reference }: { reference: string }) => {
 }
 
 const ConfirmationPage = async ({ searchParams }: ConfirmationPageProps) => {
-  const resolvedSearchParams = searchParams ? await searchParams : undefined
-  const referenceParam = resolvedSearchParams?.reference
+  const referenceParam = searchParams?.reference
   const reference = Array.isArray(referenceParam) ? referenceParam[0] ?? null : referenceParam ?? null
 
   if (!reference) {

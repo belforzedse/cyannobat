@@ -6,10 +6,6 @@ import { cn } from '@/lib/utils'
 
 type ElementType = React.ElementType
 
-type PolymorphicComponentProps<T extends ElementType, Props> = Props & {
-  as?: T
-} & Omit<React.ComponentPropsWithoutRef<T>, keyof Props | 'as'>
-
 export type GlassSurfaceStyleOptions = {
   interactive?: boolean
 }
@@ -43,27 +39,37 @@ type GlassSurfaceOwnProps = {
   className?: string
 } & GlassSurfaceStyleOptions
 
-export type GlassSurfaceProps<T extends ElementType = 'div'> = PolymorphicComponentProps<T, GlassSurfaceOwnProps>
+type GlassSurfaceBaseProps = GlassSurfaceOwnProps & {
+  as?: ElementType
+}
 
-type GlassSurfaceComponent = <T extends ElementType = 'div'>(
-  props: GlassSurfaceProps<T> & {
-    ref?: React.ComponentPropsWithRef<T>['ref']
+export type GlassSurfaceProps = GlassSurfaceBaseProps &
+  Omit<React.HTMLAttributes<HTMLElement>, keyof GlassSurfaceBaseProps> & {
+    [key: string]: unknown
   }
-) => React.ReactElement | null
 
-export const GlassSurface = React.forwardRef(function GlassSurface<T extends ElementType = 'div'>(
-  { as, interactive = true, className, ...props }: GlassSurfaceProps<T>,
-  ref: React.ComponentPropsWithRef<T>['ref']
-) {
-  const Component = (as ?? 'div') as ElementType
+export const GlassSurface = React.forwardRef<HTMLElement, GlassSurfaceProps>(
+  (
+    { as, interactive, className, ...props },
+    ref,
+  ) => {
+    const Component = (as ?? 'div') as ElementType
+    const resolvedInteractive =
+      typeof interactive === 'boolean' ? interactive : Boolean(interactive)
+    const resolvedClassName =
+      typeof className === 'string' ? className : undefined
 
-  return (
-    <Component
-      ref={ref}
-      className={cn(glassSurfaceStyles({ interactive }), className)}
-      {...(props as object)}
-    />
-  )
-}) as GlassSurfaceComponent
+    return (
+      <Component
+        ref={ref as React.Ref<HTMLElement>}
+        className={cn(
+          glassSurfaceStyles({ interactive: resolvedInteractive }),
+          resolvedClassName,
+        )}
+        {...(props as object)}
+      />
+    )
+  },
+)
 
 GlassSurface.displayName = 'GlassSurface'

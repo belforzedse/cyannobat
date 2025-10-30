@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { PATCH } from './route'
@@ -46,7 +46,7 @@ describe('PATCH /api/staff/appointments/[id]', () => {
       user: { id: 'staff-user' } as never,
     })
 
-    const request = new Request('http://localhost/api/staff/appointments/appointment-1', {
+    const request = new NextRequest('http://localhost/api/staff/appointments/appointment-1', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -56,6 +56,7 @@ describe('PATCH /api/staff/appointments/[id]', () => {
           timeZone: 'UTC',
         },
       }),
+      duplex: 'half',
     })
 
     const response = await PATCH(request, { params: Promise.resolve({ id: 'appointment-1' }) })
@@ -96,7 +97,7 @@ describe('PATCH /api/staff/appointments/[id]', () => {
       user: { id: 'staff-user' } as never,
     })
 
-    const request = new Request('http://localhost/api/staff/appointments/appointment-1', {
+    const request = new NextRequest('http://localhost/api/staff/appointments/appointment-1', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -105,6 +106,7 @@ describe('PATCH /api/staff/appointments/[id]', () => {
           end: '2023-12-31T10:30:00.000Z',
         },
       }),
+      duplex: 'half',
     })
 
     const response = await PATCH(request, { params: Promise.resolve({ id: 'appointment-1' }) })
@@ -124,7 +126,7 @@ describe('PATCH /api/staff/appointments/[id]', () => {
       user: null,
     })
 
-    const request = new Request('http://localhost/api/staff/appointments/appointment-1', {
+    const request = new NextRequest('http://localhost/api/staff/appointments/appointment-1', {
       method: 'PATCH',
     })
 

@@ -6,10 +6,6 @@ import { cn } from '@/lib/utils'
 
 type ElementType = React.ElementType
 
-type PolymorphicComponentProps<T extends ElementType, Props> = Props & {
-  as?: T
-} & Omit<React.ComponentPropsWithoutRef<T>, keyof Props | 'as'>
-
 export interface GlassPillStyleOptions {
   interactive?: boolean
 }
@@ -53,27 +49,37 @@ type GlassPillOwnProps = {
   className?: string
 } & GlassPillStyleOptions
 
-export type GlassPillProps<T extends ElementType = 'div'> = PolymorphicComponentProps<T, GlassPillOwnProps>
+type GlassPillBaseProps = GlassPillOwnProps & {
+  as?: ElementType
+}
 
-type GlassPillComponent = <T extends ElementType = 'div'>(
-  props: GlassPillProps<T> & {
-    ref?: React.ComponentPropsWithRef<T>['ref']
+export type GlassPillProps = GlassPillBaseProps &
+  Omit<React.HTMLAttributes<HTMLElement>, keyof GlassPillBaseProps> & {
+    [key: string]: unknown
   }
-) => React.ReactElement | null
 
-export const GlassPill = React.forwardRef(function GlassPill<T extends ElementType = 'div'>(
-  { as, interactive = true, className, ...props }: GlassPillProps<T>,
-  ref: React.ComponentPropsWithRef<T>['ref']
-) {
-  const Component = (as ?? 'div') as ElementType
+export const GlassPill = React.forwardRef<HTMLElement, GlassPillProps>(
+  (
+    { as, interactive, className, ...props },
+    ref,
+  ) => {
+    const Component = (as ?? 'div') as ElementType
+    const resolvedInteractive =
+      typeof interactive === 'boolean' ? interactive : Boolean(interactive)
+    const resolvedClassName =
+      typeof className === 'string' ? className : undefined
 
-  return (
-    <Component
-      ref={ref}
-      className={cn(glassPillStyles({ interactive }), className)}
-      {...(props as object)}
-    />
-  )
-}) as GlassPillComponent
+    return (
+      <Component
+        ref={ref as React.Ref<HTMLElement>}
+        className={cn(
+          glassPillStyles({ interactive: resolvedInteractive }),
+          resolvedClassName,
+        )}
+        {...(props as object)}
+      />
+    )
+  },
+)
 
 GlassPill.displayName = 'GlassPill'

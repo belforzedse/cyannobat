@@ -40,7 +40,8 @@ const StaffDashboardContent = ({
   currentUser,
   mode,
 }: StaffDashboardProps) => {
-  const prefersReducedMotion = useReducedMotion()
+  const reducedMotionSetting = useReducedMotion()
+  const prefersReducedMotion = reducedMotionSetting ?? false
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [editingScheduleId, setEditingScheduleId] = useState<string | null>(null)
   const {

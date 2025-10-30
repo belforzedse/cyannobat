@@ -6,10 +6,6 @@ import { cn } from '@/lib/utils'
 
 type ElementType = React.ElementType
 
-type PolymorphicComponentProps<T extends ElementType, Props> = Props & {
-  as?: T
-} & Omit<React.ComponentPropsWithoutRef<T>, keyof Props | 'as'>
-
 export type GlassChipTone = 'default' | 'muted' | 'current' | 'active'
 export type GlassChipShape = 'default' | 'circle'
 
@@ -87,34 +83,53 @@ type GlassChipOwnProps = {
   className?: string
 } & GlassChipStyleOptions
 
-export type GlassChipProps<T extends ElementType = 'div'> = PolymorphicComponentProps<T, GlassChipOwnProps>
+type GlassChipBaseProps = GlassChipOwnProps & {
+  as?: ElementType
+}
 
-type GlassChipComponent = <T extends ElementType = 'div'>(
-  props: GlassChipProps<T> & {
-    ref?: React.ComponentPropsWithRef<T>['ref']
+export type GlassChipProps = GlassChipBaseProps &
+  Omit<React.HTMLAttributes<HTMLElement>, keyof GlassChipBaseProps> & {
+    [key: string]: unknown
   }
-) => React.ReactElement | null
 
-export const GlassChip = React.forwardRef(function GlassChip<T extends ElementType = 'div'>({
-  as,
-  tone = 'default',
-  shape = 'default',
-  interactive = false,
-  className,
-  children,
-  ...props
-}: GlassChipProps<T>, ref: React.ComponentPropsWithRef<T>['ref']) {
-  const Component = (as ?? 'div') as ElementType
+export const GlassChip = React.forwardRef<HTMLElement, GlassChipProps>(
+  (
+    {
+      as,
+      tone,
+      shape,
+      interactive,
+      className,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
+    const Component = (as ?? 'div') as ElementType
+    const resolvedTone = (tone as GlassChipTone | undefined) ?? 'default'
+    const resolvedShape = (shape as GlassChipShape | undefined) ?? 'default'
+    const resolvedInteractive =
+      typeof interactive === 'boolean' ? interactive : Boolean(interactive)
+    const resolvedClassName =
+      typeof className === 'string' ? className : undefined
 
-  return (
-    <Component
-      ref={ref}
-      className={cn(glassChipStyles({ tone, shape, interactive }), className)}
-      {...(props as object)}
-    >
-      {children}
-    </Component>
-  )
-}) as GlassChipComponent
+    return (
+      <Component
+        ref={ref as React.Ref<HTMLElement>}
+        className={cn(
+          glassChipStyles({
+            tone: resolvedTone,
+            shape: resolvedShape,
+            interactive: resolvedInteractive,
+          }),
+          resolvedClassName,
+        )}
+        {...(props as object)}
+      >
+        {children}
+      </Component>
+    )
+  },
+)
 
 GlassChip.displayName = 'GlassChip'

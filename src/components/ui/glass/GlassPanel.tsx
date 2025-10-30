@@ -6,10 +6,6 @@ import { cn } from '@/lib/utils'
 
 type ElementType = React.ElementType
 
-type PolymorphicComponentProps<T extends ElementType, Props> = Props & {
-  as?: T
-} & Omit<React.ComponentPropsWithoutRef<T>, keyof Props | 'as'>
-
 export type GlassPanelVariant = 'default' | 'muted' | 'subtle' | 'accent'
 export type GlassPanelState = 'default' | 'active'
 export type GlassPanelDensity = 'default' | 'compact'
@@ -74,27 +70,42 @@ type GlassPanelOwnProps = {
   className?: string
 } & GlassPanelStyleOptions
 
-export type GlassPanelProps<T extends ElementType = 'div'> = PolymorphicComponentProps<T, GlassPanelOwnProps>
+type GlassPanelBaseProps = GlassPanelOwnProps & {
+  as?: ElementType
+}
 
-type GlassPanelComponent = <T extends ElementType = 'div'>(
-  props: GlassPanelProps<T> & {
-    ref?: React.ComponentPropsWithRef<T>['ref']
+export type GlassPanelProps = GlassPanelBaseProps &
+  Omit<React.HTMLAttributes<HTMLElement>, keyof GlassPanelBaseProps> & {
+    [key: string]: unknown
   }
-) => React.ReactElement | null
 
-export const GlassPanel = React.forwardRef(function GlassPanel<T extends ElementType = 'div'>(
-  { as, variant = 'default', state = 'default', density = 'default', className, ...props }: GlassPanelProps<T>,
-  ref: React.ComponentPropsWithRef<T>['ref']
-) {
-  const Component = (as ?? 'div') as ElementType
+export const GlassPanel = React.forwardRef<HTMLElement, GlassPanelProps>(
+  (
+    { as, variant, state, density, className, ...props },
+    ref,
+  ) => {
+    const Component = (as ?? 'div') as ElementType
+    const resolvedVariant = (variant as GlassPanelVariant | undefined) ?? 'default'
+    const resolvedState = (state as GlassPanelState | undefined) ?? 'default'
+    const resolvedDensity = (density as GlassPanelDensity | undefined) ?? 'default'
+    const resolvedClassName =
+      typeof className === 'string' ? className : undefined
 
-  return (
-    <Component
-      ref={ref}
-      className={cn(glassPanelStyles({ variant, state, density }), className)}
-      {...(props as object)}
-    />
-  )
-}) as GlassPanelComponent
+    return (
+      <Component
+        ref={ref as React.Ref<HTMLElement>}
+        className={cn(
+          glassPanelStyles({
+            variant: resolvedVariant,
+            state: resolvedState,
+            density: resolvedDensity,
+          }),
+          resolvedClassName,
+        )}
+        {...(props as object)}
+      />
+    )
+  },
+)
 
 GlassPanel.displayName = 'GlassPanel'
