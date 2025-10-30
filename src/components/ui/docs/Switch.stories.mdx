@@ -1,0 +1,35 @@
+import { Switch } from '../Switch'
+
+# Switch
+
+Radix-powered toggle for boolean preferences with glassmorphic styling. Combine with helper text to describe the setting.
+
+```tsx
+<Switch label="حالت تاریک" defaultChecked description="هماهنگ با سیستم" />
+```
+
+<div style={{ display: 'grid', gap: '1rem' }}>
+  <Switch label="حالت تاریک" defaultChecked />
+  <Switch label="اعلان‌های ایمیل" tone="muted" description="ارسال به صورت هفتگی" />
+  <Switch label="همگام‌سازی خودکار" tone="neutral" size="lg" />
+</div>
+
+## Tone options
+
+`accent` is ideal for primary settings, `neutral` blends into forms, and `muted` keeps a soft presentation.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+  <Switch label="Accent" defaultChecked />
+  <Switch label="Neutral" tone="neutral" defaultChecked />
+  <Switch label="Muted" tone="muted" defaultChecked />
+</div>
+
+## Size options
+
+Switch sizes match checkbox sizing for consistent rhythm.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+  <Switch label="Small" size="sm" />
+  <Switch label="Medium" size="md" defaultChecked />
+  <Switch label="Large" size="lg" />
+</div>

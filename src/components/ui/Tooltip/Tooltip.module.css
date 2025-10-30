@@ -1,0 +1,140 @@
+.content {
+  --tooltip-bg: color-mix(in srgb, var(--card) 78%, transparent);
+  --tooltip-border: rgba(var(--border-rgb), 0.45);
+  --tooltip-color: rgb(var(--fg-rgb));
+  --tooltip-padding-y: 0.45rem;
+  --tooltip-padding-x: 0.65rem;
+
+  border-radius: calc(var(--radius-sm) / 1.4);
+  border: 1px solid var(--tooltip-border);
+  background: var(--tooltip-bg);
+  color: var(--tooltip-color);
+  box-shadow: 0 18px 36px -22px rgba(15, 23, 42, 0.28);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: var(--tooltip-padding-y) var(--tooltip-padding-x);
+  line-height: 1.45;
+  backdrop-filter: blur(12px) saturate(120%);
+  animation-duration: 180ms;
+  animation-timing-function: var(--ease-glass);
+}
+
+.content[data-state='delayed-open'][data-side='top'] {
+  animation-name: tooltipSlideDown;
+}
+
+.content[data-state='delayed-open'][data-side='bottom'] {
+  animation-name: tooltipSlideUp;
+}
+
+.content[data-state='delayed-open'][data-side='left'] {
+  animation-name: tooltipSlideRight;
+}
+
+.content[data-state='delayed-open'][data-side='right'] {
+  animation-name: tooltipSlideLeft;
+}
+
+.toneMuted {
+  --tooltip-bg: color-mix(in srgb, var(--muted) 82%, transparent);
+  --tooltip-border: rgba(var(--muted-foreground-rgb, 78 94 120), 0.5);
+  --tooltip-color: rgba(var(--fg-rgb), 0.92);
+}
+
+.toneAccent {
+  --tooltip-bg: linear-gradient(145deg, color-mix(in srgb, var(--accent-strong) 88%, white 8%), color-mix(in srgb, var(--accent) 92%, white 6%));
+  --tooltip-border: rgba(var(--accent-rgb), 0.55);
+  --tooltip-color: var(--accent-foreground, rgb(var(--fg-rgb)));
+  box-shadow: 0 22px 48px -24px rgba(var(--accent-rgb), 0.4);
+}
+
+.toneInverted {
+  --tooltip-bg: rgba(15, 23, 42, 0.92);
+  --tooltip-border: rgba(255, 255, 255, 0.1);
+  --tooltip-color: rgba(248, 250, 252, 0.95);
+  box-shadow: 0 22px 42px -24px rgba(2, 6, 23, 0.7);
+}
+
+.sizeSM {
+  --tooltip-padding-y: 0.35rem;
+  --tooltip-padding-x: 0.55rem;
+  font-size: 0.78rem;
+}
+
+.sizeMD {
+  --tooltip-padding-y: 0.45rem;
+  --tooltip-padding-x: 0.7rem;
+  font-size: 0.85rem;
+}
+
+.arrow {
+  fill: none;
+  stroke: none;
+  width: 14px;
+  height: 6px;
+}
+
+.arrowToneMuted {
+  fill: color-mix(in srgb, var(--muted) 84%, white 6%);
+  stroke: rgba(var(--muted-foreground-rgb, 78 94 120), 0.5);
+}
+
+.arrowToneAccent {
+  fill: color-mix(in srgb, var(--accent) 88%, white 10%);
+  stroke: rgba(var(--accent-rgb), 0.55);
+}
+
+.arrowToneInverted {
+  fill: rgba(15, 23, 42, 0.92);
+  stroke: rgba(255, 255, 255, 0.08);
+}
+
+@keyframes tooltipSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tooltipSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tooltipSlideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes tooltipSlideRight {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+[data-theme='dark'] .toneMuted {
+  --tooltip-bg: color-mix(in srgb, rgba(12, 22, 38, 0.9) 85%, transparent);
+  --tooltip-border: rgba(var(--border-rgb), 0.5);
+  --tooltip-color: rgba(var(--fg-rgb), 0.9);
+}

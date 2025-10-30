@@ -1,0 +1,35 @@
+import { Checkbox } from '../Checkbox'
+
+# Checkbox
+
+Accessible checkbox component built on Radix primitives. Supports tone and size variants for different emphasis levels.
+
+```tsx
+<Checkbox label="شرایط را می‌پذیرم" defaultChecked helperText="قابل تغییر در هر زمان" />
+```
+
+<div style={{ display: 'grid', gap: '1rem' }}>
+  <Checkbox label="شرایط را می‌پذیرم" defaultChecked />
+  <Checkbox label="اعلان‌های ایمیل" description="ارسال بروزرسانی‌های هفتگی" tone="muted" />
+  <Checkbox label="ذخیره به صورت خودکار" tone="neutral" size="sm" />
+</div>
+
+## Tones
+
+Tone defines the surface styling. `accent` pairs with primary actions, `neutral` blends with layout surfaces, and `muted` keeps a quiet appearance.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+  <Checkbox label="Accent" defaultChecked />
+  <Checkbox label="Neutral" tone="neutral" defaultChecked />
+  <Checkbox label="Muted" tone="muted" defaultChecked />
+</div>
+
+## Sizes
+
+Use `sm`, `md`, or `lg` to align with surrounding typography.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+  <Checkbox label="Small" size="sm" />
+  <Checkbox label="Medium" size="md" defaultChecked />
+  <Checkbox label="Large" size="lg" />
+</div>

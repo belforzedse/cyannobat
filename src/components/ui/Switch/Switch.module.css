@@ -1,0 +1,177 @@
+.wrapper {
+  --switch-width: 2.75rem;
+  --switch-height: 1.5rem;
+  --switch-padding: 2px;
+  --switch-radius: var(--radius-pill);
+  --switch-bg: color-mix(in srgb, var(--card) 75%, transparent);
+  --switch-bg-hover: color-mix(in srgb, var(--card) 88%, transparent);
+  --switch-bg-checked: linear-gradient(135deg, var(--accent-strong), var(--accent));
+  --switch-border: rgba(var(--border-rgb), 0.45);
+  --switch-border-hover: rgba(var(--border-rgb), 0.65);
+  --switch-border-active: rgba(var(--accent-rgb), 0.75);
+  --switch-thumb: rgb(var(--fg-rgb));
+  --switch-thumb-shadow: 0 4px 12px -6px rgba(var(--fg-rgb), 0.4);
+  --switch-shadow-checked: 0 20px 36px -26px rgba(var(--accent-rgb), 0.45);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgb(var(--fg-rgb));
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  user-select: none;
+  transition: color 180ms var(--ease-glass);
+}
+
+.wrapper:hover {
+  color: color-mix(in srgb, rgb(var(--fg-rgb)) 92%, white 8%);
+}
+
+.toneAccent {
+  --switch-bg: color-mix(in srgb, var(--accent) 18%, var(--card));
+  --switch-bg-hover: color-mix(in srgb, var(--accent) 26%, var(--card));
+  --switch-bg-checked: linear-gradient(140deg, color-mix(in srgb, var(--accent-strong) 82%, white 12%), color-mix(in srgb, var(--accent) 92%, white 8%));
+  --switch-border: rgba(var(--accent-rgb), 0.45);
+  --switch-border-hover: rgba(var(--accent-rgb), 0.65);
+  --switch-thumb: var(--accent-foreground, rgb(30 41 59));
+  --switch-thumb-shadow: 0 10px 20px -16px rgba(var(--accent-rgb), 0.55);
+  --switch-shadow-checked: 0 20px 36px -26px rgba(var(--accent-rgb), 0.45);
+}
+
+.toneNeutral {
+  --switch-bg: color-mix(in srgb, var(--card) 90%, transparent);
+  --switch-bg-hover: color-mix(in srgb, var(--card) 96%, transparent);
+  --switch-bg-checked: linear-gradient(140deg, color-mix(in srgb, rgb(var(--fg-rgb)) 18%, white 82%), color-mix(in srgb, rgb(var(--fg-rgb)) 12%, transparent));
+  --switch-border: rgba(var(--border-rgb), 0.65);
+  --switch-border-hover: rgba(var(--border-rgb), 0.85);
+  --switch-border-active: rgba(var(--border-rgb), 0.95);
+  --switch-thumb: rgb(var(--fg-rgb));
+  --switch-thumb-shadow: 0 10px 20px -18px rgba(var(--fg-rgb), 0.38);
+  --switch-shadow-checked: 0 18px 34px -26px rgba(var(--fg-rgb), 0.32);
+}
+
+.toneMuted {
+  --switch-bg: color-mix(in srgb, var(--muted) 72%, transparent);
+  --switch-bg-hover: color-mix(in srgb, var(--muted) 82%, transparent);
+  --switch-bg-checked: linear-gradient(145deg, color-mix(in srgb, var(--muted) 88%, white 8%), color-mix(in srgb, var(--muted) 94%, white 4%));
+  --switch-border: rgba(var(--muted-foreground-rgb, 78 94 120), 0.55);
+  --switch-border-hover: rgba(var(--muted-foreground-rgb, 78 94 120), 0.75);
+  --switch-border-active: rgba(var(--muted-foreground-rgb, 78 94 120), 0.9);
+  --switch-thumb: rgb(var(--fg-rgb));
+  --switch-thumb-shadow: 0 10px 22px -18px rgba(var(--muted-foreground-rgb, 78 94 120), 0.4);
+  --switch-shadow-checked: 0 18px 34px -26px rgba(var(--muted-foreground-rgb, 78 94 120), 0.32);
+}
+
+.sizeSM {
+  --switch-width: 2.3rem;
+  --switch-height: 1.25rem;
+  --switch-padding: 1.5px;
+  font-size: 0.85rem;
+  gap: 0.6rem;
+}
+
+.sizeMD {
+  --switch-width: 2.75rem;
+  --switch-height: 1.5rem;
+}
+
+.sizeLG {
+  --switch-width: 3.25rem;
+  --switch-height: 1.75rem;
+  --switch-padding: 3px;
+  font-size: 1rem;
+  gap: 0.85rem;
+}
+
+.isDisabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  filter: saturate(0.75);
+}
+
+.control {
+  position: relative;
+  inline-size: var(--switch-width);
+  block-size: var(--switch-height);
+  border-radius: var(--switch-radius);
+  border: 1px solid var(--switch-border);
+  background: var(--switch-bg);
+  display: inline-flex;
+  align-items: center;
+  padding: var(--switch-padding);
+  transition: border-color 180ms var(--ease-glass),
+    background 180ms var(--ease-glass),
+    box-shadow 240ms var(--ease-glass);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.control:hover {
+  border-color: var(--switch-border-hover);
+  background: var(--switch-bg-hover);
+}
+
+.control[data-state='checked'] {
+  border-color: var(--switch-border-active);
+  background: var(--switch-bg-checked);
+  box-shadow: var(--switch-shadow-checked);
+}
+
+.control:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent),
+    0 0 0 5px rgb(var(--ring-rgb) / 0.35);
+}
+
+.control[data-disabled='true'],
+.control:disabled {
+  pointer-events: none;
+}
+
+.thumb {
+  inline-size: calc(var(--switch-height) - var(--switch-padding) * 2);
+  block-size: calc(var(--switch-height) - var(--switch-padding) * 2);
+  border-radius: var(--radius-pill);
+  background: var(--switch-thumb);
+  box-shadow: var(--switch-thumb-shadow);
+  transition: transform 180ms var(--ease-glass),
+    background 180ms var(--ease-glass),
+    box-shadow 240ms var(--ease-glass);
+  will-change: transform;
+}
+
+.control[data-state='checked'] .thumb {
+  transform: translateX(calc(var(--switch-width) - var(--switch-height)));
+  background: var(--switch-thumb);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.description {
+  font-size: 0.85rem;
+  color: rgba(var(--fg-rgb), 0.68);
+}
+
+[data-theme='dark'] .wrapper {
+  --switch-bg: color-mix(in srgb, var(--card) 65%, transparent);
+  --switch-bg-hover: color-mix(in srgb, var(--card) 78%, transparent);
+  --switch-thumb: rgb(var(--accent-foreground-rgb, 245 249 255));
+  --switch-thumb-shadow: 0 12px 24px -16px rgba(var(--accent-rgb), 0.45);
+}
+
+[data-theme='dark'] .toneNeutral {
+  --switch-thumb: rgb(var(--fg-rgb));
+  --switch-thumb-shadow: 0 12px 24px -18px rgba(var(--fg-rgb), 0.5);
+}
+
+[data-theme='dark'] .description {
+  color: rgba(var(--fg-rgb), 0.7);
+}
