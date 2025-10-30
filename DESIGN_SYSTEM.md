@@ -131,7 +131,31 @@ User friendly wrapper around `GlassChip` that adds icon slots and optional `meta
 Glass-inspired form controls with consistent focus rings, helper text, and error messaging.
 
 ### `<ToastProvider>`
-Shared context for app toasts (unchanged).
+App-wide toast system that exposes an ergonomic hook and accessible surface variants.
+
+```tsx
+import { useRouter } from 'next/navigation'
+import { ToastProvider, useToast } from '@/components/ui'
+
+const router = useRouter()
+const { showToast } = useToast()
+
+showToast({
+  title: 'درخواست ارسال شد',
+  description: 'در چند لحظه آینده وضعیت را اطلاع می‌دهیم.',
+  variant: 'info',
+  action: {
+    label: 'مشاهده',
+    onClick: () => router.push('/staff/requests'),
+  },
+})
+```
+
+**Variants**: `success` (default), `error`, `info`
+
+- Announces success & info toasts with `role="status"` and `aria-live="polite"`, while failures use `role="alert"`.
+- Optional action buttons dismiss the toast after running unless `dismissOnAction` is explicitly set to `false`.
+- Motion respects `prefers-reduced-motion` and surface styles pull from the shared design tokens module.
 
 ---
 

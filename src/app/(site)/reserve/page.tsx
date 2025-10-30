@@ -20,7 +20,7 @@ import {
   GlobalLoadingOverlayProvider,
   useGlobalLoadingOverlay,
 } from '@/components/GlobalLoadingOverlayProvider'
-import { useToast } from '@/components/ui/ToastProvider'
+import { useToast } from '@/components/ui'
 
 const HOLD_TTL_SECONDS = 5 * 60
 

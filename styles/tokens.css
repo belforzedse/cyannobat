@@ -17,6 +17,12 @@
   --accent-foreground-rgb: 30 41 59;
   --accent-strong: #3684d2;
   --accent-strong-rgb: 54 132 210;
+  --status-success: #16a34a;
+  --status-success-rgb: 22 163 74;
+  --status-error: #dc2626;
+  --status-error-rgb: 220 38 38;
+  --status-info: #2563eb;
+  --status-info-rgb: 37 99 235;
   --glass: #ffffffc7;
   --glass-rgb: 255 255 255;
   --ring: #3684d2;
@@ -66,6 +72,12 @@
   --accent-foreground-rgb: 245 249 255;
   --accent-strong: #78beff;
   --accent-strong-rgb: 120 190 255;
+  --status-success: #4ade80;
+  --status-success-rgb: 74 222 128;
+  --status-error: #f87171;
+  --status-error-rgb: 248 113 113;
+  --status-info: #60a5fa;
+  --status-info-rgb: 96 165 250;
   --glass: #0c1626c2;
   --glass-rgb: 12 22 38;
   --ring: #52a4ff;
