@@ -3,8 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Plus, X } from 'lucide-react'
 
-import { useToast } from '@/components/ui/ToastProvider'
-import { Button, Card, Input, Select } from '@/components/ui'
+import { Button, Card, Input, Select, useToast } from '@/components/ui'
 import { glassPanelStyles } from '@/components/ui/glass'
 import { cn } from '@/lib/utils'
 import { useGlobalLoadingOverlay } from '@/components/GlobalLoadingOverlayProvider'

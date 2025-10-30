@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState, useTransition } from 'react'
 
-import { useToast } from '@/components/ui/ToastProvider'
+import { useToast } from '@/components/ui'
 import { useGlobalLoadingOverlay } from '@/components/GlobalLoadingOverlayProvider'
 import type { StaffAppointment, StaffProvider } from '@/features/staff/types'
 

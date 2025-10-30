@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor, within } from '@testing-library/rea
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ReceptionistDashboard } from './StaffDashboard'
-import { ToastProvider } from '@/components/ui/ToastProvider'
+import { ToastProvider } from '@/components/ui'
 import type { StaffAppointment, StaffProvider, StaffUser } from '@/features/staff/types'
 
 const baseAppointment: StaffAppointment = {

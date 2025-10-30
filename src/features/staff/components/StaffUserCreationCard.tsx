@@ -2,10 +2,9 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 
-import { Button, Card, Input } from '@/components/ui'
+import { Button, Card, Input, useToast } from '@/components/ui'
 import { glassPanelStyles } from '@/components/ui/glass'
 import { cn } from '@/lib/utils'
-import { useToast } from '@/components/ui/ToastProvider'
 import { useGlobalLoadingOverlay } from '@/components/GlobalLoadingOverlayProvider'
 import type { StaffUser } from '@/features/staff/types'
 import { ASSIGNABLE_ROLES, type AssignableRole, getCreatableRolesForUser } from '@/lib/staff/rolePermissions'
