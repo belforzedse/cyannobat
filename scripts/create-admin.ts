@@ -1,10 +1,12 @@
 import { getPayload } from 'payload'
-
-import config from '../src/payload.config.js'
+import path from 'path'
 
 async function createAdmin() {
   try {
-    const payload = await getPayload({ config })
+    const configPath = path.resolve(process.cwd(), 'src/payload.config.ts')
+    const payload = await getPayload({
+      config: (await import(configPath)).default,
+    })
 
     console.log('Creating admin user...')
 
