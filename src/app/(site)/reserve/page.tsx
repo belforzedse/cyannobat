@@ -1,42 +1,26 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
-import { Button } from '@/components/ui/Button'
 import { GlassSurface } from '@/components/ui/glass'
 
+import BookingActionFooter from '@/features/booking/components/BookingActionFooter'
 import BookingStepper from '@/features/booking/components/BookingStepper'
+import BookingSummaryPanel from '@/features/booking/components/BookingSummaryPanel'
 import ScheduleSection from '@/features/booking/components/ScheduleSection'
 import ReasonsSection from '@/features/booking/components/ReasonsSection'
 import ContactSection from '@/features/booking/components/ContactSection'
-import BookingSummary from '@/features/booking/components/BookingSummary'
 import ServiceSection from '@/features/booking/components/ServiceSection'
 import { reasonOptions } from '@/features/booking/constants'
 import { useBookingState } from '@/features/booking/hooks/useBookingState'
+import { useBookingSubmission } from '@/features/booking/hooks/useBookingSubmission'
 import {
   GlobalLoadingOverlayProvider,
   useGlobalLoadingOverlay,
 } from '@/components/GlobalLoadingOverlayProvider'
 import { useToast } from '@/components/ui'
-
-const HOLD_TTL_SECONDS = 5 * 60
-
-const reasonMessages: Record<string, string> = {
-  ALREADY_BOOKED: 'این زمان پیش‌تر رزرو شده است.',
-  ALREADY_ON_HOLD: 'این زمان به طور موقت توسط کاربر دیگری نگه داشته شده است.',
-  HOLD_NOT_FOUND: 'رزرو موقت معتبر یافت نشد. لطفاً دوباره تلاش کنید.',
-  HOLD_RESERVED_FOR_DIFFERENT_CUSTOMER: 'این نوبت برای کاربر دیگری نگه داشته شده است.',
-  HOLD_RESERVED_FOR_DIFFERENT_PROVIDER: 'این نوبت با پزشک دیگری هماهنگ شده است.',
-  LEAD_TIME_NOT_MET: 'زمان انتخابی با محدودیت فاصله زمانی خدمت همخوانی ندارد.',
-  PAST_SLOT: 'زمان انتخاب‌شده در گذشته است.',
-  PROVIDER_NOT_AVAILABLE_FOR_SERVICE: 'پزشک انتخابی برای این خدمت در دسترس نیست.',
-  PROVIDER_REQUIRED: 'انتخاب پزشک برای این رزرو ضروری است.',
-  SERVICE_INACTIVE: 'این خدمت در حال حاضر فعال نیست.',
-  SERVICE_NOT_FOUND: 'خدمت انتخابی یافت نشد.',
-}
 
 const BookingPageContent = () => {
   const reducedMotionSetting = useReducedMotion()
@@ -81,16 +65,9 @@ const BookingPageContent = () => {
   const { setActivity } = useGlobalLoadingOverlay()
   const { showToast } = useToast()
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitError, setSubmitError] = useState<string | null>(null)
-  const [validationErrors, setValidationErrors] = useState<string[]>([])
-  const [bookingReference, setBookingReference] = useState<string | null>(null)
-
   const scheduleSectionRef = useRef<HTMLDivElement | null>(null)
   const reasonSectionRef = useRef<HTMLDivElement | null>(null)
   const contactSectionRef = useRef<HTMLDivElement | null>(null)
-  const holdKeyRef = useRef<{ serviceId: string; slot: string; customerId: string } | null>(null)
-
   const sectionAnimation = {
     initial: { opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -12 },
     animate: { opacity: 1, y: 0 },
@@ -148,216 +125,25 @@ const BookingPageContent = () => {
     hasShownContactSectionRef.current = shouldShowContactSection
   }, [shouldShowContactSection, scrollToSection])
 
-  const extractErrorMessages = useCallback((payload: unknown): string[] => {
-    if (!payload || typeof payload !== 'object') return []
-
-    const details: string[] = []
-    if ('errors' in payload && Array.isArray((payload as { errors?: unknown }).errors)) {
-      for (const issue of (payload as { errors?: unknown[] }).errors ?? []) {
-        if (!issue || typeof issue !== 'object') continue
-        if ('message' in issue && typeof issue.message === 'string') {
-          details.push(issue.message)
-        }
-      }
-    }
-
-    if ('reasons' in payload && Array.isArray((payload as { reasons?: unknown }).reasons)) {
-      for (const reason of (payload as { reasons?: unknown[] }).reasons ?? []) {
-        if (typeof reason !== 'string') continue
-        details.push(reasonMessages[reason] ?? reason)
-      }
-    }
-
-    return details
-  }, [])
-
-  const releaseHold = useCallback(async () => {
-    if (!holdKeyRef.current) {
-      return
-    }
-
-    const holdKey = holdKeyRef.current
-
-    try {
-      const response = await fetch('/api/hold', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(holdKey),
-      })
-
-      if (!response.ok) {
-        const payload = await response.json().catch(() => null)
-        console.warn('Failed to release booking hold', {
-          status: response.status,
-          payload,
-        })
-        showToast({
-          variant: 'error',
-          title: 'مشکل در آزادسازی نوبت',
-          description: 'رزرو موقت آزاد نشد. در صورت تکرار، صفحه را تازه‌سازی کنید.',
-        })
-      }
-    } catch (error) {
-      console.error('Failed to release booking hold', error)
-      showToast({
-        variant: 'error',
-        title: 'مشکل در آزادسازی نوبت',
-        description: 'رزرو موقت آزاد نشد. در صورت تکرار، صفحه را تازه‌سازی کنید.',
-      })
-    } finally {
-      holdKeyRef.current = null
-    }
-  }, [showToast])
-
-  const handleContinue = useCallback(async () => {
-    if (!selectedSchedule) {
-      setSubmitError('لطفاً پیش از ادامه، زمان ملاقات را انتخاب کنید.')
-      setValidationErrors([])
-      return
-    }
-
-    const normalizedCustomer = {
-      fullName: customerInfo.fullName.trim(),
-      email: customerInfo.email.trim(),
-      phone: customerInfo.phone.trim(),
-    }
-
-    const resolvedCustomerId = normalizedCustomer.email || normalizedCustomer.phone
-    const trimmedNotes = customerNotes.trim()
-    const trimmedAdditionalReason = additionalReason.trim()
-
-    setIsSubmitting(true)
-    setSubmitError(null)
-    setValidationErrors([])
-    setBookingReference(null)
-
-    holdKeyRef.current = null
-
-    try {
-      setActivity('booking-submit', true, 'در حال نهایی‌سازی نوبت...')
-      const slot = selectedSchedule.slot
-      const holdResponse = await fetch('/api/hold', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          serviceId: slot.serviceId,
-          slot: slot.start,
-          ttlSeconds: HOLD_TTL_SECONDS,
-          providerId: slot.providerId,
-          customerId: resolvedCustomerId || undefined,
-          metadata: {
-            day: selectedSchedule.day.date,
-            serviceName: slot.serviceName,
-            providerName: slot.providerName,
-            reasons: selectedReasons,
-            reasonSummary,
-            additionalReason: trimmedAdditionalReason || undefined,
-            customerInfo: normalizedCustomer,
-            customerNotes: trimmedNotes || undefined,
-          },
-        }),
-      })
-
-      const holdPayload = await holdResponse.json().catch(() => null)
-
-      if (!holdResponse.ok) {
-        setSubmitError('امکان نگه‌داشت موقت نوبت وجود ندارد. لطفاً دوباره تلاش کنید.')
-        setValidationErrors(extractErrorMessages(holdPayload))
-        return
-      }
-
-      if (
-        holdPayload &&
-        typeof holdPayload === 'object' &&
-        'hold' in holdPayload &&
-        holdPayload.hold &&
-        typeof holdPayload.hold === 'object'
-      ) {
-        const hold = holdPayload.hold as { serviceId?: unknown; slot?: unknown; customerId?: unknown }
-        if (
-          typeof hold.serviceId === 'string' &&
-          typeof hold.slot === 'string' &&
-          typeof hold.customerId === 'string'
-        ) {
-          holdKeyRef.current = {
-            serviceId: hold.serviceId,
-            slot: hold.slot,
-            customerId: hold.customerId,
-          }
-        }
-      }
-
-      const bookingResponse = await fetch('/api/book', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          serviceId: slot.serviceId,
-          slot: slot.start,
-          clientId:
-            (holdPayload && typeof holdPayload === 'object' && 'hold' in holdPayload
-              ? (holdPayload as { hold?: { customerId?: string } }).hold?.customerId
-              : null) ?? resolvedCustomerId,
-          providerId: slot.providerId,
-          timeZone: slot.timeZone,
-          clientNotes: trimmedNotes || undefined,
-          metadata: {
-            reasons: selectedReasons,
-            reasonSummary,
-            additionalReason: trimmedAdditionalReason || undefined,
-            customerInfo: normalizedCustomer,
-          },
-        }),
-      })
-
-      const bookingPayload = await bookingResponse.json().catch(() => null)
-
-      if (!bookingResponse.ok) {
-        await releaseHold()
-        setSubmitError('ثبت نهایی نوبت با خطا مواجه شد. لطفاً دوباره تلاش کنید.')
-        setValidationErrors(extractErrorMessages(bookingPayload))
-        return
-      }
-
-      const appointmentReference =
-        bookingPayload && typeof bookingPayload === 'object'
-          ? (bookingPayload as { appointment?: { reference?: unknown } }).appointment?.reference
-          : null
-
-      const reference = typeof appointmentReference === 'string' ? appointmentReference : null
-
-      setBookingReference(reference)
-      setSubmitError(null)
-      setValidationErrors([])
-
-      if (reference) {
-        router.push(`/reserve/confirmation?reference=${encodeURIComponent(reference)}`)
-      } else {
-        router.push('/reserve/confirmation')
-      }
-    } catch (error) {
-      console.error('Failed to complete booking flow', error)
-      await releaseHold()
-      setSubmitError('ثبت نوبت با خطا مواجه شد. لطفاً دوباره تلاش کنید.')
-    } finally {
-      setIsSubmitting(false)
-      setActivity('booking-submit', false)
-    }
-  }, [
+  const {
+    isSubmitting,
+    submitError,
+    validationErrors,
+    bookingReference,
+    isActionDisabled,
+    handleContinue,
+  } = useBookingSubmission({
     additionalReason,
-    customerInfo.email,
-    customerInfo.fullName,
-    customerInfo.phone,
+    customerInfo,
     customerNotes,
-    extractErrorMessages,
     reasonSummary,
     router,
     selectedReasons,
-    releaseHold,
     selectedSchedule,
     setActivity,
-  ])
-
-  const isActionDisabled = isContinueDisabled || isSubmitting
+    showToast,
+    isContinueDisabled,
+  })
 
   return (
     <GlassSurface
@@ -496,7 +282,7 @@ const BookingPageContent = () => {
             transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.2 }}
             className="lg:sticky lg:top-6"
           >
-            <BookingSummary
+            <BookingSummaryPanel
               prefersReducedMotion={prefersReducedMotion}
               isContinueDisabled={isContinueDisabled}
               formattedDate={formattedDate}
@@ -520,48 +306,15 @@ const BookingPageContent = () => {
           transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.25 }}
           className="flex flex-col items-end gap-2"
         >
-          <div className="flex flex-wrap items-center justify-end gap-3">
-            <Link href="/">
-              <Button
-                variant="secondary"
-                size="md"
-                disableAnimation={prefersReducedMotion}
-              >
-                بازگشت
-              </Button>
-            </Link>
-            <Button
-              type="button"
-              variant="primary"
-              size="md"
-              disabled={isActionDisabled}
-              onClick={handleContinue}
-              disableAnimation={prefersReducedMotion}
-              whileHover={prefersReducedMotion || isActionDisabled ? undefined : { y: -3 }}
-              whileTap={prefersReducedMotion || isActionDisabled ? undefined : { scale: 0.97 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 22 }}
-            >
-              {isSubmitting ? 'در حال ثبت...' : 'ادامه'}
-            </Button>
-          </div>
-          <div className="flex max-w-xl flex-col items-end gap-1 text-right" aria-live="polite">
-            {isSubmitting && (
-              <span className="text-xs text-muted-foreground">چند لحظه صبر کنید؛ در حال ثبت نوبت هستیم.</span>
-            )}
-            {submitError && <span className="text-sm text-destructive">{submitError}</span>}
-            {validationErrors.length > 0 && (
-              <ul className="list-disc space-y-1 pr-4 text-xs text-destructive">
-                {validationErrors.map((message, index) => (
-                  <li key={`${message}-${index}`}>{message}</li>
-                ))}
-              </ul>
-            )}
-            {bookingReference && !isSubmitting && (
-              <span className="text-sm text-accent">
-                نوبت با کد پیگیری {bookingReference} ثبت شد. در حال انتقال به صفحه تأیید...
-              </span>
-            )}
-          </div>
+          <BookingActionFooter
+            prefersReducedMotion={prefersReducedMotion}
+            isActionDisabled={isActionDisabled}
+            isSubmitting={isSubmitting}
+            submitError={submitError}
+            validationErrors={validationErrors}
+            bookingReference={bookingReference}
+            onContinue={handleContinue}
+          />
         </motion.div>
       )}
     </GlassSurface>
