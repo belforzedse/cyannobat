@@ -31,6 +31,29 @@
   --shadow-glass: 0 30px 80px -35px rgba(15, 23, 42, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45);
   --shadow-glass-soft: 0 18px 46px -28px rgba(42, 74, 125, 0.28);
   --shadow-glass-strong: 0 38px 72px -28px rgba(54, 132, 210, 0.45);
+  --button-primary-color: rgb(12 22 38);
+  --button-primary-shadow: 0 20px 48px -24px rgb(var(--accent-rgb) / 0.45),
+    0 12px 24px -18px rgba(42, 74, 125, 0.32);
+  --button-primary-shadow-hover: 0 28px 60px -24px rgb(var(--accent-rgb) / 0.55),
+    0 16px 32px -20px rgba(42, 74, 125, 0.38);
+  --button-secondary-border: rgba(var(--border-rgb), 0.65);
+  --button-secondary-border-hover: color-mix(in srgb, var(--accent) 35%, rgba(var(--border-rgb), 0.65));
+  --button-secondary-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.4));
+  --button-secondary-bg-hover: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.78),
+    color-mix(in srgb, var(--accent) 16%, transparent)
+  );
+  --button-secondary-color: rgb(var(--fg-rgb));
+  --button-secondary-shadow: var(--shadow-glass-soft);
+  --button-secondary-shadow-hover: var(--shadow-glass-strong);
+  --button-ghost-border: rgba(var(--accent-rgb), 0.35);
+  --button-ghost-border-hover: rgba(var(--accent-rgb), 0.55);
+  --button-ghost-bg: transparent;
+  --button-ghost-bg-hover: rgba(var(--accent-rgb), 0.12);
+  --button-ghost-color: rgb(var(--accent-rgb));
+  --button-ghost-shadow: none;
+  --button-ghost-shadow-hover: 0 16px 32px -24px rgba(var(--accent-rgb), 0.24);
 
   --radius-4xl: 2rem;
   --radius-3xl: 1.75rem;
@@ -86,4 +109,29 @@
   --shadow-glass: 0 28px 64px -32px rgba(2, 6, 28, 0.88), inset 0 1px 0 rgba(120, 190, 255, 0.18);
   --shadow-glass-soft: 0 20px 50px -30px rgba(2, 6, 28, 0.65);
   --shadow-glass-strong: 0 34px 72px -30px rgba(36, 132, 255, 0.5);
+  --button-primary-color: rgb(4 10 24);
+  --button-primary-shadow: 0 24px 56px -26px rgba(36, 132, 255, 0.55),
+    0 14px 28px -20px rgba(2, 6, 28, 0.6);
+  --button-primary-shadow-hover: 0 32px 68px -28px rgba(120, 190, 255, 0.6),
+    0 18px 36px -22px rgba(2, 6, 28, 0.65);
+  --button-secondary-border: rgba(120, 190, 255, 0.28);
+  --button-secondary-border-hover: rgba(120, 190, 255, 0.5);
+  --button-secondary-bg: linear-gradient(145deg, rgba(12, 22, 38, 0.85), rgba(12, 22, 38, 0.62));
+  --button-secondary-bg-hover: linear-gradient(
+    145deg,
+    rgba(36, 132, 255, 0.2),
+    rgba(12, 22, 38, 0.78)
+  );
+  --button-secondary-color: rgb(200 220 255);
+  --button-secondary-shadow: 0 22px 48px -28px rgba(2, 6, 28, 0.72),
+    inset 0 1px 0 rgba(120, 190, 255, 0.18);
+  --button-secondary-shadow-hover: 0 30px 58px -30px rgba(36, 132, 255, 0.32),
+    inset 0 1px 0 rgba(120, 190, 255, 0.22);
+  --button-ghost-border: rgba(120, 190, 255, 0.4);
+  --button-ghost-border-hover: rgba(120, 190, 255, 0.6);
+  --button-ghost-bg: transparent;
+  --button-ghost-bg-hover: rgba(36, 132, 255, 0.18);
+  --button-ghost-color: rgb(200 220 255);
+  --button-ghost-shadow: none;
+  --button-ghost-shadow-hover: 0 16px 32px -24px rgba(var(--accent-rgb), 0.24);
 }
