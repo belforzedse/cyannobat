@@ -55,7 +55,7 @@ const GlobalLoadingOverlay = ({
           >
             {/* Loading Spinner */}
             <div className="relative h-12 w-12">
-              <div className="absolute inset-0 rounded-full border-4 border-accent/20" />
+              <div className="absolute inset-0 rounded-full border-4 border-accent/10" />
               <div
                 className={`absolute inset-0 rounded-full border-4 border-transparent border-t-accent${
                   prefersReducedMotion ? '' : ' animate-spin'
@@ -69,7 +69,7 @@ const GlobalLoadingOverlay = ({
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }
 
 export default GlobalLoadingOverlay
