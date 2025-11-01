@@ -102,8 +102,8 @@ const HeroPage = () => {
   });
 
   return (
-    <div className="flex flex-col gap-16 pb-12">
-      <div className="flex flex-col gap-12 lg:grid lg:grid-cols-[1fr_minmax(260px,360px)] lg:items-stretch">
+    <div className="flex flex-col pb-8">
+      <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[1fr_minmax(200px,500px)] lg:items-stretch">
         {/* Steps Section */}
         <motion.section
           id="steps"
@@ -119,13 +119,17 @@ const HeroPage = () => {
                 distance: 32,
                 duration: 0.8,
                 scale: 0.96,
-                blur: 0,            // No blur for better performance
+                blur: 0, // No blur for better performance
                 delayIn: index * 0.08 + 0.15,
               })}
               initial="initial"
               animate="animate"
             >
-              <GlassCard title={step.title} description={step.description} className="h-full">
+              <GlassCard
+                title={step.title}
+                description={step.description}
+                className="h-full min-h-[230px]"
+              >
                 <div className="mt-4 flex items-center justify-between">
                   <GlassIcon icon={step.icon} size="sm" label={step.title} />
                   <div className="flex items-center gap-2 text-sm text-accent">
@@ -177,8 +181,8 @@ const HeroPage = () => {
               animate="animate"
               className="max-w-2xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg"
             >
-              رزرو نوبت سریع، ساده و شفاف؛ تجربه‌ای الهام‌گرفته از دقت و ظرافت
-              طراحی اپل برای مدیریت درمان شما.
+              رزرو نوبت سریع، ساده و شفاف؛ تجربه‌ای الهام‌گرفته از دقت و ظرافت طراحی اپل برای مدیریت
+              درمان شما.
             </motion.p>
             <motion.div
               variants={buttonsVariants}
@@ -200,8 +204,6 @@ const HeroPage = () => {
           </div>
         </GlassSurface>
       </div>
-
-
     </div>
   );
 };

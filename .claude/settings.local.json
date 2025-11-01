@@ -103,7 +103,8 @@
       "Bash(test:*)",
       "Bash(npm run lint)",
       "Bash(npm run lint:*)",
-      "Bash(time npm run lint:*)"
+      "Bash(time npm run lint:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

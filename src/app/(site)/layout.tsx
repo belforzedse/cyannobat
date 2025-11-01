@@ -28,7 +28,7 @@ const SiteLayout = ({ children }: { children: ReactNode }) => {
             className="pointer-events-none absolute inset-x-8 top-6 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent opacity-60 -z-10 dark:via-white/15"
             aria-hidden
           />
-          <main className="relative flex w-full flex-col gap-12 px-6 pb-32 pt-8 sm:px-10 lg:px-16 lg:pb-16 lg:pr-[8.5rem] xl:pr-[10rem] 2xl:pr-[11.5rem]">
+          <main className="relative flex w-full flex-col gap-12 px-6 pb-32 pt-8 lg:pb-16 lg:pr-[7rem] ">
             {children}
           </main>
           <footer className="relative flex w-full flex-col items-end gap-1 px-6 pb-32 pt-8 text-right text-sm text-muted-foreground sm:px-10 lg:px-16 lg:pb-16 lg:pr-[8.5rem] xl:pr-[10rem] 2xl:pr-[11.5rem]">
