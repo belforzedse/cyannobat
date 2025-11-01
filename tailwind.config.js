@@ -20,6 +20,10 @@ const config = {
           foreground: 'rgb(var(--accent-foreground-rgb) / <alpha-value>)',
         },
         'accent-strong': 'rgb(var(--accent-strong-rgb) / <alpha-value>)',
+        destructive: {
+          DEFAULT: 'rgb(var(--destructive-rgb) / <alpha-value>)',
+          foreground: 'rgb(var(--destructive-foreground-rgb) / <alpha-value>)',
+        },
         ring: 'rgb(var(--ring-rgb) / <alpha-value>)',
       },
       borderRadius: {
@@ -42,6 +46,9 @@ const config = {
       backdropBlur: {
         glass: '20px',
       },
+      backdropSaturate: {
+        30: '.3',
+      },
       fontFamily: {
         vazir: ['var(--font-vazirmatn)', 'sans-serif'],
       },
@@ -56,6 +63,19 @@ const config = {
         glass: 'var(--ease-glass)',
         'glass-emphasized': 'var(--ease-glass-emphasized)',
         'glass-soft': 'var(--ease-glass-soft)',
+      },
+      transitionDuration: {
+        250: '250ms',
+        260: '260ms',
+        300: '300ms',
+        350: '350ms',
+        400: '400ms',
+        500: '500ms',
+      },
+      opacity: {
+        8: '0.08',
+        12: '0.12',
+        18: '0.18',
       },
     },
   },

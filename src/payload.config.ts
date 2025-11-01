@@ -24,13 +24,11 @@ const hasConnectionString = Boolean(rawConnectionString && rawConnectionString.l
 
 if (!hasConnectionString) {
   console.warn(
-    'DATABASE_URI environment variable is not defined. Using a placeholder connection string; database operations will fail until it is configured.',
+    'DATABASE_URI environment variable is not defined. Skipping PostgreSQL adapter setup; database operations will throw until it is configured.',
   )
 }
 
-const connectionString = hasConnectionString
-  ? (rawConnectionString as string)
-  : 'postgres://postgres:postgres@localhost:5432/payload-placeholder'
+const connectionString = hasConnectionString ? (rawConnectionString as string) : undefined
 const projectRoot = process.cwd()
 const migrationsDir = path.resolve(
   projectRoot,
@@ -41,27 +39,45 @@ const shouldPushSchema =
     ? process.env.PAYLOAD_DB_PUSH === 'true'
     : process.env.NODE_ENV !== 'production'
 
-export const payloadPostgresAdapter = postgresAdapter({
-  pool: {
-    connectionString,
-  },
-  migrationDir: migrationsDir,
-  // Automatically push schema changes based on env configuration
-  push: shouldPushSchema,
-})
+const createMissingDatabaseProxy = <T extends object>(resource: string) =>
+  new Proxy({} as T, {
+    get: (_, property) => {
+      if (property === 'then') {
+        return undefined
+      }
 
-// Create a direct connection for Drizzle ORM usage
-const pool = new pg.Pool({
-  connectionString,
-  max: hasConnectionString ? undefined : 1,
-  idleTimeoutMillis: hasConnectionString ? undefined : 1000,
-  allowExitOnIdle: !hasConnectionString,
-})
+      return () => {
+        throw new Error(
+          `DATABASE_URI environment variable is not defined. Cannot use ${resource} until it is configured.`,
+        )
+      }
+    },
+  })
 
-export const payloadDrizzle = drizzle(pool)
+export const payloadPostgresAdapter = hasConnectionString
+  ? postgresAdapter({
+      pool: {
+        connectionString,
+      },
+      migrationDir: migrationsDir,
+      // Automatically push schema changes based on env configuration
+      push: shouldPushSchema,
+    })
+  : createMissingDatabaseProxy<ReturnType<typeof postgresAdapter>>('PostgreSQL adapter')
+
+// Create a direct connection for Drizzle ORM usage when available
+const pool = hasConnectionString
+  ? new pg.Pool({
+      connectionString,
+    })
+  : createMissingDatabaseProxy<pg.Pool>('PostgreSQL connection pool')
+
+export const payloadDrizzle = hasConnectionString
+  ? drizzle(pool)
+  : createMissingDatabaseProxy<ReturnType<typeof drizzle>>('Drizzle client')
 export const payloadDbPool = pool
 
-export default buildConfig({
+const baseConfig: Parameters<typeof buildConfig>[0] = {
   admin: {
     user: Users.slug,
     importMap: {
@@ -80,4 +96,6 @@ export default buildConfig({
     payloadCloudPlugin(),
     // storage-adapter-placeholder
   ],
-})
+}
+
+export default buildConfig(baseConfig)
