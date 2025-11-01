@@ -3,12 +3,12 @@ import type { Where } from 'payload'
 import { ZodError, z } from 'zod'
 
 import { authenticateStaffRequest, unauthorizedResponse } from '@/lib/api/auth'
-import type { StaffAppointment } from '@/features/staff/types'
+import type { StaffAppointment } from '@/lib/staff/types'
 import {
   getProviderIdsForUser,
   shouldFilterAppointmentsForRoles,
-} from '@/features/staff/server/loadStaffData'
-import type { DashboardScope } from '@/features/staff/server/loadStaffData'
+} from '@/lib/staff/server/loadStaffData'
+import type { DashboardScope } from '@/lib/staff/server/loadStaffData'
 
 export const dynamic = 'force-dynamic'
 

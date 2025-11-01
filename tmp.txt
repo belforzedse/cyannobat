@@ -5,8 +5,8 @@ import { getPayload } from 'payload'
 
 import configPromise from '@payload-config'
 import { userIsStaff } from '@/lib/auth'
-import StaffDashboard from '@/features/staff/components/StaffDashboard'
-import type { StaffAppointment, StaffProvider, StaffUser } from '@/features/staff/types'
+import StaffDashboard from '@/components/staff/dashboard/StaffDashboard'
+import type { StaffAppointment, StaffProvider, StaffUser } from '@/lib/staff/types'
 import type { Appointment, Provider as ProviderDoc, Service, User } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
