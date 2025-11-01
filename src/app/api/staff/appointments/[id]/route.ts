@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { ZodError, z } from 'zod'
 
 import { authenticateStaffRequest, unauthorizedResponse } from '@/lib/api/auth'
-import type { StaffAppointment } from '@/features/staff/types'
+import type { StaffAppointment } from '@/lib/staff/types'
 
 type RelationRecord = { [key: string]: unknown }
 

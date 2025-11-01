@@ -5,14 +5,14 @@ import { motion, useReducedMotion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
-import BookingStepper from '@/features/booking/components/BookingStepper'
-import ScheduleSection from '@/features/booking/components/ScheduleSection'
-import ReasonsSection from '@/features/booking/components/ReasonsSection'
-import ContactSection from '@/features/booking/components/ContactSection'
-import BookingSummary from '@/features/booking/components/BookingSummary'
-import ServiceSection from '@/features/booking/components/ServiceSection'
-import { reasonOptions } from '@/features/booking/constants'
-import { useBookingState } from '@/features/booking/hooks/useBookingState'
+import BookingStepper from '@/components/booking/BookingStepper'
+import ScheduleSection from '@/components/booking/ScheduleSection'
+import ReasonsSection from '@/components/booking/ReasonsSection'
+import ContactSection from '@/components/booking/ContactSection'
+import BookingSummary from '@/components/booking/BookingSummary'
+import ServiceSection from '@/components/booking/ServiceSection'
+import { reasonOptions } from '@/lib/booking/constants'
+import { useBookingState } from '@/hooks/booking/useBookingState'
 import {
   GlobalLoadingOverlayProvider,
   useGlobalLoadingOverlay,

@@ -5,7 +5,7 @@ import { getPayload } from 'payload'
 
 import configPromise from '@payload-config'
 import { userIsStaff } from '@/lib/auth'
-import LoginForm from '@/features/auth/components/LoginForm'
+import LoginForm from '@/components/auth/LoginForm'
 
 export const dynamic = 'force-dynamic'
 
