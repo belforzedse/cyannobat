@@ -142,13 +142,13 @@ const Sidebar = () => {
 
   const renderItem = (item: NavigationItem, index: number, isMobile: boolean) => {
     const Icon = item.icon;
-    const isActive = item.matches?.(pathname ?? "", activeHash) ?? false;
+    const isActive = item.matches?.(pathname ?? '', activeHash) ?? false;
     const baseClasses = clsx(
-      "group flex h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-medium relative",
-      "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+      'group flex h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-medium relative',
+      'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
       // Smooth, slow transitions for hover effects
-      "transition-all duration-300 ease-out",
-      !isActive && "hover:bg-accent/10"
+      'transition-all duration-300 ease-out',
+      !isActive && 'hover:bg-accent/10',
     );
 
     const content = (
@@ -156,14 +156,14 @@ const Sidebar = () => {
         <Icon
           aria-hidden
           className={clsx(
-            "h-5 w-5 transition-colors duration-300 ease-out",
-            isActive ? "text-foreground" : "text-current group-hover:text-foreground"
+            'h-8 w-8 transition-colors duration-300 ease-out',
+            isActive ? 'text-foreground' : 'text-current group-hover:text-foreground',
           )}
         />
         <span
           className={clsx(
-            "text-[11px] leading-4 font-medium transition-colors duration-300 ease-out",
-            isActive ? "text-foreground" : "text-current group-hover:text-foreground"
+            'text-[11px] leading-4 font-medium transition-colors duration-300 ease-out',
+            isActive ? 'text-foreground' : 'text-current group-hover:text-foreground',
           )}
         >
           {item.label}
@@ -171,7 +171,7 @@ const Sidebar = () => {
       </div>
     );
 
-    const Component = item.href.startsWith("mailto:") || item.href.startsWith("tel:") ? "a" : Link;
+    const Component = item.href.startsWith('mailto:') || item.href.startsWith('tel:') ? 'a' : Link;
 
     return (
       <Component
@@ -186,28 +186,30 @@ const Sidebar = () => {
         href={item.href}
         className={baseClasses}
         aria-label={item.ariaLabel ?? item.label}
-        aria-current={isActive ? "page" : undefined}
+        aria-current={isActive ? 'page' : undefined}
       >
         {content}
       </Component>
     );
   };
 
-  const desktopMainItems = navigationItems.filter((item) => item.group === "main");
-  const desktopActionItems = navigationItems.filter((item) => item.group === "actions");
+  const desktopMainItems = navigationItems.filter((item) => item.group === 'main');
+  const desktopActionItems = navigationItems.filter((item) => item.group === 'actions');
 
-  const hasActiveItem =
-    navigationItems.some((item) => item.matches?.(pathname ?? "", activeHash) ?? false);
-  const hasActiveMainItem =
-    desktopMainItems.some((item) => item.matches?.(pathname ?? "", activeHash) ?? false);
+  const hasActiveItem = navigationItems.some(
+    (item) => item.matches?.(pathname ?? '', activeHash) ?? false,
+  );
+  const hasActiveMainItem = desktopMainItems.some(
+    (item) => item.matches?.(pathname ?? '', activeHash) ?? false,
+  );
 
   return (
     <GlassSurface
       as="nav"
       aria-label="پیمایش اصلی و اقدامات سریع"
       className={clsx(
-        "fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-xl items-center gap-2 rounded-[20px] px-3 py-2 shadow-lg backdrop-blur animate-fade-in-up",
-        "lg:inset-auto lg:right-4 lg:top-[90px] lg:h-[calc(100vh-150px)] lg:w-[75px] lg:max-w-none lg:flex-col lg:items-center lg:justify-between lg:gap-8 lg:px-2 lg:py-6"
+        'fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-xl items-center gap-2 rounded-[20px] px-3 py-2 shadow-lg backdrop-blur animate-fade-in-up',
+        'lg:inset-auto lg:right-4 lg:top-[90px] lg:h-[calc(100vh-150px)] lg:w-[75px] lg:max-w-none lg:flex-col lg:items-center lg:justify-between lg:gap-8 lg:px-2 lg:py-6',
       )}
     >
       {/* Mobile Navigation */}
@@ -219,14 +221,14 @@ const Sidebar = () => {
             style={{
               left: 0,
               width: `${indicatorStyle.mobile.width}px`,
-              height: "56px", // h-14
+              height: '56px', // h-14
               top: 0,
               transform: `translateX(${indicatorStyle.mobile.left}px)`,
               transition:
-                "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
+                'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
               boxShadow:
-                "0 4px 12px rgba(65, 119, 172, 0.12), inset 0 1px 2px rgba(255, 255, 255, 0.3)",
-              willChange: "transform",
+                '0 4px 12px rgba(65, 119, 172, 0.12), inset 0 1px 2px rgba(255, 255, 255, 0.3)',
+              willChange: 'transform',
             }}
             aria-hidden
           />
@@ -240,11 +242,11 @@ const Sidebar = () => {
 
       {/* Desktop Navigation */}
       <div className="hidden h-full w-full flex-col justify-between lg:flex">
-        <ul ref={desktopNavRef} className="flex flex-col items-center gap-4 relative">
+        <ul ref={desktopNavRef} className="flex flex-col items-center gap-6 relative">
           {/* Morphing active indicator for desktop */}
           {hasActiveMainItem && indicatorStyle.desktop.height > 0 && (
             <div
-              className="absolute rounded-2xl bg-gradient-to-br from-accent/20 to-accent/15 backdrop-blur-sm pointer-events-none -z-10"
+              className="absolute rounded-3xl bg-gradient-to-br from-accent/20 to-accent/50 blur-md backdrop-blur-sm pointer-events-none -z-10"
               style={{
                 top: 0,
                 height: `${indicatorStyle.desktop.height}px`,
@@ -252,10 +254,10 @@ const Sidebar = () => {
                 right: 0,
                 transform: `translateY(${indicatorStyle.desktop.top}px)`,
                 transition:
-                  "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
+                  'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                 boxShadow:
-                  "0 4px 12px rgba(65, 119, 172, 0.12), inset 0 1px 2px rgba(255, 255, 255, 0.3)",
-                willChange: "transform",
+                  '0 4px 12px rgba(65, 119, 172, 0.12), inset 0 1px 2px rgba(255, 255, 255, 0.3)',
+                willChange: 'transform',
               }}
               aria-hidden
             />

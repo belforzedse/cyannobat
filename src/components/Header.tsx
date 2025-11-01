@@ -1,11 +1,10 @@
 "use client";
 
-import clsx from "clsx";
-import Link from "next/link";
-import ThemeToggle from "./ThemeToggle";
-import { BOOKING_PATH } from "@/lib/routes";
-import Logo from "./Logo";
-import AccountWidget from "./AccountWidget";
+import Link from 'next/link';
+import ThemeToggle from './ThemeToggle';
+import { BOOKING_PATH } from '@/lib/routes';
+import Logo from './Logo';
+import AccountWidget from './AccountWidget';
 import { GlassSurface, GlassPill } from '@/components/ui/glass';
 
 const Header = () => {
@@ -13,9 +12,7 @@ const Header = () => {
     <GlassSurface
       as="header"
       role="banner"
-      className={clsx(
-        'bg-white/50 sticky top-4 z-30 ml-6 mr-4 flex items-center justify-between gap-3 rounded-[20px] px-6 py-2 text-right shadow-lg shadow-black/5 transition-all duration-300 ease-glass animate-fade-in-down sm:gap-6 sm:px-6 sm:py-2 backdrop-blur-md backdrop-saturate-30',
-      )}
+      className=" sticky top-4 z-30 ml-6 mr-4 flex items-center justify-between gap-3 rounded-[20px] px-6 py-2 text-right shadow-lg shadow-black/5 transition-all duration-300 ease-glass animate-fade-in-down sm:gap-6 sm:px-6 sm:py-2 backdrop-blur-md backdrop-saturate-30"
     >
       {/* soft accent glow */}
       <div
