@@ -12,8 +12,6 @@ import React, {
   type ReactNode,
 } from 'react'
 
-import clsx from 'clsx'
-
 const DEFAULT_DURATION = 4000
 
 const toastVariantStyles: Record<'success' | 'error' | 'info', CSSProperties> = {
