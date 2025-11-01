@@ -92,7 +92,6 @@ const eslintConfig = [
       tailwindcss: {
         callees: ["clsx", "cva", "cn"],
         config: "tailwind.config.js",
-        cssFiles: ["**/*.css"],
       },
     },
     rules: {

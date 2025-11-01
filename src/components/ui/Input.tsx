@@ -4,8 +4,6 @@ import React, { InputHTMLAttributes, forwardRef, useId } from 'react'
 import clsx from 'clsx'
 
 import { FieldShell } from './FieldShell'
-import fieldStyles from './FieldShell.module.css'
-import inputStyles from './Input.module.css'
 
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string
@@ -42,14 +40,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         : undefined
 
     return (
-      <div
-        className={clsx(
-          fieldStyles.fieldGroup,
-          fullWidth && fieldStyles.fieldGroupFullWidth
-        )}
-      >
+      <div className={clsx('flex flex-col gap-1.5', fullWidth && 'w-full')}>
         {label && (
-          <label htmlFor={generatedId} className={fieldStyles.label}>
+          <label htmlFor={generatedId} className="text-sm font-medium text-right text-foreground">
             {label}
           </label>
         )}
@@ -64,22 +57,24 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             id={generatedId}
-            className={clsx(inputStyles.control, className)}
+            className={clsx('flex-1 w-full border-none outline-none bg-transparent text-sm leading-6 px-4 py-[0.625rem] transition-colors duration-200 ease-glass text-right disabled:cursor-not-allowed', className)}
+            style={{ color: 'inherit', font: 'inherit', borderRadius: 'inherit' }}
             aria-invalid={error ? 'true' : 'false'}
             aria-describedby={describedBy}
             disabled={disabled}
+            placeholder={props.placeholder || 'بنویسید...'}
             {...props}
           />
         </FieldShell>
 
         {error ? (
-          <p id={`${generatedId}-error`} className={clsx(fieldStyles.message, fieldStyles.error)}>
+          <p id={`${generatedId}-error`} className="text-xs leading-5 text-right text-red-500 animate-field-message-in mt-1">
             {error}
           </p>
         ) : helperText ? (
           <p
             id={`${generatedId}-helper`}
-            className={clsx(fieldStyles.message, fieldStyles.helper)}
+            className="text-xs leading-5 text-right text-muted-foreground/90 animate-field-message-in mt-1"
           >
             {helperText}
           </p>

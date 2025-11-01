@@ -2,8 +2,6 @@
 
 import clsx from 'clsx';
 
-import styles from './LiquidBlob.module.css';
-
 interface LiquidBlobProps {
   /** Position from top (percentage or pixels) */
   top?: string;
@@ -55,10 +53,9 @@ const LiquidBlob = ({
   return (
     <div
       className={clsx(
-        'absolute rounded-full blur-3xl pointer-events-none',
+        'absolute rounded-full blur-3xl pointer-events-none animate-liquid-morph',
         sizeClasses[size],
         variantClasses[variant],
-        styles.liquidMorph,
         className
       )}
       style={{

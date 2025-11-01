@@ -7,7 +7,6 @@ import { BOOKING_PATH } from "@/lib/routes";
 import Logo from "./Logo";
 import AccountWidget from "./AccountWidget";
 import { GlassSurface, GlassPill } from '@/components/ui/glass';
-import animations from './animations.module.css';
 
 const Header = () => {
   return (
@@ -15,8 +14,7 @@ const Header = () => {
       as="header"
       role="banner"
       className={clsx(
-        "bg-white/50 sticky top-4 z-30 mx-4 flex items-center justify-between gap-3 rounded-[20px] px-4 py-2 text-right shadow-lg shadow-black/5 transition-all duration-300 ease-glass sm:gap-6 sm:px-6 sm:py-2 backdrop-blur-md backdrop-saturate-30",
-        animations.fadeInDown
+        "bg-white/50 sticky top-4 z-30 mx-4 flex items-center justify-between gap-3 rounded-[20px] px-4 py-2 text-right shadow-lg shadow-black/5 transition-all duration-300 ease-glass animate-fade-in-down sm:gap-6 sm:px-6 sm:py-2 backdrop-blur-md backdrop-saturate-30"
       )}
     >
       {/* soft accent glow */}

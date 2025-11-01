@@ -20,7 +20,7 @@ vi.mock('@payload-config', () => ({
 describe('reserve confirmation page', () => {
   it('renders a friendly fallback when reference is missing', async () => {
     const ConfirmationPage = (await import('./page')).default
-    const tree = await ConfirmationPage({ searchParams: {} })
+    const tree = await ConfirmationPage({ searchParams: Promise.resolve({}) })
     const html = renderToString(tree)
 
     expect(html).toContain('تأییدیه رزرو در دسترس نیست')

@@ -101,10 +101,12 @@
       "Bash(cmd /c taskkill /F /PID 15364)",
       "Bash(rm:*)",
       "Bash(test:*)",
-      "Bash(npm run lint)"
+      "Bash(npm run lint)",
+      "Bash(npm run lint:*)",
+      "Bash(time npm run lint:*)"
     ],
     "deny": [],
     "ask": []
   },
-  "outputStyle": "Learning"
+  "outputStyle": "default"
 }

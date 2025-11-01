@@ -4,6 +4,7 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  CSSProperties,
   useEffect,
   useMemo,
   useRef,
@@ -13,9 +14,13 @@ import React, {
 
 import clsx from 'clsx'
 
-import styles from './ToastProvider.module.css'
-
 const DEFAULT_DURATION = 4000
+
+const toastVariantStyles: Record<'success' | 'error' | 'info', CSSProperties> = {
+  success: { '--toast-border': 'rgba(var(--status-success-rgb), 0.45)', '--toast-foreground': 'color-mix(in srgb, var(--status-success) 70%, var(--fg) 30%)', '--toast-action-color': 'color-mix(in srgb, var(--status-success) 65%, var(--toast-foreground) 35%)', backgroundImage: 'linear-gradient(145deg, color-mix(in srgb, rgba(var(--status-success-rgb), 0.12) 60%, var(--card) 40%), color-mix(in srgb, rgba(var(--status-success-rgb), 0.2) 45%, transparent))' } as CSSProperties,
+  error: { '--toast-border': 'rgba(var(--status-error-rgb), 0.45)', '--toast-foreground': 'color-mix(in srgb, var(--status-error) 72%, var(--fg) 28%)', '--toast-action-color': 'color-mix(in srgb, var(--status-error) 65%, var(--toast-foreground) 35%)', backgroundImage: 'linear-gradient(145deg, color-mix(in srgb, rgba(var(--status-error-rgb), 0.12) 60%, var(--card) 40%), color-mix(in srgb, rgba(var(--status-error-rgb), 0.2) 45%, transparent))' } as CSSProperties,
+  info: { '--toast-border': 'rgba(var(--status-info-rgb), 0.45)', '--toast-foreground': 'color-mix(in srgb, var(--status-info) 70%, var(--fg) 30%)', '--toast-action-color': 'color-mix(in srgb, var(--status-info) 60%, var(--toast-foreground) 40%)', backgroundImage: 'linear-gradient(145deg, color-mix(in srgb, rgba(var(--status-info-rgb), 0.12) 60%, var(--card) 40%), color-mix(in srgb, rgba(var(--status-info-rgb), 0.2) 45%, transparent))' } as CSSProperties,
+}
 
 export type ToastVariant = 'success' | 'error' | 'info'
 
@@ -112,8 +117,8 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className={styles.viewport} role='presentation'>
-        <ul className={styles.stack}>
+      <div className='pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center px-4' role='presentation'>
+        <ul className='flex flex-col gap-3 w-full max-w-sm'>
           {toasts.map((toast) => {
             const role = toast.variant === 'error' ? 'alert' : 'status'
             const live = toast.variant === 'error' ? 'assertive' : 'polite'
@@ -127,24 +132,25 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
                 aria-atomic='true'
                 aria-labelledby={titleId}
                 aria-describedby={descriptionId}
-                className={clsx(styles.toast, styles[toast.variant])}
+                className='pointer-events-auto list-none rounded-lg border border-solid bg-card shadow-glass-soft backdrop-blur-sm px-4 py-3.5 text-right flex flex-col gap-2 animate-toast-enter'
+                style={{ direction: 'rtl', ...toastVariantStyles[toast.variant] }}
               >
-                <div className={styles.content}>
-                  <div className={styles.copy}>
+                <div className='flex gap-3 items-start'>
+                  <div className='flex-1 min-w-0 flex flex-col gap-1'>
                     {toast.title ? (
-                      <p id={titleId} className={styles.title}>
+                      <p id={titleId} className='m-0 text-sm font-semibold text-current'>
                         {toast.title}
                       </p>
                     ) : null}
-                    <p id={descriptionId} className={styles.description}>
+                    <p id={descriptionId} className='m-0 text-xs leading-6' style={{ color: 'currentColor', opacity: 0.82 }}>
                       {toast.description}
                     </p>
                   </div>
-                  <div className={styles.actions}>
+                  <div className='flex flex-row gap-2 items-start'>
                     {toast.action ? (
                       <button
                         type='button'
-                        className={styles.actionButton}
+                        className='border-none bg-none text-xs font-semibold p-0 cursor-pointer transition-opacity duration-150 hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:shadow-ring'
                         onClick={() => handleAction(toast)}
                       >
                         {toast.action.label}
@@ -152,7 +158,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
                     ) : null}
                     <button
                       type='button'
-                      className={styles.dismissButton}
+                      className='border-none bg-none text-xs font-semibold p-0 cursor-pointer opacity-70 transition-opacity duration-150 hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:shadow-ring focus-visible:rounded-full'
                       onClick={() => removeToast(toast.id)}
                       aria-label='بستن اعلان'
                     >

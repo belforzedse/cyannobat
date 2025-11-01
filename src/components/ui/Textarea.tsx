@@ -3,9 +3,7 @@
 import { TextareaHTMLAttributes, forwardRef, useEffect, useId, useState } from 'react'
 import clsx from 'clsx'
 
-import { FieldShell } from './FieldShell'
-import fieldStyles from './FieldShell.module.css'
-import textareaStyles from './Textarea.module.css'
+import { FieldShell } from './FieldShell';
 
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string
@@ -24,7 +22,6 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       fullWidth = true,
       showCharCount = false,
       maxLength,
-      className,
       id,
       disabled,
       value,
@@ -63,14 +60,9 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         : {}
 
     return (
-      <div
-        className={clsx(
-          fieldStyles.fieldGroup,
-          fullWidth && fieldStyles.fieldGroupFullWidth
-        )}
-      >
+      <div className={clsx('flex flex-col gap-1.5', fullWidth && 'w-full')}>
         {label && (
-          <label htmlFor={generatedId} className={fieldStyles.label}>
+          <label htmlFor={generatedId} className="text-sm font-medium text-right text-foreground">
             {label}
           </label>
         )}
@@ -79,7 +71,8 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           <textarea
             ref={ref}
             id={generatedId}
-            className={clsx(textareaStyles.control, className)}
+            className="w-full border-none outline-none bg-transparent text-sm leading-6 px-4 py-3 resize-y min-h-[100px] transition-colors duration-200 ease-glass text-right disabled:cursor-not-allowed"
+            style={{ color: 'inherit', font: 'inherit', borderRadius: 'inherit' }}
             maxLength={maxLength}
             aria-invalid={error ? 'true' : 'false'}
             aria-describedby={describedBy}
@@ -90,19 +83,19 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           />
         </FieldShell>
 
-        <div className={fieldStyles.messageRow}>
+        <div className="flex items-center justify-between gap-2 mt-1">
           <div>
             {error ? (
               <p
                 id={`${generatedId}-error`}
-                className={clsx(fieldStyles.message, fieldStyles.error)}
+                className="text-xs leading-5 text-right text-red-500 animate-field-message-in"
               >
                 {error}
               </p>
             ) : helperText ? (
               <p
                 id={`${generatedId}-helper`}
-                className={clsx(fieldStyles.message, fieldStyles.helper)}
+                className="text-xs leading-5 text-right text-muted-foreground/90 animate-field-message-in"
               >
                 {helperText}
               </p>
@@ -110,13 +103,13 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           </div>
 
           {showCharCount && maxLength && (
-            <p className={fieldStyles.charCount}>
+            <p className="text-xs text-muted-foreground/90">
               {charCount} / {maxLength}
             </p>
           )}
         </div>
       </div>
-    )
+    );
   }
 )
 
