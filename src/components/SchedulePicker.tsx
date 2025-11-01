@@ -6,7 +6,7 @@ import clsx from 'clsx'
 
 import { GlassPanel, GlassChip } from '@/components/ui/glass'
 
-import type { AvailabilityDay, AvailabilitySlot } from '@/features/booking/types'
+import type { AvailabilityDay, AvailabilitySlot } from '@/lib/booking/types'
 import { luxuryContainer, luxurySlideFade } from '@/lib/luxuryAnimations'
 
 type SchedulePickerProps = {
