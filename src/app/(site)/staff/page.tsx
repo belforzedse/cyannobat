@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
-import { DoctorDashboard, ReceptionistDashboard } from '@/features/staff/dashboard/StaffDashboard'
-import { loadStaffDashboardData, loadStaffSession, shouldFilterAppointmentsForRoles } from '@/features/staff/server/loadStaffData'
+import { DoctorDashboard, ReceptionistDashboard } from '@/components/staff/dashboard/StaffDashboard'
+import { loadStaffDashboardData, loadStaffSession, shouldFilterAppointmentsForRoles } from '@/lib/staff/server/loadStaffData'
 
 export const dynamic = 'force-dynamic'
 

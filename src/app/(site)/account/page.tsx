@@ -6,7 +6,7 @@ import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { extractRoles, userIsStaff } from '@/lib/auth'
 import type { Appointment, Provider as ProviderDoc, Service } from '@/payload-types'
-import AccountPageClient from '@/features/account/components/AccountPageClient'
+import AccountPageClient from '@/components/account/AccountPageClient'
 
 type PopulatedAppointment = Appointment & {
   provider?: Appointment['provider']
