@@ -75,6 +75,14 @@
     0 16px 32px -20px rgba(42, 74, 125, 0.38)
   );
   --button-translate-hover: -1.5px;
+
+  :global([data-theme='dark']) & {
+    --button-color: rgb(4 10 24);
+    --button-shadow: 0 24px 56px -26px rgba(36, 132, 255, 0.55),
+      0 14px 28px -20px rgba(2, 6, 28, 0.6);
+    --button-shadow-hover: 0 32px 68px -28px rgba(120, 190, 255, 0.6),
+      0 18px 36px -22px rgba(2, 6, 28, 0.65);
+  }
 }
 
 .secondary {
@@ -99,6 +107,19 @@
   --button-shadow: var(--button-secondary-shadow, var(--shadow-glass-soft));
   --button-shadow-hover: var(--button-secondary-shadow-hover, var(--shadow-glass-strong));
   --button-translate-hover: -1px;
+
+  :global([data-theme='dark']) & {
+    --button-border: rgba(120, 190, 255, 0.28);
+    --button-border-hover: rgba(120, 190, 255, 0.5);
+    --button-bg: linear-gradient(145deg, rgba(12, 22, 38, 0.85), rgba(12, 22, 38, 0.62));
+    --button-bg-hover: linear-gradient(
+      145deg,
+      rgba(36, 132, 255, 0.2),
+      rgba(12, 22, 38, 0.78)
+    );
+    --button-shadow: 0 22px 48px -28px rgba(2, 6, 28, 0.72), inset 0 1px 0 rgba(120, 190, 255, 0.18);
+    --button-shadow-hover: 0 30px 58px -30px rgba(36, 132, 255, 0.32), inset 0 1px 0 rgba(120, 190, 255, 0.22);
+  }
 }
 
 .ghost {
@@ -113,6 +134,13 @@
     0 16px 32px -24px rgba(var(--accent-rgb), 0.24)
   );
   --button-translate-hover: -0.75px;
+
+  :global([data-theme='dark']) & {
+    --button-border: rgba(120, 190, 255, 0.4);
+    --button-border-hover: rgba(120, 190, 255, 0.6);
+    --button-bg-hover: rgba(36, 132, 255, 0.18);
+    --button-color: rgb(200 220 255);
+  }
 }
 
 .disabled {

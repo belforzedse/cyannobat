@@ -17,6 +17,10 @@
   --accent-foreground-rgb: 30 41 59;
   --accent-strong: #3684d2;
   --accent-strong-rgb: 54 132 210;
+  --destructive: #dc2626;
+  --destructive-rgb: 220 38 38;
+  --destructive-foreground: #fef2f2;
+  --destructive-foreground-rgb: 254 242 242;
   --status-success: #16a34a;
   --status-success-rgb: 22 163 74;
   --status-error: #dc2626;
@@ -95,6 +99,10 @@
   --accent-foreground-rgb: 245 249 255;
   --accent-strong: #78beff;
   --accent-strong-rgb: 120 190 255;
+  --destructive: #f87171;
+  --destructive-rgb: 248 113 113;
+  --destructive-foreground: #450a0a;
+  --destructive-foreground-rgb: 69 10 10;
   --status-success: #4ade80;
   --status-success-rgb: 74 222 128;
   --status-error: #f87171;

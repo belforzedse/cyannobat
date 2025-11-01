@@ -21,7 +21,7 @@ const baseChipClasses = [
   'text-[color:var(--fg)]',
   'shadow-[0_16px_32px_-26px_rgba(42,74,125,0.3)]',
   'backdrop-blur-[16px] backdrop-saturate-[1.1]',
-  'transition-[background-color,border-color,color,box-shadow,transform] duration-[300ms] ease-glass'
+  'transition-[background-color,border-color,color,box-shadow,transform] duration-300 ease-glass'
 ].join(' ')
 
 const toneClasses: Record<GlassChipTone, string> = {
