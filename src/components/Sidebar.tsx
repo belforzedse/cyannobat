@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import clsx from 'clsx';
 import type { LucideIcon } from 'lucide-react';
-import { CalendarDays, Home, LifeBuoy } from 'lucide-react';
+import { CalendarDays, Headset, Home } from 'lucide-react';
 import { BOOKING_PATH } from '@/lib/routes';
 import { GlassSurface } from '@/components/ui/glass';
 
@@ -37,9 +37,9 @@ const navigationItems: NavigationItem[] = [
     matches: (pathname) => pathname.startsWith(BOOKING_PATH),
   },
   {
-    label: 'تماس با ما',
+    label: 'تماس',
     href: '/contact',
-    icon: LifeBuoy,
+    icon: Headset,
     group: 'actions',
     ariaLabel: 'تماس با پشتیبانی سایان نوبت',
     matches: (pathname) => pathname === '/contact',
