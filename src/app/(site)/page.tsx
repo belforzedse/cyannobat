@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { Fragment, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
@@ -15,20 +15,29 @@ import { luxuryContainer, luxurySlideFade } from '@/lib/luxuryAnimations';
 const steps = [
   {
     title: 'انتخاب خدمت',
-    description:
-      'از میان خدمات تخصصی و بسته‌های سفارشی‌شده، بهترین گزینه را برای نیاز خود برگزینید.',
+    bullets: [
+      'مرور دسته‌بندی خدمات',
+      'بررسی توضیح کوتاه هر گزینه',
+      'انتخاب متناسب با نیاز',
+    ],
     icon: Search,
   },
   {
     title: 'انتخاب تاریخ و زمان',
-    description:
-      'بازه دلخواه خود را از میان زمان‌های آزاد انتخاب کنید؛ ارائه‌دهنده مناسب با همان بازه هماهنگ است.',
+    bullets: [
+      'مشاهده زمان‌های آزاد در لحظه',
+      'فیلتر بر اساس روز دلخواه',
+      'هماهنگی با ارائه‌دهنده مناسب',
+    ],
     icon: Calendar,
   },
   {
     title: 'تایید جزئیات',
-    description:
-      'اطلاعات تماس و خلاصه نوبت را مرور کنید و پیش از ثبت نهایی، همه چیز را یک‌جا تایید نمایید.',
+    bullets: [
+      'بازبینی اطلاعات تماس',
+      'تایید خلاصه نوبت',
+      'ثبت نهایی با یک کلیک',
+    ],
     icon: CheckCircle2,
   },
 ];
@@ -73,14 +82,6 @@ const HeroPage = () => {
     delayIn: 0.1,
   });
 
-  const badgeVariants = configureSlideFade('up', {
-    distance: 16,
-    duration: 0.8,
-    scale: 0.98,
-    blur: 0, // No blur (performance)
-    delayIn: 0.2,
-  });
-
   const titleVariants = configureSlideFade('up', {
     distance: 24,
     duration: 0.9,
@@ -111,7 +112,7 @@ const HeroPage = () => {
         {/* Steps Section */}
         <motion.section
           id="steps"
-          className="order-2 space-y-6 text-right lg:order-2 lg:space-y-8"
+          className="order-2 space-y-4 text-right lg:order-2 lg:space-y-6"
           variants={prefersReducedMotion ? undefined : luxuryContainer}
           initial="initial"
           animate="animate"
@@ -129,16 +130,36 @@ const HeroPage = () => {
               initial="initial"
               animate="animate"
             >
-              <GlassCard
-                title={step.title}
-                description={step.description}
-                className="h-full min-h-[230px]"
-              >
-                <div className="mt-4 flex items-center justify-between">
-                  <GlassIcon icon={step.icon} size="sm" label={step.title} />
-                  <div className="flex items-center gap-2 text-sm text-accent">
-                    <span className="font-semibold">۰{index + 1}</span>
-                    <span>گام</span>
+              <GlassCard className="h-full min-h-[200px] rounded-3xl p-5 sm:p-6">
+                <div className="flex flex-col gap-5">
+                  <div className="flex items-center gap-3 text-foreground">
+                    <GlassIcon
+                      icon={step.icon}
+                      size="sm"
+                      label={step.title}
+                      className="shrink-0"
+                    />
+                    <h3 className="text-base font-semibold leading-tight sm:text-lg">
+                      {step.title}
+                    </h3>
+                  </div>
+                  <div
+                    dir="rtl"
+                    className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm leading-6 text-foreground/90 sm:text-[0.95rem]"
+                  >
+                    {step.bullets.map((bullet, bulletIndex) => (
+                      <Fragment key={`${step.title}-${bulletIndex}`}>
+                        <span className="whitespace-nowrap">{bullet}</span>
+                        {bulletIndex < step.bullets.length - 1 ? (
+                          <span
+                            aria-hidden
+                            className="px-1 text-accent/70"
+                          >
+                            •
+                          </span>
+                        ) : null}
+                      </Fragment>
+                    ))}
                   </div>
                 </div>
               </GlassCard>
@@ -152,7 +173,7 @@ const HeroPage = () => {
           variants={heroCardVariants}
           initial="initial"
           animate="animate"
-          className="order-1 relative flex h-full min-h-[420px] flex-col overflow-hidden px-8 pb-16 pt-20 text-right sm:px-12 lg:order-1 lg:px-20"
+          className="order-1 relative flex h-full min-h-[380px] flex-col overflow-hidden px-8 pb-16 pt-16 text-right sm:px-12 lg:order-1 lg:px-20"
         >
           <div
             className="absolute inset-x-0 -top-32 h-64 bg-gradient-to-b from-accent/50 via-transparent to-transparent"
@@ -162,7 +183,7 @@ const HeroPage = () => {
             className="absolute -right-32 top-0 h-64 w-64 rounded-full bg-accent/30 blur-3xl"
             aria-hidden
           />
-          <div className="relative flex flex-1 flex-col items-end gap-8">
+          <div className="relative flex flex-1 flex-col items-end gap-6">
             <Image
               src="/images/image 50.png"
               alt="Saayan"
@@ -183,7 +204,7 @@ const HeroPage = () => {
               variants={descriptionVariants}
               initial="initial"
               animate="animate"
-              className="relative z-10 max-w-2xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg"
+              className="relative z-10 max-w-2xl text-balance text-base leading-7 text-foreground/80 sm:text-lg"
             >
               نوبت‌دهی راحت برای شما، تجربه‌ی حرفه‌ای برای بیماران.
             </motion.p>
