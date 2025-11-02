@@ -11,16 +11,16 @@ export type GlassSurfaceStyleOptions = {
 };
 
 const baseSurfaceClasses = [
-  'relative rounded-[2rem] border border-white/50',
-  'bg-[linear-gradient(155deg,#FFFFFFD1,#FFFFFF8C)]',
+  'relative rounded-[2rem] border border-white/30',
+  'bg-[linear-gradient(155deg,rgba(255,255,255,0.6),rgba(255,255,255,0.56))]',
   'shadow-[0_22px_60px_-28px_#2A4A7D73,inset_0_1px_0_#FFFFFFA6,inset_0_-1px_0_#569ADE2E]',
   'backdrop-blur-[20px] backdrop-saturate-[1.5]',
   'transition-[box-shadow,border-color,backdrop-filter,transform] duration-400 ease-glass',
-  "before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-white/65 before:bg-[linear-gradient(180deg,#FFFFFFAD_0%,#FFFFFF3D_48%,transparent_100%)] before:content-['']",
+  "before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-white/35 before:bg-[linear-gradient(180deg,rgba(255,255,255,0.6)_0%,rgba(255,255,255,0.2)_48%,transparent_100%)] before:content-['']",
   "after:pointer-events-none after:absolute after:inset-[-2px] after:rounded-[inherit] after:bg-[radial-gradient(480px_280px_at_22%_18%,#569ADE38,transparent_58%),radial-gradient(520px_300px_at_78%_72%,#3684D233,transparent_64%)] after:opacity-0 after:transition-[opacity,filter] after:duration-500 after:ease-glass after:content-['']",
-  'dark:border-[#78BEFF38] dark:bg-[linear-gradient(150deg,#0C1626EB,#0C1626BD)]',
+  'dark:border-white/12 dark:bg-[linear-gradient(150deg,#0C1626EB,#0C1626BD)]',
   'dark:shadow-[0_26px_84px_-32px_#02061CC7,inset_0_1px_0_#78BEFF38,inset_0_-1px_0_#02061CAD]',
-  'dark:before:border-[#78BEFF33] dark:before:bg-[linear-gradient(180deg,#78BEFF24_0%,#0C16261F_55%,transparent_100%)]',
+  'dark:before:border-white/10 dark:before:bg-[linear-gradient(180deg,rgba(255,255,255,0.12)_0%,rgba(12,22,38,0.12)_55%,transparent_100%)]',
   'dark:after:bg-[radial-gradient(520px_320px_at_18%_18%,#2484FF47,transparent_62%),radial-gradient(540px_340px_at_82%_78%,#78BEFF3D,transparent_68%)]',
 ].join(' ');
 
