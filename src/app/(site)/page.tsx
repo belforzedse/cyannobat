@@ -8,7 +8,7 @@ import GlassCard from '@/components/GlassCard';
 import { Button } from '@/components/ui';
 import GlassIcon from '@/components/GlassIcon';
 import { GlassSurface } from '@/components/ui/glass';
-import { Calendar, Search, CheckCircle2 } from 'lucide-react';
+import { Calendar, Search, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { BOOKING_PATH } from '@/lib/routes';
 import { luxuryContainer, luxurySlideFade } from '@/lib/luxuryAnimations';
 
@@ -165,40 +165,54 @@ const HeroPage = () => {
           variants={heroCardVariants}
           initial="initial"
           animate="animate"
-          className="order-1 relative flex h-full min-h-[380px] flex-col overflow-hidden px-8 pb-16 pt-16 text-right sm:px-12 lg:order-1 lg:px-20"
+          className="order-1 relative flex h-full min-h-[440px] flex-col overflow-hidden px-8 pb-20 pt-20 text-right sm:px-14 lg:order-1 lg:px-24"
         >
+          <div
+            className="pointer-events-none absolute inset-0 opacity-80"
+            style={{ background: 'radial-gradient(circle at top, var(--accent) 0%, transparent 55%)' }}
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute inset-0 bg-white/18 backdrop-blur-[2px] mix-blend-screen"
+            aria-hidden
+          />
           <div
             className="absolute inset-x-0 -top-32 h-64 bg-gradient-to-b from-accent/50 via-transparent to-transparent"
             aria-hidden
           />
-          <div
-            className="absolute -right-32 top-0 h-64 w-64 rounded-full bg-accent/30 blur-3xl"
-            aria-hidden
-          />
+          <div className="absolute right-0 top-10 h-56 w-56 rounded-full bg-accent/25 blur-3xl" aria-hidden />
           <div className="relative flex flex-1 flex-col items-end gap-6">
             <Image
               src="/images/image 50.png"
               alt="Saayan"
               width={400}
               height={500}
-              className="absolute -right-24 -top-16 w-[600px] z-20 h-auto pointer-events-none"
+              className="pointer-events-none absolute right-1/2 top-1/2 z-20 h-auto w-[420px] translate-x-1/2 -translate-y-1/2 sm:right-[18%] sm:w-[500px] sm:translate-x-0 lg:w-[560px]"
               priority
             />
             <motion.h1
               variants={titleVariants}
               initial="initial"
               animate="animate"
-              className="relative z-10 max-w-3xl text-balance bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-4xl font-bold leading-tight tracking-tight text-transparent sm:text-5xl lg:text-7xl"
+              className="relative z-10 max-w-3xl text-balance text-[2.5rem] font-semibold leading-tight tracking-tight text-foreground sm:text-[2.875rem] lg:text-[3.5rem]"
             >
-              سایـــــــــان نوبت{' '}
+              <span className="relative inline-flex items-center">
+                <span
+                  className="pointer-events-none absolute inset-x-[-18px] top-1/2 h-3 -translate-y-1/2 rounded-full bg-gradient-to-l from-foreground/10 via-white/80 to-foreground/15 blur-[1px]"
+                  aria-hidden
+                />
+                <span className="relative bg-gradient-to-b from-foreground to-foreground/75 bg-clip-text px-4 text-transparent">
+                  سایـــــــــان نوبت
+                </span>
+              </span>
             </motion.h1>
             <motion.p
               variants={descriptionVariants}
               initial="initial"
               animate="animate"
-              className="relative z-10 max-w-2xl text-balance text-base leading-7 text-foreground/80 sm:text-lg"
+              className="relative z-10 max-w-2xl text-balance text-sm leading-7 text-foreground/75 sm:text-base"
             >
-              نوبت‌دهی راحت برای شما، تجربه‌ی حرفه‌ای برای بیماران.
+              نوبت‌های پزشکی را در چند لحظه هماهنگ کنید و تجربه‌ای لوکس و دقیق بسازید.
             </motion.p>
             <motion.div
               variants={buttonsVariants}
@@ -207,12 +221,12 @@ const HeroPage = () => {
               className="mt-auto flex flex-row-reverse flex-wrap items-center justify-end gap-4 pt-4"
             >
               <Link href={BOOKING_PATH}>
-                <Button variant="primary" size="md">
+                <Button variant="ghost" size="lg" leftIcon={<ArrowLeft className="h-4 w-4" />}>
                   رزرو نوبت
                 </Button>
               </Link>
               <Link href="#steps">
-                <Button variant="secondary" size="md">
+                <Button variant="ghost" size="lg">
                   مشاهده مراحل
                 </Button>
               </Link>
