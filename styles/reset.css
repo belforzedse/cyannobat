@@ -34,11 +34,7 @@ body {
   margin: 0;
   color: var(--fg);
   background-color: var(--bg);
-  background-image:
-    radial-gradient(960px 640px at -10% -5%, #ACCDFF52, transparent 60%),
-    radial-gradient(880px 600px at 110% 5%, #BCD8FF47, transparent 58%),
-    radial-gradient(780px 540px at 48% 110%, #CEE6FF38, transparent 65%),
-    linear-gradient(180deg, #FFFFFFF2, #F3F7FFE0);
+  background-image: radial-gradient(160% 150% at 50% -20%, #E9F0FA 0%, #DCE9F9 100%);
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
@@ -47,11 +43,7 @@ body {
 
 [data-theme='dark'] body {
   background-color: var(--bg);
-  background-image:
-    radial-gradient(1200px 720px at 50% -20%, #2484FF33, transparent 70%),
-    radial-gradient(960px 680px at 90% 82%, #123A8447, transparent 65%),
-    radial-gradient(840px 640px at 10% 80%, #14306C3D, transparent 68%),
-    linear-gradient(185deg, #040A18F5, #040A18FF);
+  background-image: radial-gradient(165% 155% at 50% -25%, #0F1A26 0%, #1C2432 100%);
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -65,27 +57,26 @@ body {
     background-attachment: fixed;
   }
 
-  body::before {
+  html:not([data-theme='dark']) body::before {
     content: '';
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(720px 520px at 12% 18%, rgba(255, 255, 255, 0.16), transparent 55%),
-      radial-gradient(820px 560px at 88% 26%, rgba(255, 255, 255, 0.18), transparent 60%),
-      url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140"%3E%3Cfilter id="noise" x="0" y="0" width="100%25" height="100%25"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.03"/%3E%3C/svg%3E');
+      radial-gradient(720px 520px at 12% 18%, rgba(255, 255, 255, 0.08), transparent 55%),
+      radial-gradient(820px 560px at 88% 26%, rgba(255, 255, 255, 0.1), transparent 60%);
     pointer-events: none;
     mix-blend-mode: screen;
     z-index: -1;
   }
 
-  body::after {
+  html:not([data-theme='dark']) body::after {
     content: '';
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(880px 640px at 18% 16%, rgba(86, 154, 222, 0.16), transparent 60%),
-      radial-gradient(840px 600px at 84% 66%, rgba(54, 132, 210, 0.12), transparent 58%),
-      radial-gradient(720px 520px at 50% -15%, rgba(180, 215, 255, 0.14), transparent 65%);
+      radial-gradient(880px 640px at 18% 16%, rgba(86, 154, 222, 0.08), transparent 60%),
+      radial-gradient(840px 600px at 84% 66%, rgba(54, 132, 210, 0.06), transparent 58%),
+      radial-gradient(720px 520px at 50% -15%, rgba(180, 215, 255, 0.06), transparent 65%);
     mix-blend-mode: lighten;
     pointer-events: none;
     z-index: -2;
