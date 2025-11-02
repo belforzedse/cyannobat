@@ -76,12 +76,8 @@
           "name": "users_sessions_parent_id_fk",
           "tableFrom": "users_sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -286,12 +282,8 @@
           "name": "providers_specialties_parent_id_fk",
           "tableFrom": "providers_specialties",
           "tableTo": "providers",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -381,12 +373,8 @@
           "name": "providers_availability_windows_parent_id_fk",
           "tableFrom": "providers_availability_windows",
           "tableTo": "providers",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -463,12 +451,8 @@
           "name": "providers_meta_languages_parent_id_fk",
           "tableFrom": "providers_meta_languages",
           "tableTo": "providers",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -695,12 +679,8 @@
           "name": "providers_account_id_users_id_fk",
           "tableFrom": "providers",
           "tableTo": "users",
-          "columnsFrom": [
-            "account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["account_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -708,12 +688,8 @@
           "name": "providers_profile_image_id_media_id_fk",
           "tableFrom": "providers",
           "tableTo": "media",
-          "columnsFrom": [
-            "profile_image_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["profile_image_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -826,12 +802,8 @@
           "name": "providers_rels_parent_fk",
           "tableFrom": "providers_rels",
           "tableTo": "providers",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -839,12 +811,8 @@
           "name": "providers_rels_services_fk",
           "tableFrom": "providers_rels",
           "tableTo": "services",
-          "columnsFrom": [
-            "services_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["services_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1140,12 +1108,8 @@
           "name": "services_rels_parent_fk",
           "tableFrom": "services_rels",
           "tableTo": "services",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1153,12 +1117,8 @@
           "name": "services_rels_providers_fk",
           "tableFrom": "services_rels",
           "tableTo": "providers",
-          "columnsFrom": [
-            "providers_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["providers_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1166,12 +1126,8 @@
           "name": "services_rels_media_fk",
           "tableFrom": "services_rels",
           "tableTo": "media",
-          "columnsFrom": [
-            "media_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["media_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1262,12 +1218,8 @@
           "name": "appointments_reminders_parent_id_fk",
           "tableFrom": "appointments_reminders",
           "tableTo": "appointments",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1517,12 +1469,8 @@
           "name": "appointments_client_id_users_id_fk",
           "tableFrom": "appointments",
           "tableTo": "users",
-          "columnsFrom": [
-            "client_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["client_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1530,12 +1478,8 @@
           "name": "appointments_provider_id_providers_id_fk",
           "tableFrom": "appointments",
           "tableTo": "providers",
-          "columnsFrom": [
-            "provider_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["provider_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1543,12 +1487,8 @@
           "name": "appointments_service_id_services_id_fk",
           "tableFrom": "appointments",
           "tableTo": "services",
-          "columnsFrom": [
-            "service_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["service_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1969,12 +1909,8 @@
           "name": "payload_locked_documents_rels_parent_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "payload_locked_documents",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1982,12 +1918,8 @@
           "name": "payload_locked_documents_rels_users_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "users",
-          "columnsFrom": [
-            "users_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["users_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1995,12 +1927,8 @@
           "name": "payload_locked_documents_rels_providers_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "providers",
-          "columnsFrom": [
-            "providers_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["providers_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2008,12 +1936,8 @@
           "name": "payload_locked_documents_rels_services_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "services",
-          "columnsFrom": [
-            "services_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["services_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2021,12 +1945,8 @@
           "name": "payload_locked_documents_rels_appointments_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "appointments",
-          "columnsFrom": [
-            "appointments_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["appointments_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2034,12 +1954,8 @@
           "name": "payload_locked_documents_rels_media_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "media",
-          "columnsFrom": [
-            "media_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["media_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2243,12 +2159,8 @@
           "name": "payload_preferences_rels_parent_fk",
           "tableFrom": "payload_preferences_rels",
           "tableTo": "payload_preferences",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2256,12 +2168,8 @@
           "name": "payload_preferences_rels_users_fk",
           "tableFrom": "payload_preferences_rels",
           "tableTo": "users",
-          "columnsFrom": [
-            "users_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["users_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2366,31 +2274,17 @@
     "public.enum_services_pricing_currency": {
       "name": "enum_services_pricing_currency",
       "schema": "public",
-      "values": [
-        "USD",
-        "EUR",
-        "GBP",
-        "CAD",
-        "AUD"
-      ]
+      "values": ["USD", "EUR", "GBP", "CAD", "AUD"]
     },
     "public.enum_appointments_reminders_channel": {
       "name": "enum_appointments_reminders_channel",
       "schema": "public",
-      "values": [
-        "email",
-        "sms",
-        "push"
-      ]
+      "values": ["email", "sms", "push"]
     },
     "public.enum_appointments_reminders_status": {
       "name": "enum_appointments_reminders_status",
       "schema": "public",
-      "values": [
-        "scheduled",
-        "sent",
-        "failed"
-      ]
+      "values": ["scheduled", "sent", "failed"]
     },
     "public.enum_appointments_status": {
       "name": "enum_appointments_status",
@@ -2407,13 +2301,7 @@
     "public.enum_appointments_pricing_snapshot_currency": {
       "name": "enum_appointments_pricing_snapshot_currency",
       "schema": "public",
-      "values": [
-        "USD",
-        "EUR",
-        "GBP",
-        "CAD",
-        "AUD"
-      ]
+      "values": ["USD", "EUR", "GBP", "CAD", "AUD"]
     }
   },
   "schemas": {},

@@ -24,7 +24,7 @@ export const useGlassFilter = ({
   xChannel = 'R',
   yChannel = 'G',
   mixBlendMode = 'screen',
-  style = {}
+  style = {},
 }: GlassSurfaceProps) => {
   const uniqueId = useId().replace(/:/g, '-');
   const filterId = `glass-filter-${uniqueId}`;
@@ -47,12 +47,8 @@ export const useGlassFilter = ({
 
   const isDarkMode = mounted && resolvedTheme === 'dark';
 
-  const glowPrimary = isDarkMode
-    ? 'rgba(65, 119, 172, 0.25)'
-    : 'rgba(65, 119, 172, 0.35)';
-  const glowSecondary = isDarkMode
-    ? 'rgba(65, 119, 172, 0.2)'
-    : 'rgba(65, 119, 172, 0.28)';
+  const glowPrimary = isDarkMode ? 'rgba(65, 119, 172, 0.25)' : 'rgba(65, 119, 172, 0.35)';
+  const glowSecondary = isDarkMode ? 'rgba(65, 119, 172, 0.2)' : 'rgba(65, 119, 172, 0.28)';
 
   const generateDisplacementMap = useCallback(() => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -90,7 +86,7 @@ export const useGlassFilter = ({
     mixBlendMode,
     opacity,
     redGradId,
-    blueGradId
+    blueGradId,
   ]);
 
   const updateDisplacementMap = useCallback(() => {
@@ -103,7 +99,7 @@ export const useGlassFilter = ({
     const channels = [
       { ref: redChannelRef, offset: redOffset },
       { ref: greenChannelRef, offset: greenOffset },
-      { ref: blueChannelRef, offset: blueOffset }
+      { ref: blueChannelRef, offset: blueOffset },
     ];
 
     channels.forEach(({ ref, offset }) => {
@@ -124,7 +120,7 @@ export const useGlassFilter = ({
     redOffset,
     updateDisplacementMap,
     xChannel,
-    yChannel
+    yChannel,
   ]);
 
   useEffect(() => {
@@ -154,7 +150,7 @@ export const useGlassFilter = ({
       height: typeof height === 'number' ? `${height}px` : height,
       borderRadius: `${borderRadius}px`,
       '--glass-frost': backgroundOpacity,
-      '--glass-saturation': saturation
+      '--glass-saturation': saturation,
     } as React.CSSProperties;
 
     if (!mounted) {
@@ -167,7 +163,9 @@ export const useGlassFilter = ({
     if (svgSupported) {
       return {
         ...baseStyles,
-        background: isDarkMode ? `hsl(0 0% 0% / ${backgroundOpacity})` : `hsl(0 0% 100% / ${backgroundOpacity})`,
+        background: isDarkMode
+          ? `hsl(0 0% 0% / ${backgroundOpacity})`
+          : `hsl(0 0% 100% / ${backgroundOpacity})`,
         backdropFilter: `url(#${filterId}) saturate(${saturation})`,
         boxShadow: isDarkMode
           ? `0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
@@ -185,7 +183,7 @@ export const useGlassFilter = ({
              0px 16px 56px rgba(17, 17, 26, 0.05),
              0px 4px 16px rgba(17, 17, 26, 0.05) inset,
              0px 8px 24px rgba(17, 17, 26, 0.05) inset,
-             0px 16px 56px rgba(17, 17, 26, 0.05) inset`
+             0px 16px 56px rgba(17, 17, 26, 0.05) inset`,
       };
     }
 
@@ -196,7 +194,7 @@ export const useGlassFilter = ({
           background: 'rgba(0, 0, 0, 0.4)',
           border: '1px solid rgba(255, 255, 255, 0.2)',
           boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
-                      inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`
+                      inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`,
         };
       }
 
@@ -207,7 +205,7 @@ export const useGlassFilter = ({
         WebkitBackdropFilter: 'blur(12px) saturate(1.8) brightness(1.2)',
         border: '1px solid rgba(255, 255, 255, 0.2)',
         boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
-                    inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`
+                    inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`,
       };
     }
 
@@ -217,7 +215,7 @@ export const useGlassFilter = ({
         background: 'rgba(255, 255, 255, 0.4)',
         border: '1px solid rgba(255, 255, 255, 0.3)',
         boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
-                    inset 0 -1px 0 0 rgba(255, 255, 255, 0.3)`
+                    inset 0 -1px 0 0 rgba(255, 255, 255, 0.3)`,
       };
     }
 
@@ -230,7 +228,7 @@ export const useGlassFilter = ({
       boxShadow: `0 8px 32px 0 rgba(31, 38, 135, 0.2),
                   0 2px 16px 0 rgba(31, 38, 135, 0.1),
                   inset 0 1px 0 0 rgba(255, 255, 255, 0.4),
-                  inset 0 -1px 0 0 rgba(255, 255, 255, 0.2)`
+                  inset 0 -1px 0 0 rgba(255, 255, 255, 0.2)`,
     };
   }, [
     backgroundOpacity,
@@ -241,7 +239,7 @@ export const useGlassFilter = ({
     saturation,
     style,
     width,
-    filterId
+    filterId,
   ]);
 
   return {
@@ -253,6 +251,6 @@ export const useGlassFilter = ({
     gaussianBlurRef,
     filterId,
     containerStyles,
-    isDarkMode
+    isDarkMode,
   };
 };

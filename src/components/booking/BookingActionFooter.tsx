@@ -1,18 +1,18 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
+import Link from 'next/link';
 
-import { Button } from '@/components/ui/Button'
+import { Button } from '@/components/ui/Button';
 
 export type BookingActionFooterProps = {
-  prefersReducedMotion: boolean
-  isActionDisabled: boolean
-  isSubmitting: boolean
-  submitError: string | null
-  validationErrors: string[]
-  bookingReference: string | null
-  onContinue: () => void
-}
+  prefersReducedMotion: boolean;
+  isActionDisabled: boolean;
+  isSubmitting: boolean;
+  submitError: string | null;
+  validationErrors: string[];
+  bookingReference: string | null;
+  onContinue: () => void;
+};
 
 const BookingActionFooter = ({
   prefersReducedMotion,
@@ -47,7 +47,9 @@ const BookingActionFooter = ({
       </div>
       <div className="flex max-w-xl flex-col items-end gap-1 text-right" aria-live="polite">
         {isSubmitting && (
-          <span className="text-xs text-muted-foreground">چند لحظه صبر کنید؛ در حال ثبت نوبت هستیم.</span>
+          <span className="text-xs text-muted-foreground">
+            چند لحظه صبر کنید؛ در حال ثبت نوبت هستیم.
+          </span>
         )}
         {submitError && <span className="text-sm text-destructive">{submitError}</span>}
         {validationErrors.length > 0 && (
@@ -64,7 +66,7 @@ const BookingActionFooter = ({
         )}
       </div>
     </>
-  )
-}
+  );
+};
 
-export default BookingActionFooter
+export default BookingActionFooter;

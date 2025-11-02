@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react';
 
-const staffRoles = ['admin', 'doctor', 'receptionist'] as const
+const staffRoles = ['admin', 'doctor', 'receptionist'] as const;
 
 type LoginFormProps = {
-  redirectToStaff?: string
-  redirectToAccount?: string
-  toggleHref?: string
-  toggleLabel?: string
-}
+  redirectToStaff?: string;
+  redirectToAccount?: string;
+  toggleHref?: string;
+  toggleLabel?: string;
+};
 
 const LoginForm = ({
   redirectToStaff = '/staff',
@@ -17,15 +17,15 @@ const LoginForm = ({
   toggleHref,
   toggleLabel,
 }: LoginFormProps) => {
-  const [identifier, setIdentifier] = useState('')
-  const [password, setPassword] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setIsSubmitting(true)
-    setErrorMessage(null)
+    event.preventDefault();
+    setIsSubmitting(true);
+    setErrorMessage(null);
 
     try {
       const response = await fetch('/api/login', {
@@ -34,25 +34,27 @@ const LoginForm = ({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ identifier, password }),
-      })
+      });
 
       if (!response.ok) {
-        const result = await response.json().catch(() => ({ message: 'ورود ناموفق بود.' }))
-        throw new Error(result.message ?? 'ورود ناموفق بود.')
+        const result = await response.json().catch(() => ({ message: 'ورود ناموفق بود.' }));
+        throw new Error(result.message ?? 'ورود ناموفق بود.');
       }
 
-      const result = (await response.json()) as { user: { roles?: string[] } }
-      const roles = Array.isArray(result.user?.roles) ? result.user.roles : []
-      const isStaff = roles.some((role) => staffRoles.includes(role as (typeof staffRoles)[number]))
+      const result = (await response.json()) as { user: { roles?: string[] } };
+      const roles = Array.isArray(result.user?.roles) ? result.user.roles : [];
+      const isStaff = roles.some((role) =>
+        staffRoles.includes(role as (typeof staffRoles)[number]),
+      );
 
-      window.location.href = isStaff ? redirectToStaff : redirectToAccount
+      window.location.href = isStaff ? redirectToStaff : redirectToAccount;
     } catch (error) {
-      console.error(error)
-      setErrorMessage((error as Error).message ?? 'ورود ناموفق بود.')
+      console.error(error);
+      setErrorMessage((error as Error).message ?? 'ورود ناموفق بود.');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4 text-right">
@@ -107,12 +109,12 @@ const LoginForm = ({
         ) : null}
 
         <p className="text-xs leading-6 text-muted-foreground">
-          احراز هویت پیامکی به‌زودی راه‌اندازی می‌شود. تا آن موقع از حساب‌های موقتی یا رمز عبور خود استفاده کنید.
+          احراز هویت پیامکی به‌زودی راه‌اندازی می‌شود. تا آن موقع از حساب‌های موقتی یا رمز عبور خود
+          استفاده کنید.
         </p>
       </div>
     </form>
-  )
-}
+  );
+};
 
-export default LoginForm
-
+export default LoginForm;

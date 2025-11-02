@@ -1,20 +1,21 @@
-import { Button } from '../Button'
+import { Button } from '../Button';
 import {
   TooltipProvider,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-} from '../Tooltip'
+} from '../Tooltip';
 
 const TooltipPreview = ({ tone, size, label, children }) => (
-  <Tooltip>
-    <TooltipTrigger asChild>
-      <Button variant="ghost">{label}</Button>
-    </TooltipTrigger>
-    <TooltipContent tone={tone} size={size}>
-      {children}
-    </TooltipContent>
-  </Tooltip>
+
+<Tooltip>
+  <TooltipTrigger asChild>
+    <Button variant="ghost">{label}</Button>
+  </TooltipTrigger>
+  <TooltipContent tone={tone} size={size}>
+    {children}
+  </TooltipContent>
+</Tooltip>
 )
 
 # Tooltip

@@ -1,24 +1,20 @@
-'use client'
+'use client';
 
-import { X } from 'lucide-react'
-import type { FC } from 'react'
+import { X } from 'lucide-react';
+import type { FC } from 'react';
 
-import { Button, Input, Select } from '@/components/ui'
-import type { ProviderAvailabilityDayOption } from '@/lib/staff/constants/providerAvailability'
-import type { StaffProviderAvailabilityWindow } from '@/lib/staff/types'
+import { Button, Input, Select } from '@/components/ui';
+import type { ProviderAvailabilityDayOption } from '@/lib/staff/constants/providerAvailability';
+import type { StaffProviderAvailabilityWindow } from '@/lib/staff/types';
 
 type AvailabilityWindowFieldsProps = {
-  index: number
-  window: StaffProviderAvailabilityWindow
-  dayOptions: readonly ProviderAvailabilityDayOption[]
-  disabled?: boolean
-  onChange: (
-    index: number,
-    field: keyof StaffProviderAvailabilityWindow,
-    value: string,
-  ) => void
-  onRemove: (index: number) => void
-}
+  index: number;
+  window: StaffProviderAvailabilityWindow;
+  dayOptions: readonly ProviderAvailabilityDayOption[];
+  disabled?: boolean;
+  onChange: (index: number, field: keyof StaffProviderAvailabilityWindow, value: string) => void;
+  onRemove: (index: number) => void;
+};
 
 const AvailabilityWindowFields: FC<AvailabilityWindowFieldsProps> = ({
   index,
@@ -69,7 +65,7 @@ const AvailabilityWindowFields: FC<AvailabilityWindowFieldsProps> = ({
         </Button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AvailabilityWindowFields
+export default AvailabilityWindowFields;

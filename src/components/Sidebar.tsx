@@ -6,8 +6,8 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import clsx from 'clsx';
 import type { LucideIcon } from 'lucide-react';
-import { CalendarDays, Home, LifeBuoy } from "lucide-react";
-import { BOOKING_PATH } from "@/lib/routes";
+import { CalendarDays, Home, LifeBuoy } from 'lucide-react';
+import { BOOKING_PATH } from '@/lib/routes';
 import { GlassSurface } from '@/components/ui/glass';
 
 type NavigationGroup = 'main' | 'actions';
@@ -46,10 +46,9 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
-
 const Sidebar = () => {
   const pathname = usePathname();
-  const [activeHash, setActiveHash] = useState("");
+  const [activeHash, setActiveHash] = useState('');
   const [indicatorStyle, setIndicatorStyle] = useState<{
     mobile: { left: number; width: number };
     desktop: { top: number; height: number };
@@ -64,19 +63,19 @@ const Sidebar = () => {
   const desktopNavRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
+    if (typeof window === 'undefined') {
       return;
     }
 
     const updateHash = () => {
-      setActiveHash(window.location.hash || "");
+      setActiveHash(window.location.hash || '');
     };
 
     updateHash();
-    window.addEventListener("hashchange", updateHash);
+    window.addEventListener('hashchange', updateHash);
 
     return () => {
-      window.removeEventListener("hashchange", updateHash);
+      window.removeEventListener('hashchange', updateHash);
     };
   }, []);
 
@@ -85,7 +84,7 @@ const Sidebar = () => {
     const updateIndicatorPosition = () => {
       // Find active item index
       const activeIndex = navigationItems.findIndex(
-        (item) => item.matches?.(pathname ?? "", activeHash) ?? false
+        (item) => item.matches?.(pathname ?? '', activeHash) ?? false,
       );
 
       // Update mobile indicator
@@ -106,9 +105,9 @@ const Sidebar = () => {
       }
 
       // Update desktop indicator
-      const desktopMainItems = navigationItems.filter((item) => item.group === "main");
+      const desktopMainItems = navigationItems.filter((item) => item.group === 'main');
       const desktopActiveIndex = desktopMainItems.findIndex(
-        (item) => item.matches?.(pathname ?? "", activeHash) ?? false
+        (item) => item.matches?.(pathname ?? '', activeHash) ?? false,
       );
 
       const desktopNav = desktopNavRef.current;
@@ -136,8 +135,8 @@ const Sidebar = () => {
     updateIndicatorPosition();
 
     // Update on resize
-    window.addEventListener("resize", updateIndicatorPosition);
-    return () => window.removeEventListener("resize", updateIndicatorPosition);
+    window.addEventListener('resize', updateIndicatorPosition);
+    return () => window.removeEventListener('resize', updateIndicatorPosition);
   }, [pathname, activeHash]);
 
   const renderItem = (item: NavigationItem, index: number, isMobile: boolean) => {

@@ -35,7 +35,9 @@ const ReasonsSection = ({
         delayIn: 0.06,
       });
 
-  const motionStates = reduceMotion ? {} : { initial: 'initial' as const, animate: 'animate' as const };
+  const motionStates = reduceMotion
+    ? {}
+    : { initial: 'initial' as const, animate: 'animate' as const };
 
   return (
     <motion.section variants={sectionVariants} {...motionStates}>
@@ -46,7 +48,11 @@ const ReasonsSection = ({
             یکی از گزینه‌های زیر را انتخاب کنید یا توضیح کوتاهی درباره‌ی نیاز خود بنویسید.
           </p>
         </div>
-        <motion.div className="mt-3 grid gap-2 sm:mt-4 sm:grid-cols-2 sm:gap-3 lg:mt-5" variants={listVariants} {...motionStates}>
+        <motion.div
+          className="mt-3 grid gap-2 sm:mt-4 sm:grid-cols-2 sm:gap-3 lg:mt-5"
+          variants={listVariants}
+          {...motionStates}
+        >
           {options.map((reason) => {
             const isSelected = selectedReasons.includes(reason.value);
             return (

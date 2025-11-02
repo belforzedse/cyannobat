@@ -1,16 +1,24 @@
-import { Checkbox } from '../Checkbox'
+import { Checkbox } from '../Checkbox';
 
 # Checkbox
 
 Accessible checkbox component built on Radix primitives. Supports tone and size variants for different emphasis levels.
 
 ```tsx
-<Checkbox label="شرایط را می‌پذیرم" defaultChecked helperText="قابل تغییر در هر زمان" />
+<Checkbox
+  label="شرایط را می‌پذیرم"
+  defaultChecked
+  helperText="قابل تغییر در هر زمان"
+/>
 ```
 
 <div style={{ display: 'grid', gap: '1rem' }}>
   <Checkbox label="شرایط را می‌پذیرم" defaultChecked />
-  <Checkbox label="اعلان‌های ایمیل" description="ارسال بروزرسانی‌های هفتگی" tone="muted" />
+  <Checkbox
+    label="اعلان‌های ایمیل"
+    description="ارسال بروزرسانی‌های هفتگی"
+    tone="muted"
+  />
   <Checkbox label="ذخیره به صورت خودکار" tone="neutral" size="sm" />
 </div>
 

@@ -1,29 +1,53 @@
-'use client'
+'use client';
 
-import * as TooltipPrimitive from '@radix-ui/react-tooltip'
-import React, { CSSProperties, ElementRef, forwardRef } from 'react'
+import * as TooltipPrimitive from '@radix-ui/react-tooltip';
+import React, { CSSProperties, ElementRef, forwardRef } from 'react';
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
-type TooltipTone = 'muted' | 'accent' | 'inverted'
-type TooltipSize = 'sm' | 'md'
+type TooltipTone = 'muted' | 'accent' | 'inverted';
+type TooltipSize = 'sm' | 'md';
 
 const tooltipToneStyles: Record<TooltipTone, CSSProperties> = {
-  muted: { '--tooltip-bg': 'color-mix(in srgb, var(--muted) 82%, transparent)', '--tooltip-border': 'rgba(var(--muted-foreground-rgb, 78 94 120), 0.5)', '--tooltip-color': 'rgba(var(--fg-rgb), 0.92)' } as CSSProperties,
-  accent: { '--tooltip-bg': 'linear-gradient(145deg, color-mix(in srgb, var(--accent-strong) 88%, white 8%), color-mix(in srgb, var(--accent) 92%, white 6%))', '--tooltip-border': 'rgba(var(--accent-rgb), 0.55)', '--tooltip-color': 'var(--accent-foreground, rgb(var(--fg-rgb)))', boxShadow: '0 22px 48px -24px rgba(var(--accent-rgb), 0.4)' } as CSSProperties,
-  inverted: { '--tooltip-bg': 'rgba(15, 23, 42, 0.92)', '--tooltip-border': 'rgba(255, 255, 255, 0.1)', '--tooltip-color': 'rgba(248, 250, 252, 0.95)', boxShadow: '0 22px 42px -24px rgba(2, 6, 23, 0.7)' } as CSSProperties,
-}
+  muted: {
+    '--tooltip-bg': 'color-mix(in srgb, var(--muted) 82%, transparent)',
+    '--tooltip-border': 'rgba(var(--muted-foreground-rgb, 78 94 120), 0.5)',
+    '--tooltip-color': 'rgba(var(--fg-rgb), 0.92)',
+  } as CSSProperties,
+  accent: {
+    '--tooltip-bg':
+      'linear-gradient(145deg, color-mix(in srgb, var(--accent-strong) 88%, white 8%), color-mix(in srgb, var(--accent) 92%, white 6%))',
+    '--tooltip-border': 'rgba(var(--accent-rgb), 0.55)',
+    '--tooltip-color': 'var(--accent-foreground, rgb(var(--fg-rgb)))',
+    boxShadow: '0 22px 48px -24px rgba(var(--accent-rgb), 0.4)',
+  } as CSSProperties,
+  inverted: {
+    '--tooltip-bg': 'rgba(15, 23, 42, 0.92)',
+    '--tooltip-border': 'rgba(255, 255, 255, 0.1)',
+    '--tooltip-color': 'rgba(248, 250, 252, 0.95)',
+    boxShadow: '0 22px 42px -24px rgba(2, 6, 23, 0.7)',
+  } as CSSProperties,
+};
 
 const arrowToneStyles: Record<TooltipTone, CSSProperties> = {
-  muted: { fill: 'color-mix(in srgb, var(--muted) 84%, white 6%)', stroke: 'rgba(var(--muted-foreground-rgb, 78 94 120), 0.5)' } as CSSProperties,
-  accent: { fill: 'color-mix(in srgb, var(--accent) 88%, white 10%)', stroke: 'rgba(var(--accent-rgb), 0.55)' } as CSSProperties,
-  inverted: { fill: 'rgba(15, 23, 42, 0.92)', stroke: 'rgba(255, 255, 255, 0.08)' } as CSSProperties,
-}
+  muted: {
+    fill: 'color-mix(in srgb, var(--muted) 84%, white 6%)',
+    stroke: 'rgba(var(--muted-foreground-rgb, 78 94 120), 0.5)',
+  } as CSSProperties,
+  accent: {
+    fill: 'color-mix(in srgb, var(--accent) 88%, white 10%)',
+    stroke: 'rgba(var(--accent-rgb), 0.55)',
+  } as CSSProperties,
+  inverted: {
+    fill: 'rgba(15, 23, 42, 0.92)',
+    stroke: 'rgba(255, 255, 255, 0.08)',
+  } as CSSProperties,
+};
 
 const sizeClassNames: Record<TooltipSize, string> = {
   sm: '[--tooltip-padding-y:0.35rem] [--tooltip-padding-x:0.55rem] text-[0.78rem]',
   md: '[--tooltip-padding-y:0.45rem] [--tooltip-padding-x:0.7rem] text-[0.85rem]',
-}
+};
 
 const sideAnimationClass: Record<
   NonNullable<TooltipPrimitive.TooltipContentProps['side']>,
@@ -33,19 +57,19 @@ const sideAnimationClass: Record<
   bottom: 'animate-tooltip-slide-up',
   left: 'animate-tooltip-slide-right',
   right: 'animate-tooltip-slide-left',
-}
+};
 
 interface TooltipContentProps extends TooltipPrimitive.TooltipContentProps {
-  tone?: TooltipTone
-  size?: TooltipSize
-  hideArrow?: boolean
+  tone?: TooltipTone;
+  size?: TooltipSize;
+  hideArrow?: boolean;
 }
 
-type TooltipContentElement = ElementRef<typeof TooltipPrimitive.Content>
+type TooltipContentElement = ElementRef<typeof TooltipPrimitive.Content>;
 
-const TooltipProvider = TooltipPrimitive.Provider
-const TooltipRoot = TooltipPrimitive.Root
-const TooltipTrigger = TooltipPrimitive.Trigger
+const TooltipProvider = TooltipPrimitive.Provider;
+const TooltipRoot = TooltipPrimitive.Root;
+const TooltipTrigger = TooltipPrimitive.Trigger;
 
 const TooltipContent = forwardRef<TooltipContentElement, TooltipContentProps>(
   (
@@ -59,7 +83,7 @@ const TooltipContent = forwardRef<TooltipContentElement, TooltipContentProps>(
       children,
       ...props
     },
-    ref
+    ref,
   ) => (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
@@ -71,7 +95,7 @@ const TooltipContent = forwardRef<TooltipContentElement, TooltipContentProps>(
           'transition-transform duration-200 ease-glass',
           sizeClassNames[size],
           sideAnimationClass[side],
-          className
+          className,
         )}
         style={tooltipToneStyles[tone]}
         sideOffset={sideOffset}
@@ -80,14 +104,16 @@ const TooltipContent = forwardRef<TooltipContentElement, TooltipContentProps>(
       >
         {children}
         {!hideArrow && (
-          <TooltipPrimitive.Arrow style={{ width: '14px', height: '6px', ...arrowToneStyles[tone] }} />
+          <TooltipPrimitive.Arrow
+            style={{ width: '14px', height: '6px', ...arrowToneStyles[tone] }}
+          />
         )}
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
-  )
-)
+  ),
+);
 
-TooltipContent.displayName = 'TooltipContent'
+TooltipContent.displayName = 'TooltipContent';
 
 const TooltipArrow = forwardRef<
   ElementRef<typeof TooltipPrimitive.Arrow>,
@@ -99,9 +125,9 @@ const TooltipArrow = forwardRef<
     className={className}
     {...props}
   />
-))
+));
 
-TooltipArrow.displayName = 'TooltipArrow'
+TooltipArrow.displayName = 'TooltipArrow';
 
 export {
   TooltipProvider,
@@ -112,4 +138,4 @@ export {
   type TooltipContentProps,
   type TooltipTone,
   type TooltipSize,
-}
+};

@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import React, { HTMLAttributes, forwardRef } from 'react'
+import React, { HTMLAttributes, forwardRef } from 'react';
 
-import { GlassPanel, type GlassPanelDensity, type GlassPanelVariant } from './glass'
-import { cn } from '@/lib/utils'
+import { GlassPanel, type GlassPanelDensity, type GlassPanelVariant } from './glass';
+import { cn } from '@/lib/utils';
 
-type CardVariant = 'default' | 'muted' | 'subtle' | 'active' | 'accent' | 'compact'
+type CardVariant = 'default' | 'muted' | 'subtle' | 'active' | 'accent' | 'compact';
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   /**
@@ -17,15 +17,15 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
    * - accent: Accent background treatment
    * - compact: Smaller border radius
    */
-  variant?: CardVariant
+  variant?: CardVariant;
   /**
    * Apply custom animation on mount
    */
-  animate?: boolean
+  animate?: boolean;
   /**
    * Padding size
    */
-  padding?: 'none' | 'sm' | 'md' | 'lg'
+  padding?: 'none' | 'sm' | 'md' | 'lg';
 }
 
 const paddingClasses: Record<Exclude<CardProps['padding'], undefined>, string> = {
@@ -33,7 +33,7 @@ const paddingClasses: Record<Exclude<CardProps['padding'], undefined>, string> =
   sm: 'p-4',
   md: 'p-6',
   lg: 'p-8',
-}
+};
 
 /**
  * Unified Card component built on the GlassPanel primitive
@@ -53,22 +53,13 @@ const paddingClasses: Record<Exclude<CardProps['padding'], undefined>, string> =
  */
 const Card = forwardRef<HTMLDivElement, CardProps>(
   (
-    {
-      variant = 'default',
-      animate = false,
-      padding = 'md',
-      className,
-      children,
-      ...props
-    },
-    ref
+    { variant = 'default', animate = false, padding = 'md', className, children, ...props },
+    ref,
   ) => {
     const panelVariant: GlassPanelVariant =
-      variant === 'muted' || variant === 'subtle' || variant === 'accent'
-        ? variant
-        : 'default'
-    const panelState = variant === 'active' ? 'active' : 'default'
-    const panelDensity: GlassPanelDensity = variant === 'compact' ? 'compact' : 'default'
+      variant === 'muted' || variant === 'subtle' || variant === 'accent' ? variant : 'default';
+    const panelState = variant === 'active' ? 'active' : 'default';
+    const panelDensity: GlassPanelDensity = variant === 'compact' ? 'compact' : 'default';
 
     return (
       <GlassPanel
@@ -81,10 +72,10 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       >
         {children}
       </GlassPanel>
-    )
-  }
-)
+    );
+  },
+);
 
-Card.displayName = 'Card'
+Card.displayName = 'Card';
 
-export { Card, type CardProps, type CardVariant }
+export { Card, type CardProps, type CardVariant };

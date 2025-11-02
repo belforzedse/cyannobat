@@ -1,31 +1,31 @@
-'use client'
+'use client';
 
-import { useCallback, useEffect, useRef } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
-import clsx from 'clsx'
-import { GlassSurface } from '@/components/ui/glass'
+import { useCallback, useEffect, useRef } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import clsx from 'clsx';
+import { GlassSurface } from '@/components/ui/glass';
 
-import BookingActionFooter from '@/components/booking/BookingActionFooter'
-import BookingStepper from '@/components/booking/BookingStepper'
-import BookingSummaryPanel from '@/components/booking/BookingSummaryPanel'
-import ScheduleSection from '@/components/booking/ScheduleSection'
-import ReasonsSection from '@/components/booking/ReasonsSection'
-import ContactSection from '@/components/booking/ContactSection'
-import ServiceSection from '@/components/booking/ServiceSection'
-import { reasonOptions } from '@/lib/booking/constants'
-import { useBookingState } from '@/hooks/booking/useBookingState'
-import { useBookingSubmission } from '@/hooks/booking/useBookingSubmission'
+import BookingActionFooter from '@/components/booking/BookingActionFooter';
+import BookingStepper from '@/components/booking/BookingStepper';
+import BookingSummaryPanel from '@/components/booking/BookingSummaryPanel';
+import ScheduleSection from '@/components/booking/ScheduleSection';
+import ReasonsSection from '@/components/booking/ReasonsSection';
+import ContactSection from '@/components/booking/ContactSection';
+import ServiceSection from '@/components/booking/ServiceSection';
+import { reasonOptions } from '@/lib/booking/constants';
+import { useBookingState } from '@/hooks/booking/useBookingState';
+import { useBookingSubmission } from '@/hooks/booking/useBookingSubmission';
 import {
   GlobalLoadingOverlayProvider,
   useGlobalLoadingOverlay,
-} from '@/components/GlobalLoadingOverlayProvider'
-import { useToast } from '@/components/ui'
+} from '@/components/GlobalLoadingOverlayProvider';
+import { useToast } from '@/components/ui';
 
 const BookingPageContent = () => {
-  const reducedMotionSetting = useReducedMotion()
-  const prefersReducedMotion = reducedMotionSetting ?? false
-  const router = useRouter()
+  const reducedMotionSetting = useReducedMotion();
+  const prefersReducedMotion = reducedMotionSetting ?? false;
+  const router = useRouter();
   const {
     services,
     servicesLoading,
@@ -61,69 +61,72 @@ const BookingPageContent = () => {
     isCustomerComplete,
     reasonSummary,
     schedulePlaceholderMessage,
-  } = useBookingState()
-  const { setActivity } = useGlobalLoadingOverlay()
-  const { showToast } = useToast()
+  } = useBookingState();
+  const { setActivity } = useGlobalLoadingOverlay();
+  const { showToast } = useToast();
 
-  const scheduleSectionRef = useRef<HTMLDivElement | null>(null)
-  const reasonSectionRef = useRef<HTMLDivElement | null>(null)
-  const contactSectionRef = useRef<HTMLDivElement | null>(null)
+  const scheduleSectionRef = useRef<HTMLDivElement | null>(null);
+  const reasonSectionRef = useRef<HTMLDivElement | null>(null);
+  const contactSectionRef = useRef<HTMLDivElement | null>(null);
   const sectionAnimation = {
     initial: { opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -12 },
     animate: { opacity: 1, y: 0 },
     transition: { duration: prefersReducedMotion ? 0 : 0.3, ease: 'easeOut' },
-  }
+  };
 
-  const shouldShowScheduleSection = isServiceComplete
-  const shouldShowReasonSection = isScheduleComplete
-  const shouldShowContactSection = isReasonComplete
+  const shouldShowScheduleSection = isServiceComplete;
+  const shouldShowReasonSection = isScheduleComplete;
+  const shouldShowContactSection = isReasonComplete;
   const shouldShowSummarySection =
-    isServiceComplete && isScheduleComplete && isReasonComplete && isCustomerComplete
+    isServiceComplete && isScheduleComplete && isReasonComplete && isCustomerComplete;
 
   useEffect(() => {
-    setActivity('booking-availability', availabilityLoading, 'در حال بررسی زمان‌های خالی...')
+    setActivity('booking-availability', availabilityLoading, 'در حال بررسی زمان‌های خالی...');
     return () => {
-      setActivity('booking-availability', false)
-    }
-  }, [availabilityLoading, setActivity])
+      setActivity('booking-availability', false);
+    };
+  }, [availabilityLoading, setActivity]);
 
   const scrollToSection = useCallback(
     (sectionRef: { current: HTMLElement | null }) => {
-      const element = sectionRef.current
-      if (!element) return
+      const element = sectionRef.current;
+      if (!element) return;
 
-      element.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' })
+      element.scrollIntoView({
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        block: 'start',
+      });
     },
     [prefersReducedMotion],
-  )
+  );
 
-  const hasShownScheduleSectionRef = useRef(shouldShowScheduleSection)
-  const hasShownReasonSectionRef = useRef(shouldShowReasonSection)
-  const hasShownContactSectionRef = useRef(shouldShowContactSection)
+  const hasShownScheduleSectionRef = useRef(shouldShowScheduleSection);
+  const hasShownReasonSectionRef = useRef(shouldShowReasonSection);
+  const hasShownContactSectionRef = useRef(shouldShowContactSection);
 
   useEffect(() => {
     if (shouldShowScheduleSection && !hasShownScheduleSectionRef.current) {
-      scrollToSection(scheduleSectionRef)
+      scrollToSection(scheduleSectionRef);
     }
 
-    hasShownScheduleSectionRef.current = shouldShowScheduleSection
-  }, [shouldShowScheduleSection, scrollToSection])
+    hasShownScheduleSectionRef.current = shouldShowScheduleSection;
+  }, [shouldShowScheduleSection, scrollToSection]);
 
   useEffect(() => {
     if (shouldShowReasonSection && !hasShownReasonSectionRef.current) {
-      scrollToSection(reasonSectionRef)
+      scrollToSection(reasonSectionRef);
     }
 
-    hasShownReasonSectionRef.current = shouldShowReasonSection
-  }, [shouldShowReasonSection, scrollToSection])
+    hasShownReasonSectionRef.current = shouldShowReasonSection;
+  }, [shouldShowReasonSection, scrollToSection]);
 
   useEffect(() => {
     if (shouldShowContactSection && !hasShownContactSectionRef.current) {
-      scrollToSection(contactSectionRef)
+      scrollToSection(contactSectionRef);
     }
 
-    hasShownContactSectionRef.current = shouldShowContactSection
-  }, [shouldShowContactSection, scrollToSection])
+    hasShownContactSectionRef.current = shouldShowContactSection;
+  }, [shouldShowContactSection, scrollToSection]);
 
   const {
     isSubmitting,
@@ -143,7 +146,7 @@ const BookingPageContent = () => {
     setActivity,
     showToast,
     isContinueDisabled,
-  })
+  });
 
   return (
     <GlassSurface
@@ -170,7 +173,10 @@ const BookingPageContent = () => {
         <motion.span
           initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: prefersReducedMotion ? 0 : 0.1, duration: prefersReducedMotion ? 0 : 0.45 }}
+          transition={{
+            delay: prefersReducedMotion ? 0 : 0.1,
+            duration: prefersReducedMotion ? 0 : 0.45,
+          }}
           className="rounded-full border border-white/25 bg-white/20 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm dark:border-white/15 dark:bg-white/10"
         >
           مسیر رزرو نوبت
@@ -178,7 +184,10 @@ const BookingPageContent = () => {
         <motion.h1
           initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: prefersReducedMotion ? 0 : 0.2, duration: prefersReducedMotion ? 0 : 0.5 }}
+          transition={{
+            delay: prefersReducedMotion ? 0 : 0.2,
+            duration: prefersReducedMotion ? 0 : 0.5,
+          }}
           className="bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-4xl font-bold text-transparent sm:text-5xl"
         >
           رزرو سریع وقت ملاقات
@@ -186,12 +195,15 @@ const BookingPageContent = () => {
         <motion.p
           initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: prefersReducedMotion ? 0 : 0.3, duration: prefersReducedMotion ? 0 : 0.5 }}
+          transition={{
+            delay: prefersReducedMotion ? 0 : 0.3,
+            duration: prefersReducedMotion ? 0 : 0.5,
+          }}
           className="max-w-2xl text-balance leading-relaxed text-muted-foreground"
         >
-          از میان خدمات فعال، بازه زمانی مناسب خود را انتخاب کنید؛ ارائه‌دهنده مرتبط همراه هر بازه معرفی شده است. سپس
-          علت مراجعه را بنویسید و اطلاعات تماس را ثبت نمایید. در پایان جزئیات را یک بار دیگر مرور کنید تا نوبت شما به‌صورت
-          خودکار در سامانه ثبت شود.
+          از میان خدمات فعال، بازه زمانی مناسب خود را انتخاب کنید؛ ارائه‌دهنده مرتبط همراه هر بازه
+          معرفی شده است. سپس علت مراجعه را بنویسید و اطلاعات تماس را ثبت نمایید. در پایان جزئیات را
+          یک بار دیگر مرور کنید تا نوبت شما به‌صورت خودکار در سامانه ثبت شود.
         </motion.p>
       </header>
 
@@ -205,7 +217,11 @@ const BookingPageContent = () => {
         )}
       >
         <form className="grid gap-4 sm:gap-6 lg:gap-8">
-          <motion.div layout {...sectionAnimation} transition={{ ...sectionAnimation.transition, delay: 0 }}>
+          <motion.div
+            layout
+            {...sectionAnimation}
+            transition={{ ...sectionAnimation.transition, delay: 0 }}
+          >
             <ServiceSection
               services={services}
               selectedServiceId={selectedServiceId}
@@ -216,62 +232,68 @@ const BookingPageContent = () => {
             />
           </motion.div>
 
-        {shouldShowScheduleSection && (
-          <motion.div
-            key="booking-schedule"
-            layout
-            ref={scheduleSectionRef}
-            {...sectionAnimation}
-            transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.05 }}
-          >
-            <ScheduleSection
-              availability={availabilityForSelection}
-              selectedDay={selectedDay}
-              selectedSlotId={selectedSchedule?.slot.id ?? null}
-              onSelectDay={handleDaySelect}
-              onSelectSlot={handleSlotSelect}
-              placeholderMessage={schedulePlaceholderMessage}
-              isLoading={availabilityLoading}
-              errorMessage={availabilityError}
-              onRetry={refreshAvailability}
-            />
-          </motion.div>
-        )}
+          {shouldShowScheduleSection && (
+            <motion.div
+              key="booking-schedule"
+              layout
+              ref={scheduleSectionRef}
+              {...sectionAnimation}
+              transition={{
+                ...sectionAnimation.transition,
+                delay: prefersReducedMotion ? 0 : 0.05,
+              }}
+            >
+              <ScheduleSection
+                availability={availabilityForSelection}
+                selectedDay={selectedDay}
+                selectedSlotId={selectedSchedule?.slot.id ?? null}
+                onSelectDay={handleDaySelect}
+                onSelectSlot={handleSlotSelect}
+                placeholderMessage={schedulePlaceholderMessage}
+                isLoading={availabilityLoading}
+                errorMessage={availabilityError}
+                onRetry={refreshAvailability}
+              />
+            </motion.div>
+          )}
 
-        {shouldShowReasonSection && (
-          <motion.div
-            key="booking-reasons"
-            layout
-            ref={reasonSectionRef}
-            {...sectionAnimation}
-            transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.1 }}
-          >
-            <ReasonsSection
-              options={reasonOptions}
-              selectedReasons={selectedReasons}
-              onToggleReason={handleReasonToggle}
-              additionalReason={additionalReason}
-              onAdditionalReasonChange={(value) => setAdditionalReason(value)}
-            />
-          </motion.div>
-        )}
+          {shouldShowReasonSection && (
+            <motion.div
+              key="booking-reasons"
+              layout
+              ref={reasonSectionRef}
+              {...sectionAnimation}
+              transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.1 }}
+            >
+              <ReasonsSection
+                options={reasonOptions}
+                selectedReasons={selectedReasons}
+                onToggleReason={handleReasonToggle}
+                additionalReason={additionalReason}
+                onAdditionalReasonChange={(value) => setAdditionalReason(value)}
+              />
+            </motion.div>
+          )}
 
-        {shouldShowContactSection && (
-          <motion.div
-            key="booking-contact"
-            layout
-            ref={contactSectionRef}
-            {...sectionAnimation}
-            transition={{ ...sectionAnimation.transition, delay: prefersReducedMotion ? 0 : 0.15 }}
-          >
-            <ContactSection
-              customerInfo={customerInfo}
-              onCustomerChange={handleCustomerChange}
-              customerNotes={customerNotes}
-              onCustomerNotesChange={(value) => setCustomerNotes(value)}
-            />
-          </motion.div>
-        )}
+          {shouldShowContactSection && (
+            <motion.div
+              key="booking-contact"
+              layout
+              ref={contactSectionRef}
+              {...sectionAnimation}
+              transition={{
+                ...sectionAnimation.transition,
+                delay: prefersReducedMotion ? 0 : 0.15,
+              }}
+            >
+              <ContactSection
+                customerInfo={customerInfo}
+                onCustomerChange={handleCustomerChange}
+                customerNotes={customerNotes}
+                onCustomerNotesChange={(value) => setCustomerNotes(value)}
+              />
+            </motion.div>
+          )}
         </form>
 
         {shouldShowSummarySection && (
@@ -318,13 +340,13 @@ const BookingPageContent = () => {
         </motion.div>
       )}
     </GlassSurface>
-  )
-}
+  );
+};
 
 const BookingPage = () => (
   <GlobalLoadingOverlayProvider>
     <BookingPageContent />
   </GlobalLoadingOverlayProvider>
-)
+);
 
-export default BookingPage
+export default BookingPage;

@@ -134,7 +134,7 @@ export const luxuryStagger = {
  */
 export function luxurySlideFade(
   direction: Direction = 'up',
-  options: LuxurySlideFadeOptions = {}
+  options: LuxurySlideFadeOptions = {},
 ): Variants {
   const {
     distance = 32,

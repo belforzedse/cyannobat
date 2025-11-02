@@ -1,18 +1,23 @@
-import type { CollectionAfterChangeHook, CollectionBeforeValidateHook, CollectionConfig, Where } from 'payload'
-import type { PayloadRequest } from 'payload'
+import type {
+  CollectionAfterChangeHook,
+  CollectionBeforeValidateHook,
+  CollectionConfig,
+  Where,
+} from 'payload';
+import type { PayloadRequest } from 'payload';
 
-import { userIsStaff } from '@/lib/auth'
-import type { Service as ServiceDoc } from '../payload-types'
-import { bookingHold } from '../lib/redis'
+import { userIsStaff } from '@/lib/auth';
+import type { Service as ServiceDoc } from '../payload-types';
+import { bookingHold } from '../lib/redis';
 
 const generateReference = (): string => {
-  const timestamp = Date.now().toString(36).toUpperCase()
-  const random = Math.random().toString(36).slice(2, 8).toUpperCase()
-  return `APT-${timestamp}-${random}`
-}
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const random = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `APT-${timestamp}-${random}`;
+};
 
 const getProviderIdsForUser = async (req: PayloadRequest): Promise<string[]> => {
-  if (!req.user) return []
+  if (!req.user) return [];
 
   const result = await req.payload.find({
     collection: 'providers',
@@ -23,50 +28,56 @@ const getProviderIdsForUser = async (req: PayloadRequest): Promise<string[]> => 
     },
     depth: 0,
     limit: 25,
-  })
+  });
 
   const ids = result.docs
     .map((doc) => {
       if (doc && typeof doc === 'object') {
-        const value = (doc as { id?: unknown }).id
+        const value = (doc as { id?: unknown }).id;
         if (typeof value === 'string' || typeof value === 'number') {
-          return String(value)
+          return String(value);
         }
       }
 
-      return null
+      return null;
     })
-    .filter((id): id is string => typeof id === 'string')
+    .filter((id): id is string => typeof id === 'string');
 
-  return ids
-}
+  return ids;
+};
 
 const extractRelationshipId = (value: unknown): string | null => {
-  if (!value) return null
+  if (!value) return null;
 
-  if (typeof value === 'string') return value
-  if (typeof value === 'number') return value.toString()
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return value.toString();
   if (typeof value === 'object') {
-    if ('id' in (value as Record<string, unknown>) && typeof (value as Record<string, unknown>).id !== 'undefined') {
-      return String((value as Record<string, unknown>).id)
+    if (
+      'id' in (value as Record<string, unknown>) &&
+      typeof (value as Record<string, unknown>).id !== 'undefined'
+    ) {
+      return String((value as Record<string, unknown>).id);
     }
-    if ('value' in (value as Record<string, unknown>) && typeof (value as Record<string, unknown>).value !== 'undefined') {
-      return String((value as Record<string, unknown>).value)
+    if (
+      'value' in (value as Record<string, unknown>) &&
+      typeof (value as Record<string, unknown>).value !== 'undefined'
+    ) {
+      return String((value as Record<string, unknown>).value);
     }
   }
 
-  return null
-}
+  return null;
+};
 
 const serviceSchedulingHook: CollectionBeforeValidateHook = async ({ data, originalDoc, req }) => {
-  if (!data) return data
+  if (!data) return data;
 
-  const serviceRelation = data.service ?? originalDoc?.service
-  const serviceId = extractRelationshipId(serviceRelation)
+  const serviceRelation = data.service ?? originalDoc?.service;
+  const serviceId = extractRelationshipId(serviceRelation);
 
   if (!serviceId) {
     if (!data.reference) {
-      data.reference = originalDoc?.reference ?? generateReference()
+      data.reference = originalDoc?.reference ?? generateReference();
     }
     if (!data.pricingSnapshot) {
       data.pricingSnapshot = {
@@ -74,21 +85,21 @@ const serviceSchedulingHook: CollectionBeforeValidateHook = async ({ data, origi
         currency: data.pricingSnapshot?.currency ?? 'USD',
         durationMinutes: data.pricingSnapshot?.durationMinutes ?? 0,
         taxRate: data.pricingSnapshot?.taxRate,
-      }
+      };
     }
-    return data
+    return data;
   }
 
-  let service: ServiceDoc | null = null
+  let service: ServiceDoc | null = null;
   try {
     service = (await req.payload.findByID({
       collection: 'services',
       id: serviceId,
       depth: 0,
-    })) as ServiceDoc
+    })) as ServiceDoc;
   } catch {
     if (!data.reference) {
-      data.reference = originalDoc?.reference ?? generateReference()
+      data.reference = originalDoc?.reference ?? generateReference();
     }
     if (!data.pricingSnapshot) {
       data.pricingSnapshot = {
@@ -96,94 +107,104 @@ const serviceSchedulingHook: CollectionBeforeValidateHook = async ({ data, origi
         currency: data.pricingSnapshot?.currency ?? 'USD',
         durationMinutes: data.pricingSnapshot?.durationMinutes ?? 0,
         taxRate: data.pricingSnapshot?.taxRate,
-      }
+      };
     }
-    return data
+    return data;
   }
 
   const schedule = {
     ...originalDoc?.schedule,
     ...data.schedule,
-  }
+  };
 
   if (service?.durationMinutes) {
-    const startISO = schedule?.start
+    const startISO = schedule?.start;
 
     if (startISO && !schedule?.end) {
-      const start = new Date(startISO)
+      const start = new Date(startISO);
       if (!Number.isNaN(start.getTime())) {
-        const end = new Date(start.getTime() + service.durationMinutes * 60 * 1000)
-        schedule.start = start.toISOString()
-        schedule.end = end.toISOString()
-        schedule.durationMinutes = Math.max(Math.round((end.getTime() - start.getTime()) / 60000), 0)
+        const end = new Date(start.getTime() + service.durationMinutes * 60 * 1000);
+        schedule.start = start.toISOString();
+        schedule.end = end.toISOString();
+        schedule.durationMinutes = Math.max(
+          Math.round((end.getTime() - start.getTime()) / 60000),
+          0,
+        );
       }
     }
   }
 
   if (schedule.start && schedule.end && !schedule.durationMinutes) {
-    const start = new Date(schedule.start)
-    const end = new Date(schedule.end)
+    const start = new Date(schedule.start);
+    const end = new Date(schedule.end);
     if (!Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime())) {
-      schedule.durationMinutes = Math.max(Math.round((end.getTime() - start.getTime()) / 60000), 0)
+      schedule.durationMinutes = Math.max(Math.round((end.getTime() - start.getTime()) / 60000), 0);
     }
   }
 
-  schedule.timeZone = schedule.timeZone ?? 'UTC'
-  schedule.bufferBefore = schedule.bufferBefore ?? service?.bufferMinutesBefore ?? 0
-  schedule.bufferAfter = schedule.bufferAfter ?? service?.bufferMinutesAfter ?? 0
+  schedule.timeZone = schedule.timeZone ?? 'UTC';
+  schedule.bufferBefore = schedule.bufferBefore ?? service?.bufferMinutesBefore ?? 0;
+  schedule.bufferAfter = schedule.bufferAfter ?? service?.bufferMinutesAfter ?? 0;
 
-  data.schedule = schedule
+  data.schedule = schedule;
 
   const pricing = {
     amount: data.pricingSnapshot?.amount ?? service?.pricing?.amount ?? 0,
     currency: data.pricingSnapshot?.currency ?? service?.pricing?.currency ?? 'USD',
     durationMinutes: data.pricingSnapshot?.durationMinutes ?? service?.durationMinutes ?? 0,
     taxRate: data.pricingSnapshot?.taxRate ?? service?.pricing?.taxRate,
-  }
+  };
 
-  data.pricingSnapshot = pricing
+  data.pricingSnapshot = pricing;
 
   if (!data.provider && Array.isArray(service?.providers) && service.providers.length === 1) {
-    const [firstProvider] = service.providers
-    const providerId = extractRelationshipId(firstProvider)
+    const [firstProvider] = service.providers;
+    const providerId = extractRelationshipId(firstProvider);
 
     if (providerId) {
       data.provider = {
         relationTo: 'providers',
         value: providerId,
-      }
+      };
     }
   }
 
   if (!data.reference) {
-    data.reference = originalDoc?.reference ?? generateReference()
+    data.reference = originalDoc?.reference ?? generateReference();
   }
 
-  return data
-}
+  return data;
+};
 
-const releaseBookingHoldAfterCreate: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
-  if (operation !== 'create') return doc
+const releaseBookingHoldAfterCreate: CollectionAfterChangeHook = async ({
+  doc,
+  operation,
+  req,
+}) => {
+  if (operation !== 'create') return doc;
 
-  const serviceId = extractRelationshipId(doc?.service)
-  const slot = typeof doc?.schedule === 'object' && doc?.schedule !== null ? (doc.schedule as { start?: unknown }).start : null
-  const slotStart = typeof slot === 'string' ? slot : null
+  const serviceId = extractRelationshipId(doc?.service);
+  const slot =
+    typeof doc?.schedule === 'object' && doc?.schedule !== null
+      ? (doc.schedule as { start?: unknown }).start
+      : null;
+  const slotStart = typeof slot === 'string' ? slot : null;
 
   if (!serviceId || !slotStart) {
-    return doc
+    return doc;
   }
 
   try {
     await bookingHold.release({
       serviceId,
       slot: slotStart,
-    })
+    });
   } catch (error) {
-    req.payload.logger.error?.('Failed to release booking hold after appointment creation', error)
+    req.payload.logger.error?.('Failed to release booking hold after appointment creation', error);
   }
 
-  return doc
-}
+  return doc;
+};
 
 export const Appointments: CollectionConfig = {
   slug: 'appointments',
@@ -201,74 +222,74 @@ export const Appointments: CollectionConfig = {
   },
   access: {
     read: async ({ req }) => {
-      if (!req.user) return false
-      if (userIsStaff(req.user)) return true
+      if (!req.user) return false;
+      if (userIsStaff(req.user)) return true;
 
-      const providerIds = await getProviderIdsForUser(req)
+      const providerIds = await getProviderIdsForUser(req);
       const orConstraints: Where[] = [
         {
           client: {
             equals: req.user.id,
           },
         } as Where,
-      ]
+      ];
 
       if (providerIds.length > 0) {
         orConstraints.push({
           provider: {
             in: providerIds,
           },
-        } as Where)
+        } as Where);
       }
 
-      return { or: orConstraints } as Where
+      return { or: orConstraints } as Where;
     },
     create: ({ req }) => Boolean(req.user),
     update: async ({ req }) => {
-      if (!req.user) return false
-      if (userIsStaff(req.user)) return true
+      if (!req.user) return false;
+      if (userIsStaff(req.user)) return true;
 
-      const providerIds = await getProviderIdsForUser(req)
+      const providerIds = await getProviderIdsForUser(req);
       const constraints: Where[] = [
         {
           client: {
             equals: req.user.id,
           },
         } as Where,
-      ]
+      ];
 
       if (providerIds.length > 0) {
         constraints.push({
           provider: {
             in: providerIds,
           },
-        } as Where)
+        } as Where);
       }
 
-      return { or: constraints } as Where
+      return { or: constraints } as Where;
     },
     delete: async ({ req }) => {
-      if (!req.user) return false
-      if (userIsStaff(req.user)) return true
+      if (!req.user) return false;
+      if (userIsStaff(req.user)) return true;
 
-      const providerIds = await getProviderIdsForUser(req)
+      const providerIds = await getProviderIdsForUser(req);
       const constraints: Where[] = [
         {
           client: {
             equals: req.user.id,
           },
         } as Where,
-      ]
+      ];
 
       if (providerIds.length > 0) {
         constraints.push({
           provider: {
             in: providerIds,
           },
-        } as Where)
+        } as Where);
       }
 
-      return { or: constraints } as Where
+      return { or: constraints } as Where;
     },
   },
   fields: [
@@ -464,4 +485,4 @@ export const Appointments: CollectionConfig = {
       },
     },
   ],
-}
+};

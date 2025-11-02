@@ -1,15 +1,15 @@
 // @ts-nocheck
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getPayload } from 'payload';
+import config from '@payload-config';
 
 async function seed() {
-  console.log('🌱 Starting database seeding...')
+  console.log('🌱 Starting database seeding...');
 
-  const payload = await getPayload({ config })
+  const payload = await getPayload({ config });
 
   try {
     // Create admin user
-    console.log('Creating admin user...')
+    console.log('Creating admin user...');
     const adminUser = await payload.create({
       collection: 'users',
       data: {
@@ -20,10 +20,10 @@ async function seed() {
         password: 'admin123',
         roles: ['admin'],
       },
-    })
+    });
 
     // Create provider users
-    console.log('Creating provider users...')
+    console.log('Creating provider users...');
     const provider1User = await payload.create({
       collection: 'users',
       data: {
@@ -34,7 +34,7 @@ async function seed() {
         password: 'provider123',
         roles: ['doctor'],
       },
-    })
+    });
 
     const provider2User = await payload.create({
       collection: 'users',
@@ -46,7 +46,7 @@ async function seed() {
         password: 'provider123',
         roles: ['doctor'],
       },
-    })
+    });
 
     const provider3User = await payload.create({
       collection: 'users',
@@ -58,10 +58,10 @@ async function seed() {
         password: 'provider123',
         roles: ['doctor'],
       },
-    })
+    });
 
     // Create client user
-    console.log('Creating client user...')
+    console.log('Creating client user...');
     const clientUser = await payload.create({
       collection: 'users',
       data: {
@@ -72,10 +72,10 @@ async function seed() {
         password: 'client123',
         roles: ['patient'],
       },
-    })
+    });
 
     // Create providers
-    console.log('Creating providers...')
+    console.log('Creating providers...');
     const provider1 = await payload.create({
       collection: 'providers',
       data: {
@@ -83,11 +83,7 @@ async function seed() {
         displayName: 'دکتر سارا رضایی',
         slug: 'dr-sara-rezaei',
         headline: 'متخصص پوست و مو',
-        specialties: [
-          { label: 'پوست' },
-          { label: 'مو' },
-          { label: 'لیزر' },
-        ],
+        specialties: [{ label: 'پوست' }, { label: 'مو' }, { label: 'لیزر' }],
         contact: {
           phone: '۰۹۱۲۳۴۵۶۷۸۹',
           email: 'sara.rezaei@cyannobat.com',
@@ -98,7 +94,7 @@ async function seed() {
           country: 'ایران',
         },
       },
-    })
+    });
 
     const provider2 = await payload.create({
       collection: 'providers',
@@ -107,11 +103,7 @@ async function seed() {
         displayName: 'دکتر علی کریمی',
         slug: 'dr-ali-karimi',
         headline: 'متخصص دندانپزشکی زیبایی',
-        specialties: [
-          { label: 'دندانپزشکی' },
-          { label: 'ایمپلنت' },
-          { label: 'زیبایی' },
-        ],
+        specialties: [{ label: 'دندانپزشکی' }, { label: 'ایمپلنت' }, { label: 'زیبایی' }],
         contact: {
           phone: '۰۹۱۲۳۴۵۶۷۸۸',
           email: 'ali.karimi@cyannobat.com',
@@ -122,7 +114,7 @@ async function seed() {
           country: 'ایران',
         },
       },
-    })
+    });
 
     const provider3 = await payload.create({
       collection: 'providers',
@@ -131,11 +123,7 @@ async function seed() {
         displayName: 'مریم احمدی',
         slug: 'maryam-ahmadi',
         headline: 'کارشناس ماساژ درمانی و فیزیوتراپی',
-        specialties: [
-          { label: 'ماساژ' },
-          { label: 'فیزیوتراپی' },
-          { label: 'طب سوزنی' },
-        ],
+        specialties: [{ label: 'ماساژ' }, { label: 'فیزیوتراپی' }, { label: 'طب سوزنی' }],
         contact: {
           phone: '۰۹۱۲۳۴۵۶۷۸۷',
           email: 'maryam.ahmadi@cyannobat.com',
@@ -146,10 +134,10 @@ async function seed() {
           country: 'ایران',
         },
       },
-    })
+    });
 
     // Create services
-    console.log('Creating services...')
+    console.log('Creating services...');
     const service1 = await payload.create({
       collection: 'services',
       data: {
@@ -164,7 +152,7 @@ async function seed() {
         providers: [provider1.id],
         isActive: true,
       },
-    })
+    });
 
     const service2 = await payload.create({
       collection: 'services',
@@ -180,7 +168,7 @@ async function seed() {
         providers: [provider1.id, provider2.id],
         isActive: true,
       },
-    })
+    });
 
     const service3 = await payload.create({
       collection: 'services',
@@ -196,7 +184,7 @@ async function seed() {
         providers: [provider2.id],
         isActive: true,
       },
-    })
+    });
 
     const service4 = await payload.create({
       collection: 'services',
@@ -212,7 +200,7 @@ async function seed() {
         providers: [provider3.id],
         isActive: true,
       },
-    })
+    });
 
     const service5 = await payload.create({
       collection: 'services',
@@ -228,7 +216,7 @@ async function seed() {
         providers: [provider1.id, provider3.id],
         isActive: true,
       },
-    })
+    });
 
     const service6 = await payload.create({
       collection: 'services',
@@ -244,24 +232,24 @@ async function seed() {
         providers: [provider2.id, provider3.id],
         isActive: true,
       },
-    })
+    });
 
     // Create sample appointments
-    console.log('Creating sample appointments...')
-    const now = new Date()
-    const tomorrow = new Date(now)
-    tomorrow.setDate(tomorrow.getDate() + 1)
-    tomorrow.setHours(10, 0, 0, 0)
+    console.log('Creating sample appointments...');
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0);
 
-    const appointmentEndTime = new Date(tomorrow)
-    appointmentEndTime.setMinutes(appointmentEndTime.getMinutes() + 30)
+    const appointmentEndTime = new Date(tomorrow);
+    appointmentEndTime.setMinutes(appointmentEndTime.getMinutes() + 30);
 
-    const nextWeek = new Date(now)
-    nextWeek.setDate(nextWeek.getDate() + 7)
-    nextWeek.setHours(14, 0, 0, 0)
+    const nextWeek = new Date(now);
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    nextWeek.setHours(14, 0, 0, 0);
 
-    const nextWeekEndTime = new Date(nextWeek)
-    nextWeekEndTime.setMinutes(nextWeekEndTime.getMinutes() + 60)
+    const nextWeekEndTime = new Date(nextWeek);
+    nextWeekEndTime.setMinutes(nextWeekEndTime.getMinutes() + 60);
 
     await payload.create({
       collection: 'appointments',
@@ -278,7 +266,7 @@ async function seed() {
         clientNotes: 'اولین ویزیت - بررسی کامل',
         internalNotes: 'Seeded appointment - initial consultation',
       },
-    })
+    });
 
     await payload.create({
       collection: 'appointments',
@@ -295,22 +283,21 @@ async function seed() {
         clientNotes: 'نوبت دوم - پیگیری درمان',
         internalNotes: 'Seeded appointment - follow-up scheduling',
       },
-    })
+    });
 
-    console.log('✅ Database seeded successfully!')
-    console.log('\n📋 Login credentials:')
-    console.log('Admin: admin@cyannobat.com / admin123')
-    console.log('Provider 1: sara.rezaei@cyannobat.com / provider123')
-    console.log('Provider 2: ali.karimi@cyannobat.com / provider123')
-    console.log('Provider 3: maryam.ahmadi@cyannobat.com / provider123')
-    console.log('Client: client@example.com / client123')
-
+    console.log('✅ Database seeded successfully!');
+    console.log('\n📋 Login credentials:');
+    console.log('Admin: admin@cyannobat.com / admin123');
+    console.log('Provider 1: sara.rezaei@cyannobat.com / provider123');
+    console.log('Provider 2: ali.karimi@cyannobat.com / provider123');
+    console.log('Provider 3: maryam.ahmadi@cyannobat.com / provider123');
+    console.log('Client: client@example.com / client123');
   } catch (error) {
-    console.error('❌ Error seeding database:', error)
-    throw error
+    console.error('❌ Error seeding database:', error);
+    throw error;
   }
 
-  process.exit(0)
+  process.exit(0);
 }
 
-seed()
+seed();

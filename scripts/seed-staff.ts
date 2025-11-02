@@ -1,5 +1,5 @@
-import payload from 'payload'
-import path from 'path'
+import payload from 'payload';
+import path from 'path';
 
 const USERS_TO_SEED = [
   {
@@ -26,14 +26,14 @@ const USERS_TO_SEED = [
     password: 'reception123!',
     roles: ['receptionist'],
   },
-]
+];
 
 const run = async () => {
-  const configPath = path.resolve(process.cwd(), 'src/payload.config.ts')
+  const configPath = path.resolve(process.cwd(), 'src/payload.config.ts');
 
   await payload.init({
     config: (await import(configPath)).default,
-  })
+  });
 
   for (const user of USERS_TO_SEED) {
     const existing = await payload.find({
@@ -45,23 +45,23 @@ const run = async () => {
       },
       limit: 1,
       depth: 0,
-    })
+    });
 
     if (existing.docs.length > 0) {
-      const target = existing.docs[0]
+      const target = existing.docs[0];
       const updateData: Record<string, unknown> = {
         roles: user.roles,
         name: user.name,
         phone: user.phone,
         nationalId: user.nationalId,
-      }
+      };
       await payload.update({
         collection: 'users',
         id: target.id,
         data: updateData as never,
         overrideAccess: true,
-      })
-      continue
+      });
+      continue;
     }
 
     const createData: Record<string, unknown> = {
@@ -71,20 +71,20 @@ const run = async () => {
       nationalId: user.nationalId,
       password: user.password,
       roles: user.roles,
-    }
+    };
 
     await payload.create({
       collection: 'users',
       data: createData as never,
       overrideAccess: true,
-    })
+    });
   }
 
-  payload.logger.info('Seeded default patient/doctor/receptionist users.')
-  process.exit(0)
-}
+  payload.logger.info('Seeded default patient/doctor/receptionist users.');
+  process.exit(0);
+};
 
 run().catch((error) => {
-  payload.logger.error('Failed to seed staff users', error)
-  process.exit(1)
-})
+  payload.logger.error('Failed to seed staff users', error);
+  process.exit(1);
+});

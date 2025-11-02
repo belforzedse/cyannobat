@@ -28,11 +28,13 @@ npm run typecheck
 ## Docker Environment
 
 The project includes Docker Compose configuration with three services:
+
 - `postgres`: PostgreSQL 16 database (port 5432)
 - `redis`: Redis 7 cache (port 6379)
 - `web`: Next.js application (port 3000)
 
 Start services:
+
 ```bash
 docker-compose up -d
 ```
@@ -69,6 +71,7 @@ The application uses Next.js App Router with three distinct route groups:
 Main config: `src/payload.config.ts`
 
 Key aspects:
+
 - Database: PostgreSQL via `@payloadcms/db-postgres`
 - Rich text editor: Lexical (`@payloadcms/richtext-lexical`)
 - Image processing: Sharp
@@ -78,6 +81,7 @@ Key aspects:
 ### Collections
 
 Defined in `src/collections/`:
+
 - **Users**: Authentication collection with email as title field
 - **Media**: File upload collection with public read access and required alt text
 - **Providers**: Service providers with relationship to user accounts
@@ -85,6 +89,7 @@ Defined in `src/collections/`:
 - **Appointments**: Booking records with complex scheduling logic and access control
 
 To add new collections:
+
 1. Create collection config in `src/collections/`
 2. Import and add to `collections` array in `src/payload.config.ts`
 3. Types will regenerate automatically
@@ -92,6 +97,7 @@ To add new collections:
 ### Environment Variables
 
 Required in `.env`:
+
 - `PAYLOAD_SECRET`: Secret key for Payload authentication
 - `DATABASE_URI`: PostgreSQL connection string (format: `postgresql://user:pass@host:port/db`)
 - `REDIS_URL`: Redis connection URL (currently stubbed in-memory)
@@ -101,6 +107,7 @@ Required in `.env`:
 - `NEXT_PUBLIC_APP_URL`: Public URL for client-side code
 
 Docker defaults:
+
 - DB: `postgresql://cyannobat:cyannopass@postgres:5432/cyannobat`
 - Redis: `redis://localhost:6379`
 
@@ -109,6 +116,7 @@ Docker defaults:
 In development (`NODE_ENV=development`), Payload automatically pushes schema changes to PostgreSQL on startup when `PAYLOAD_DB_PUSH=true`.
 
 For production deployments, generate tracked migrations:
+
 ```bash
 pnpm payload migrate:create -- --name <migration-name>
 pnpm payload migrate
@@ -119,6 +127,7 @@ Migration files are stored in `src/payload-migrations/` and should be committed 
 ### TypeScript Configuration
 
 Path aliases:
+
 - `@/*` maps to `src/*`
 - `@styles/*` maps to `styles/*`
 - `@payload-config` maps to `src/payload.config.ts`
@@ -134,18 +143,18 @@ The Next.js config (`next.config.ts`) wraps the base configuration with `withPay
 ### Accessing Payload in Server Components
 
 ```typescript
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getPayload } from 'payload';
+import config from '@payload-config';
 
-const payload = await getPayload({ config })
+const payload = await getPayload({ config });
 ```
 
 ### Checking Authentication
 
 ```typescript
-import { headers as getHeaders } from 'next/headers'
-const headers = await getHeaders()
-const { user } = await payload.auth({ headers })
+import { headers as getHeaders } from 'next/headers';
+const headers = await getHeaders();
+const { user } = await payload.auth({ headers });
 ```
 
 ### Direct Database Access with Drizzle
@@ -153,18 +162,18 @@ const { user } = await payload.auth({ headers })
 The project exports `payloadDrizzle` and `payloadDbPool` from `src/payload.config.ts` for direct SQL queries when Payload's ORM is insufficient:
 
 ```typescript
-import { payloadDrizzle } from '@payload-config'
-import { sql } from 'drizzle-orm'
+import { payloadDrizzle } from '@payload-config';
+import { sql } from 'drizzle-orm';
 
-const result = await payloadDrizzle.execute(
-  sql`SELECT * FROM appointments WHERE service = ${serviceId}`
-)
+const result = await payloadDrizzle.execute(sql`SELECT * FROM appointments WHERE service = ${serviceId}`);
 ```
 
 ## UI & Design System
 
 ### Glassmorphic Components
+
 The glass aesthetic now lives inside `@/components/ui/glass` as typed primitives:
+
 - `GlassSurface` – hero/section shell with layered gradients
 - `GlassPanel` – content-friendly panel with `variant`, `state`, and `density` props
 - `GlassChip` – chip/badge primitive with tone + shape variants
@@ -173,10 +182,12 @@ The glass aesthetic now lives inside `@/components/ui/glass` as typed primitives
 Use the accompanying style helpers (`glassPanelStyles`, etc.) when you need the class string for native inputs.
 
 Legacy gradient buttons are still available as global classes:
+
 - `.btn-primary` - Accent gradient button with glow effects
 - `.btn-secondary` - Glass variant button
 
 ### Font System
+
 - **Primary font**: Peyda (Persian-optimized)
   - Files: `public/fonts/peyda-{regular,medium,bold}.woff2`
   - Loaded via `@font-face` in `styles/globals.css`
@@ -184,6 +195,7 @@ Legacy gradient buttons are still available as global classes:
 - RTL layout: Set via `html dir="rtl"` in root layout
 
 ### Theme System
+
 - Uses `next-themes` with `ThemeProvider` wrapper
 - CSS variables for dynamic theming: `--bg`, `--fg`, `--accent`, `--accent-strong`, etc.
 - Light mode: `:root` selector
@@ -191,6 +203,7 @@ Legacy gradient buttons are still available as global classes:
 - Toggle component: `ThemeToggle.tsx`
 
 ### Layout Components
+
 - **Header** (`src/components/Header.tsx`): Sticky navigation bar with theme toggle
 - **Sidebar** (`src/components/Sidebar.tsx`): Fixed right sidebar (GNOME-style) with glassmorphic styling
 - **Main Layout** (`src/app/(site)/layout.tsx`): Combines Header + Sidebar + responsive content area
@@ -198,6 +211,7 @@ Legacy gradient buttons are still available as global classes:
 ## Booking API
 
 Custom REST endpoints for appointment management:
+
 - `GET /api/availability` - Check slot availability
 - `POST /api/hold` - Place 5-minute hold on a slot
 - `POST /api/book` - Complete a booking

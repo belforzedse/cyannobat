@@ -56,7 +56,7 @@ const LiquidBlob = ({
         'absolute rounded-full blur-3xl pointer-events-none animate-liquid-morph',
         sizeClasses[size],
         variantClasses[variant],
-        className
+        className,
       )}
       style={{
         top,

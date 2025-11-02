@@ -1,20 +1,23 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 
-import { Button, Input } from '@/components/ui'
-import type { StaffAppointment } from '@/lib/staff/types'
+import { Button, Input } from '@/components/ui';
+import type { StaffAppointment } from '@/lib/staff/types';
 
-import { toInputValue, toISOStringOrNull } from '@/lib/staff/dashboard/utils'
-import type { UpdateSchedulePayload, UpdateScheduleResult } from '@/lib/staff/dashboard/hooks'
+import { toInputValue, toISOStringOrNull } from '@/lib/staff/dashboard/utils';
+import type { UpdateSchedulePayload, UpdateScheduleResult } from '@/lib/staff/dashboard/hooks';
 
 export type ScheduleEditorProps = {
-  appointment: StaffAppointment
-  isSaving: boolean
-  onCancel: () => void
-  onSubmit: (appointmentId: string, payload: UpdateSchedulePayload) => Promise<UpdateScheduleResult>
-  onSuccess: () => void
-}
+  appointment: StaffAppointment;
+  isSaving: boolean;
+  onCancel: () => void;
+  onSubmit: (
+    appointmentId: string,
+    payload: UpdateSchedulePayload,
+  ) => Promise<UpdateScheduleResult>;
+  onSuccess: () => void;
+};
 
 export const ScheduleEditor = ({
   appointment,
@@ -23,46 +26,46 @@ export const ScheduleEditor = ({
   onSubmit,
   onSuccess,
 }: ScheduleEditorProps) => {
-  const [startValue, setStartValue] = useState(() => toInputValue(appointment.start))
-  const [endValue, setEndValue] = useState(() => toInputValue(appointment.end))
-  const [error, setError] = useState<string | null>(null)
+  const [startValue, setStartValue] = useState(() => toInputValue(appointment.start));
+  const [endValue, setEndValue] = useState(() => toInputValue(appointment.end));
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setStartValue(toInputValue(appointment.start))
-    setEndValue(toInputValue(appointment.end))
-    setError(null)
-  }, [appointment.id, appointment.start, appointment.end])
+    setStartValue(toInputValue(appointment.start));
+    setEndValue(toInputValue(appointment.end));
+    setError(null);
+  }, [appointment.id, appointment.start, appointment.end]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setError(null)
+    event.preventDefault();
+    setError(null);
 
-    const startISO = toISOStringOrNull(startValue)
-    const endISO = toISOStringOrNull(endValue)
+    const startISO = toISOStringOrNull(startValue);
+    const endISO = toISOStringOrNull(endValue);
 
     if (!startISO || !endISO) {
-      setError('زمان نوبت معتبر نیست.')
-      return
+      setError('زمان نوبت معتبر نیست.');
+      return;
     }
 
     if (new Date(endISO).getTime() <= new Date(startISO).getTime()) {
-      setError('بازه زمانی معتبر نیست.')
-      return
+      setError('بازه زمانی معتبر نیست.');
+      return;
     }
 
     const result = await onSubmit(appointment.id, {
       start: startISO,
       end: endISO,
       timeZone: appointment.timeZone || 'UTC',
-    })
+    });
 
     if (result.success) {
-      setError(null)
-      onSuccess()
+      setError(null);
+      onSuccess();
     } else {
-      setError(result.error)
+      setError(result.error);
     }
-  }
+  };
 
   return (
     <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
@@ -85,10 +88,17 @@ export const ScheduleEditor = ({
         <Button type="submit" size="sm" isLoading={isSaving} className="gap-2">
           ذخیره زمان
         </Button>
-        <Button type="button" variant="secondary" size="sm" onClick={onCancel} disabled={isSaving} className="gap-2">
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          onClick={onCancel}
+          disabled={isSaving}
+          className="gap-2"
+        >
           انصراف
         </Button>
       </div>
     </form>
-  )
-}
+  );
+};

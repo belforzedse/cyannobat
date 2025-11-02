@@ -1,94 +1,94 @@
-import type { Access, CollectionBeforeValidateHook, CollectionConfig } from 'payload'
-import { ValidationError } from 'payload'
+import type { Access, CollectionBeforeValidateHook, CollectionConfig } from 'payload';
+import { ValidationError } from 'payload';
 
-import { extractRoles } from '@/lib/auth'
-import { canAssignRoles } from '@/lib/staff/rolePermissions'
+import { extractRoles } from '@/lib/auth';
+import { canAssignRoles } from '@/lib/staff/rolePermissions';
 import {
   isValidIranNationalId,
   normalizeIranNationalIdDigits,
-} from '@/lib/validators/iran-national-id'
+} from '@/lib/validators/iran-national-id';
 
 // Allow creating first user without authentication
 const isFirstUserCreation: Access = async ({ req }) => {
   // If user is already authenticated, allow access
   if (req.user) {
-    return true
+    return true;
   }
 
   // If not authenticated, check if this could be the first user
   try {
     const result = await req.payload.count({
       collection: 'users',
-    })
+    });
 
     // If no users exist, allow unauthenticated access to create first user
-    return result.totalDocs === 0
+    return result.totalDocs === 0;
   } catch {
     // If there's an error (e.g., table doesn't exist yet), allow creation
     // This handles the initial setup case
-    return true
+    return true;
   }
-}
+};
 
 const rolesFromData = (roles: unknown): string[] => {
-  if (!Array.isArray(roles)) return []
-  return roles.filter((role): role is string => typeof role === 'string')
-}
+  if (!Array.isArray(roles)) return [];
+  return roles.filter((role): role is string => typeof role === 'string');
+};
 
 const canCreateUser: Access = async (args) => {
-  const { req, data } = args
+  const { req, data } = args;
 
-  const requestedRoles = rolesFromData(data?.roles)
-  const rolesToAssign = requestedRoles.length > 0 ? requestedRoles : ['patient']
+  const requestedRoles = rolesFromData(data?.roles);
+  const rolesToAssign = requestedRoles.length > 0 ? requestedRoles : ['patient'];
 
   if (!req.user) {
-    const onlyPatientRoles = rolesToAssign.every((role) => role === 'patient')
+    const onlyPatientRoles = rolesToAssign.every((role) => role === 'patient');
     if (onlyPatientRoles) {
-      return true
+      return true;
     }
 
-    return isFirstUserCreation(args)
+    return isFirstUserCreation(args);
   }
 
-  const creatorRoles = extractRoles(req.user)
+  const creatorRoles = extractRoles(req.user);
 
-  return canAssignRoles(creatorRoles, rolesToAssign)
-}
+  return canAssignRoles(creatorRoles, rolesToAssign);
+};
 
 const enforcePatientRoleForUnauthenticated: CollectionBeforeValidateHook = ({ data, req }) => {
-  if (req.user) return data
+  if (req.user) return data;
 
-  const nextData = { ...(data ?? {}) }
-  nextData.roles = ['patient']
+  const nextData = { ...(data ?? {}) };
+  nextData.roles = ['patient'];
 
-  return nextData
-}
+  return nextData;
+};
 
 const ensureContactMethod: CollectionBeforeValidateHook = ({ data, originalDoc }) => {
-  const nextData = { ...(data ?? {}) }
+  const nextData = { ...(data ?? {}) };
   const phoneCandidate =
     typeof nextData.phone === 'string'
       ? nextData.phone.trim()
       : typeof originalDoc?.phone === 'string'
         ? originalDoc.phone.trim()
-        : ''
+        : '';
 
   if (!phoneCandidate) {
     throw new ValidationError({
       collection: 'users',
       errors: [{ message: 'Phone number is required.', path: 'phone' }],
-    })
+    });
   }
 
   if (typeof nextData.phone === 'string') {
-    nextData.phone = phoneCandidate
+    nextData.phone = phoneCandidate;
   }
 
-  nextData.username = phoneCandidate
+  nextData.username = phoneCandidate;
 
   if (typeof nextData.email === 'string') {
-    const trimmedEmail = nextData.email.trim()
-    nextData.email = trimmedEmail || undefined
+    const trimmedEmail = nextData.email.trim();
+    nextData.email = trimmedEmail || undefined;
   }
 
   const nationalIdCandidate =
@@ -96,21 +96,21 @@ const ensureContactMethod: CollectionBeforeValidateHook = ({ data, originalDoc }
       ? normalizeIranNationalIdDigits(nextData.nationalId).trim()
       : typeof originalDoc?.nationalId === 'string'
         ? normalizeIranNationalIdDigits(originalDoc.nationalId).trim()
-        : ''
+        : '';
 
   if (!isValidIranNationalId(nationalIdCandidate)) {
     throw new ValidationError({
       collection: 'users',
       errors: [{ message: 'National ID is required and must be valid.', path: 'nationalId' }],
-    })
+    });
   }
 
   if (typeof nextData.nationalId === 'string') {
-    nextData.nationalId = nationalIdCandidate
+    nextData.nationalId = nationalIdCandidate;
   }
 
-  return nextData
-}
+  return nextData;
+};
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -143,10 +143,11 @@ export const Users: CollectionConfig = {
       required: true,
       unique: true,
       validate: (value: unknown) => {
-        if (typeof value !== 'string' || value.trim().length === 0) return 'Phone number is required'
+        if (typeof value !== 'string' || value.trim().length === 0)
+          return 'Phone number is required';
 
-        const iranPhoneRegex = /^(\+98|0)?9\d{9}$/
-        return iranPhoneRegex.test(value) || 'Enter a valid Iranian phone number'
+        const iranPhoneRegex = /^(\+98|0)?9\d{9}$/;
+        return iranPhoneRegex.test(value) || 'Enter a valid Iranian phone number';
       },
     },
     {
@@ -156,11 +157,11 @@ export const Users: CollectionConfig = {
       unique: true,
       validate: (value: unknown) => {
         if (typeof value !== 'string' || value.trim().length === 0) {
-          return 'National ID is required'
+          return 'National ID is required';
         }
 
-        const normalized = normalizeIranNationalIdDigits(value).trim()
-        return isValidIranNationalId(normalized) || 'Enter a valid Iranian national ID'
+        const normalized = normalizeIranNationalIdDigits(value).trim();
+        return isValidIranNationalId(normalized) || 'Enter a valid Iranian national ID';
       },
     },
     {
@@ -187,4 +188,4 @@ export const Users: CollectionConfig = {
       ],
     },
   ],
-}
+};

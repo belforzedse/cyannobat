@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
-import Link from 'next/link'
-import { Mail, Phone, MapPin, Send, CheckCircle2 } from 'lucide-react'
+import { useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import Link from 'next/link';
+import { Mail, Phone, MapPin, Send, CheckCircle2 } from 'lucide-react';
 
-import { Card, Button, Input, Textarea } from '@/components/ui'
-import GlassIcon from '@/components/GlassIcon'
-import { GlassSurface } from '@/components/ui/glass'
+import { Card, Button, Input, Textarea } from '@/components/ui';
+import GlassIcon from '@/components/GlassIcon';
+import { GlassSurface } from '@/components/ui/glass';
 
 const contactMethods = [
   {
@@ -31,82 +31,84 @@ const contactMethods = [
     href: null,
     description: 'دفتر مرکزی سایان نوبت',
   },
-]
+];
 
 const ContactPage = () => {
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = useReducedMotion();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',
     message: '',
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof typeof formData, string>>>({})
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof typeof formData, string>>>(
+    {},
+  );
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (isSubmitting) return
+    e.preventDefault();
+    if (isSubmitting) return;
 
-    setSubmitStatus('idle')
-    setErrorMessage(null)
+    setSubmitStatus('idle');
+    setErrorMessage(null);
 
     const trimmedData = {
       name: formData.name.trim(),
       email: formData.email.trim(),
       subject: formData.subject.trim(),
       message: formData.message.trim(),
-    }
+    };
 
-    const errors: Partial<Record<keyof typeof formData, string>> = {}
+    const errors: Partial<Record<keyof typeof formData, string>> = {};
 
     if (!trimmedData.name) {
-      errors.name = 'لطفاً نام خود را وارد کنید.'
+      errors.name = 'لطفاً نام خود را وارد کنید.';
     }
 
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!trimmedData.email) {
-      errors.email = 'لطفاً ایمیل خود را وارد کنید.'
+      errors.email = 'لطفاً ایمیل خود را وارد کنید.';
     } else if (!emailPattern.test(trimmedData.email)) {
-      errors.email = 'ایمیل وارد شده معتبر نیست.'
+      errors.email = 'ایمیل وارد شده معتبر نیست.';
     }
 
     if (!trimmedData.subject) {
-      errors.subject = 'لطفاً موضوع پیام را بنویسید.'
+      errors.subject = 'لطفاً موضوع پیام را بنویسید.';
     }
 
     if (!trimmedData.message) {
-      errors.message = 'لطفاً متن پیام را وارد کنید.'
+      errors.message = 'لطفاً متن پیام را وارد کنید.';
     }
 
     if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors)
-      setSubmitStatus('error')
-      setErrorMessage('لطفاً خطاهای مشخص‌شده را برطرف کنید و دوباره تلاش کنید.')
-      return
+      setFieldErrors(errors);
+      setSubmitStatus('error');
+      setErrorMessage('لطفاً خطاهای مشخص‌شده را برطرف کنید و دوباره تلاش کنید.');
+      return;
     }
 
-    setFieldErrors({})
-    setIsSubmitting(true)
+    setFieldErrors({});
+    setIsSubmitting(true);
 
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(trimmedData),
-      })
+      });
 
       if (!response.ok) {
-        let errorBody: unknown
+        let errorBody: unknown;
         try {
-          errorBody = await response.json()
+          errorBody = await response.json();
         } catch {
           // ignore parse error
         }
 
-        const apiErrors: Partial<Record<keyof typeof formData, string>> = {}
+        const apiErrors: Partial<Record<keyof typeof formData, string>> = {};
 
         if (
           errorBody &&
@@ -122,58 +124,65 @@ const ContactPage = () => {
               typeof (issue as { field?: unknown }).field === 'string' &&
               typeof (issue as { message?: unknown }).message === 'string'
             ) {
-              const fieldKey = (issue as { field: string }).field
-              if (fieldKey === 'form') continue
+              const fieldKey = (issue as { field: string }).field;
+              if (fieldKey === 'form') continue;
               if (fieldKey in trimmedData) {
-                apiErrors[fieldKey as keyof typeof formData] = (issue as { message: string }).message
+                apiErrors[fieldKey as keyof typeof formData] = (
+                  issue as { message: string }
+                ).message;
               }
             }
           }
         }
 
         if (Object.keys(apiErrors).length > 0) {
-          setFieldErrors(apiErrors)
+          setFieldErrors(apiErrors);
         }
 
         const apiMessage =
-          errorBody && typeof errorBody === 'object' && 'message' in errorBody && typeof errorBody.message === 'string'
+          errorBody &&
+          typeof errorBody === 'object' &&
+          'message' in errorBody &&
+          typeof errorBody.message === 'string'
             ? errorBody.message
-            : 'ارسال پیام با خطا مواجه شد. لطفاً دوباره تلاش کنید.'
+            : 'ارسال پیام با خطا مواجه شد. لطفاً دوباره تلاش کنید.';
 
-        setSubmitStatus('error')
-        setErrorMessage(apiMessage)
-        return
+        setSubmitStatus('error');
+        setErrorMessage(apiMessage);
+        return;
       }
 
-      setFieldErrors({})
-      setSubmitStatus('success')
-      setErrorMessage(null)
-      setFormData({ name: '', email: '', subject: '', message: '' })
+      setFieldErrors({});
+      setSubmitStatus('success');
+      setErrorMessage(null);
+      setFormData({ name: '', email: '', subject: '', message: '' });
 
       setTimeout(() => {
-        setSubmitStatus('idle')
-      }, 4000)
+        setSubmitStatus('idle');
+      }, 4000);
     } catch (error) {
-      console.error('Contact form submission failed', error)
-      setSubmitStatus('error')
-      setErrorMessage('ارسال پیام با خطا مواجه شد. لطفاً اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.')
+      console.error('Contact form submission failed', error);
+      setSubmitStatus('error');
+      setErrorMessage(
+        'ارسال پیام با خطا مواجه شد. لطفاً اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.',
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleChange = (field: keyof typeof formData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+    setFormData((prev) => ({ ...prev, [field]: value }));
     setFieldErrors((prev) => {
       if (!prev[field]) {
-        return prev
+        return prev;
       }
 
-      const next = { ...prev }
-      delete next[field]
-      return next
-    })
-  }
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
 
   return (
     <motion.section
@@ -200,7 +209,10 @@ const ContactPage = () => {
         <motion.span
           initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: prefersReducedMotion ? 0 : 0.1, duration: prefersReducedMotion ? 0 : 0.45 }}
+          transition={{
+            delay: prefersReducedMotion ? 0 : 0.1,
+            duration: prefersReducedMotion ? 0 : 0.45,
+          }}
           className="inline-block rounded-full border border-white/25 bg-white/20 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm dark:border-white/15 dark:bg-white/10"
         >
           راه‌های ارتباطی
@@ -209,7 +221,10 @@ const ContactPage = () => {
         <motion.h1
           initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: prefersReducedMotion ? 0 : 0.2, duration: prefersReducedMotion ? 0 : 0.5 }}
+          transition={{
+            delay: prefersReducedMotion ? 0 : 0.2,
+            duration: prefersReducedMotion ? 0 : 0.5,
+          }}
           className="mt-4 bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-4xl font-bold text-transparent sm:text-5xl"
         >
           تماس با ما
@@ -218,11 +233,14 @@ const ContactPage = () => {
         <motion.p
           initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: prefersReducedMotion ? 0 : 0.3, duration: prefersReducedMotion ? 0 : 0.5 }}
+          transition={{
+            delay: prefersReducedMotion ? 0 : 0.3,
+            duration: prefersReducedMotion ? 0 : 0.5,
+          }}
           className="mt-3 max-w-2xl text-balance leading-relaxed text-muted-foreground"
         >
-          سوالات، پیشنهادات یا نیاز به راهنمایی دارید؟ تیم پشتیبانی سایان نوبت آماده کمک به شماست. از طریق فرم زیر یا
-          راه‌های ارتباطی دیگر با ما در تماس باشید.
+          سوالات، پیشنهادات یا نیاز به راهنمایی دارید؟ تیم پشتیبانی سایان نوبت آماده کمک به شماست.
+          از طریق فرم زیر یا راه‌های ارتباطی دیگر با ما در تماس باشید.
         </motion.p>
       </GlassSurface>
 
@@ -275,7 +293,10 @@ const ContactPage = () => {
       <motion.div
         initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: prefersReducedMotion ? 0 : 0.7, duration: prefersReducedMotion ? 0 : 0.6 }}
+        transition={{
+          delay: prefersReducedMotion ? 0 : 0.7,
+          duration: prefersReducedMotion ? 0 : 0.6,
+        }}
       >
         <Card variant="default" padding="lg" className="sm:px-8 sm:py-4">
           <div className="mb-6 text-right">
@@ -383,7 +404,7 @@ const ContactPage = () => {
         </Card>
       </motion.div>
     </motion.section>
-  )
-}
+  );
+};
 
-export default ContactPage
+export default ContactPage;

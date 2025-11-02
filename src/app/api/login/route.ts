@@ -1,27 +1,27 @@
-import { NextResponse } from 'next/server'
-import { getPayload, type PayloadRequest } from 'payload'
+import { NextResponse } from 'next/server';
+import { getPayload, type PayloadRequest } from 'payload';
 
-import configPromise from '@payload-config'
-import { extractRoles, userIsStaff } from '@/lib/auth'
+import configPromise from '@payload-config';
+import { extractRoles, userIsStaff } from '@/lib/auth';
 
 type StaffLoginResult = {
-  user: PayloadRequest['user'] | null
-  token?: string
-  exp?: number
-  refreshToken?: string
-  refreshTokenExpiration?: number
-}
+  user: PayloadRequest['user'] | null;
+  token?: string;
+  exp?: number;
+  refreshToken?: string;
+  refreshTokenExpiration?: number;
+};
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 export const POST = async (request: Request) => {
-  const payload = await getPayload({ config: configPromise })
+  const payload = await getPayload({ config: configPromise });
 
-  let body: unknown
+  let body: unknown;
   try {
-    body = await request.json()
+    body = await request.json();
   } catch {
-    return NextResponse.json({ message: 'Invalid JSON body' }, { status: 400 })
+    return NextResponse.json({ message: 'Invalid JSON body' }, { status: 400 });
   }
 
   if (
@@ -30,40 +30,50 @@ export const POST = async (request: Request) => {
     typeof (body as { identifier?: unknown }).identifier !== 'string' ||
     typeof (body as { password?: unknown }).password !== 'string'
   ) {
-    return NextResponse.json({ message: 'ایمیل یا شماره تلفن و رمز عبور الزامی است.' }, { status: 400 })
+    return NextResponse.json(
+      { message: 'ایمیل یا شماره تلفن و رمز عبور الزامی است.' },
+      { status: 400 },
+    );
   }
 
-  const { identifier, password } = body as { identifier: string; password: string }
-  const trimmedIdentifier = identifier.trim()
+  const { identifier, password } = body as { identifier: string; password: string };
+  const trimmedIdentifier = identifier.trim();
 
   if (!trimmedIdentifier) {
-    return NextResponse.json({ message: 'ایمیل یا شماره تلفن و رمز عبور الزامی است.' }, { status: 400 })
+    return NextResponse.json(
+      { message: 'ایمیل یا شماره تلفن و رمز عبور الزامی است.' },
+      { status: 400 },
+    );
   }
 
   try {
-    const loginData: { email: string; username?: string; password: string } = trimmedIdentifier.includes('@')
-      ? { email: trimmedIdentifier, password }
-      : { email: trimmedIdentifier, username: trimmedIdentifier, password }
+    const loginData: { email: string; username?: string; password: string } =
+      trimmedIdentifier.includes('@')
+        ? { email: trimmedIdentifier, password }
+        : { email: trimmedIdentifier, username: trimmedIdentifier, password };
 
     const auth = (await payload.login({
       collection: 'users',
       data: loginData,
-    })) as StaffLoginResult
+    })) as StaffLoginResult;
 
-    const authUser = auth.user as PayloadRequest['user']
+    const authUser = auth.user as PayloadRequest['user'];
 
     if (!authUser) {
-      return NextResponse.json({ message: 'ورود ناموفق بود. ایمیل یا شماره تلفن یا رمز عبور را بررسی کنید.' }, { status: 401 })
+      return NextResponse.json(
+        { message: 'ورود ناموفق بود. ایمیل یا شماره تلفن یا رمز عبور را بررسی کنید.' },
+        { status: 401 },
+      );
     }
 
-    const roles = extractRoles(authUser)
+    const roles = extractRoles(authUser);
 
     const response = NextResponse.json({
       user: { id: String(authUser.id), email: authUser.email ?? '', roles },
       isStaff: userIsStaff(authUser),
-    })
+    });
 
-    const secureCookies = process.env.NODE_ENV === 'production'
+    const secureCookies = process.env.NODE_ENV === 'production';
 
     if (auth.token) {
       response.cookies.set('payload-token', auth.token, {
@@ -72,11 +82,11 @@ export const POST = async (request: Request) => {
         sameSite: 'lax',
         secure: secureCookies,
         ...(auth.exp ? { expires: new Date(auth.exp * 1000) } : {}),
-      })
+      });
     }
 
     if (auth.refreshToken) {
-      const rtExp = auth.refreshTokenExpiration ?? undefined
+      const rtExp = auth.refreshTokenExpiration ?? undefined;
       response.cookies.set('payload-refresh-token', auth.refreshToken, {
         path: '/',
         httpOnly: true,
@@ -87,15 +97,15 @@ export const POST = async (request: Request) => {
               expires: new Date(rtExp > 1_000_000_000_000 ? rtExp : rtExp * 1000),
             }
           : {}),
-      })
+      });
     }
 
-    return response
+    return response;
   } catch (error) {
-    payload.logger.warn?.('Failed login attempt', error)
+    payload.logger.warn?.('Failed login attempt', error);
     return NextResponse.json(
       { message: 'ورود ناموفق بود. ایمیل یا شماره تلفن یا رمز عبور را بررسی کنید.' },
       { status: 401 },
-    )
+    );
   }
-}
+};

@@ -1,37 +1,42 @@
-import { NextResponse } from 'next/server'
-import { ZodError, z } from 'zod'
-import type { PayloadRequest } from 'payload'
+import { NextResponse } from 'next/server';
+import { ZodError, z } from 'zod';
+import type { PayloadRequest } from 'payload';
 
-import { authenticateStaffRequest, unauthorizedResponse } from '@/lib/api/auth'
-import { extractRoles } from '@/lib/auth'
-import { ASSIGNABLE_ROLES, canAssignRoles, type AssignableRole } from '@/lib/staff/rolePermissions'
+import { authenticateStaffRequest, unauthorizedResponse } from '@/lib/api/auth';
+import { extractRoles } from '@/lib/auth';
+import { ASSIGNABLE_ROLES, canAssignRoles, type AssignableRole } from '@/lib/staff/rolePermissions';
 import {
   isValidIranNationalId,
   normalizeIranNationalIdDigits,
-} from '@/lib/validators/iran-national-id'
+} from '@/lib/validators/iran-national-id';
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
-const roleEnum = z.enum(ASSIGNABLE_ROLES as [typeof ASSIGNABLE_ROLES[number], ...typeof ASSIGNABLE_ROLES[number][]])
+const roleEnum = z.enum(
+  ASSIGNABLE_ROLES as [(typeof ASSIGNABLE_ROLES)[number], ...(typeof ASSIGNABLE_ROLES)[number][]],
+);
 
 const emailSchema = z
   .string({ invalid_type_error: 'Email must be a string' })
   .trim()
-  .email('Email must be valid')
+  .email('Email must be valid');
 
 const phoneSchema = z
   .string({ invalid_type_error: 'Phone number must be a string' })
   .trim()
   .min(1, 'Phone number must be provided')
-  .regex(/^(\+98|0)?9\d{9}$/, 'Enter a valid Iranian phone number')
+  .regex(/^(\+98|0)?9\d{9}$/, 'Enter a valid Iranian phone number');
 
 const nationalIdSchema = z
-  .string({ invalid_type_error: 'National ID must be a string', required_error: 'National ID is required' })
+  .string({
+    invalid_type_error: 'National ID must be a string',
+    required_error: 'National ID is required',
+  })
   .transform((value) => normalizeIranNationalIdDigits(value))
   .transform((value) => value.trim())
   .refine((value) => isValidIranNationalId(value), {
     message: 'Enter a valid Iranian national ID',
-  })
+  });
 
 const createUserSchema = z.object({
   email: emailSchema.optional().or(z.literal('').transform(() => undefined)),
@@ -44,26 +49,26 @@ const createUserSchema = z.object({
     })
     .min(8, 'Password must be at least 8 characters long'),
   roles: z.array(roleEnum).optional(),
-})
+});
 
-type CreateUserBody = z.infer<typeof createUserSchema>
+type CreateUserBody = z.infer<typeof createUserSchema>;
 
 const parseBody = async (request: Request): Promise<CreateUserBody> => {
-  const body = await request.json()
-  return createUserSchema.parse(body)
-}
+  const body = await request.json();
+  return createUserSchema.parse(body);
+};
 
 export const POST = async (request: Request) => {
-  const { payload, user } = await authenticateStaffRequest(request)
+  const { payload, user } = await authenticateStaffRequest(request);
 
   if (!user) {
-    return unauthorizedResponse()
+    return unauthorizedResponse();
   }
 
-  let body: CreateUserBody
+  let body: CreateUserBody;
 
   try {
-    body = await parseBody(request)
+    body = await parseBody(request);
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(
@@ -72,7 +77,7 @@ export const POST = async (request: Request) => {
           issues: error.flatten(),
         },
         { status: 400 },
-      )
+      );
     }
 
     return NextResponse.json(
@@ -80,11 +85,11 @@ export const POST = async (request: Request) => {
         message: 'Invalid JSON body',
       },
       { status: 400 },
-    )
+    );
   }
 
-  const defaultRoles: NonNullable<CreateUserBody['roles']> = ['patient']
-  const rolesToAssign = body.roles && body.roles.length > 0 ? body.roles : defaultRoles
+  const defaultRoles: NonNullable<CreateUserBody['roles']> = ['patient'];
+  const rolesToAssign = body.roles && body.roles.length > 0 ? body.roles : defaultRoles;
 
   if (!canAssignRoles(extractRoles(user), rolesToAssign)) {
     return NextResponse.json(
@@ -92,12 +97,12 @@ export const POST = async (request: Request) => {
         message: 'You do not have permission to assign one or more of the requested roles.',
       },
       { status: 403 },
-    )
+    );
   }
 
-  const normalizedPhone = body.phone.trim()
-  const normalizedEmail = body.email?.trim()
-  const normalizedNationalId = body.nationalId
+  const normalizedPhone = body.phone.trim();
+  const normalizedEmail = body.email?.trim();
+  const normalizedNationalId = body.nationalId;
 
   try {
     const created = await payload.create({
@@ -112,16 +117,16 @@ export const POST = async (request: Request) => {
         roles: rolesToAssign,
       },
       overrideAccess: false,
-    } as Parameters<typeof payload.create>[0])
+    } as Parameters<typeof payload.create>[0]);
 
-    const createdUser = created as PayloadRequest['user']
+    const createdUser = created as PayloadRequest['user'];
 
     const createdRoles = Array.isArray(createdUser?.roles)
       ? createdUser.roles.filter(
           (role): role is AssignableRole =>
             typeof role === 'string' && (ASSIGNABLE_ROLES as readonly string[]).includes(role),
         )
-      : []
+      : [];
 
     return NextResponse.json(
       {
@@ -134,9 +139,9 @@ export const POST = async (request: Request) => {
         },
       },
       { status: 201 },
-    )
+    );
   } catch (error) {
-    payload.logger.error?.('Failed to create staff-managed user', error)
+    payload.logger.error?.('Failed to create staff-managed user', error);
 
     if (error instanceof Error && /duplicate key value|already exists/i.test(error.message)) {
       return NextResponse.json(
@@ -144,7 +149,7 @@ export const POST = async (request: Request) => {
           message: 'A user with the same email, phone, or national ID already exists.',
         },
         { status: 409 },
-      )
+      );
     }
 
     return NextResponse.json(
@@ -152,6 +157,6 @@ export const POST = async (request: Request) => {
         message: 'Failed to create user.',
       },
       { status: 500 },
-    )
+    );
   }
-}
+};

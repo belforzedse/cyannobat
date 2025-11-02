@@ -25,13 +25,13 @@ This split keeps the glass aesthetic consistent while giving product teams fully
 
 ### When to use what?
 
-| Pattern | Use Glass Primitive | Use UI Component |
-|---------|--------------------|------------------|
-| Hero / layout shell | ✅ `GlassSurface` | ❌ |
-| Content card or panel | ✅ `GlassPanel` | ✅ `<Card>` (wraps `GlassPanel` + padding helpers) |
-| Status chip / slot | ✅ `GlassChip` | ✅ `<Chip>` for icon/meta ergonomics |
-| Action button | ✅ `GlassPill` (for raw links) | ✅ `<Button>` for loading states |
-| Form field with validation | ❌ | ✅ `<Input>`, `<Select>`, `<Textarea>` |
+| Pattern                    | Use Glass Primitive            | Use UI Component                                   |
+| -------------------------- | ------------------------------ | -------------------------------------------------- |
+| Hero / layout shell        | ✅ `GlassSurface`              | ❌                                                 |
+| Content card or panel      | ✅ `GlassPanel`                | ✅ `<Card>` (wraps `GlassPanel` + padding helpers) |
+| Status chip / slot         | ✅ `GlassChip`                 | ✅ `<Chip>` for icon/meta ergonomics               |
+| Action button              | ✅ `GlassPill` (for raw links) | ✅ `<Button>` for loading states                   |
+| Form field with validation | ❌                             | ✅ `<Input>`, `<Select>`, `<Textarea>`             |
 
 ---
 
@@ -40,20 +40,21 @@ This split keeps the glass aesthetic consistent while giving product teams fully
 All primitives are polymorphic (accept an `as` prop) and export helper style functions when you only need the class string.
 
 ### `<GlassSurface>`
+
 High fidelity surface used for hero cards and shells.
 
 ```tsx
-import { GlassSurface } from '@/components/ui/glass'
+import { GlassSurface } from '@/components/ui/glass';
 
-<GlassSurface className="relative overflow-hidden p-8">
-  {/* content */}
-</GlassSurface>
+<GlassSurface className="relative overflow-hidden p-8">{/* content */}</GlassSurface>;
 ```
 
 **Options**:
+
 - `interactive?: boolean` (default `true`) – enables hover lift/shine.
 
 ### `<GlassPanel>`
+
 Content friendly container used for cards, modals, and muted sheets.
 
 ```tsx
@@ -64,11 +65,13 @@ Content friendly container used for cards, modals, and muted sheets.
 ```
 
 **Variants**:
+
 - `variant`: `'default' | 'muted' | 'subtle' | 'accent'`
 - `state`: `'default' | 'active'`
 - `density`: `'default' | 'compact'`
 
 ### `<GlassChip>`
+
 Interactive chip/badge primitive for slot pickers and status tags.
 
 ```tsx
@@ -78,11 +81,13 @@ Interactive chip/badge primitive for slot pickers and status tags.
 ```
 
 **Variants**:
+
 - `tone`: `'default' | 'muted' | 'current' | 'active'`
 - `shape`: `'default' | 'circle'`
 - `interactive`: hover + focus animation toggle.
 
 ### `<GlassPill>`
+
 Rounded pill container for CTA links or icon badges.
 
 ```tsx
@@ -92,6 +97,7 @@ Rounded pill container for CTA links or icon badges.
 ```
 
 **Variants**:
+
 - `interactive?: boolean` – opt out when the parent handles motion.
 
 > Need the classes only? Import `glassSurfaceStyles`, `glassPanelStyles`, `glassChipStyles`, or `glassPillStyles` to style native form elements.
@@ -109,36 +115,42 @@ Rounded pill container for CTA links or icon badges.
 Import from `@/components/ui`:
 
 ```tsx
-import { Button, Card, Chip, Input, Select, Textarea } from '@/components/ui'
+import { Button, Card, Chip, Input, Select, Textarea } from '@/components/ui';
 ```
 
 ### `<Button>`
+
 Unified button component that wraps the gradient tokens and `GlassPill` styles.
 
 **Props**
+
 - `variant`: `'primary' | 'secondary' | 'glass-pill'`
 - `size`: `'sm' | 'md' | 'lg'` (applies to glass pill)
 - `isLoading`: show spinner + disables hover motion
 - `leftIcon`, `rightIcon`, `fullWidth`, `disableAnimation`
 
 ### `<Card>`
+
 Layout primitive built on `GlassPanel`. Handles padding presets and the `animate` entrance class.
 
 ### `<Chip>`
+
 User friendly wrapper around `GlassChip` that adds icon slots and optional `meta` text.
 
 ### `<Input>`, `<Select>`, `<Textarea>`
+
 Glass-inspired form controls with consistent focus rings, helper text, and error messaging.
 
 ### `<ToastProvider>`
+
 App-wide toast system that exposes an ergonomic hook and accessible surface variants.
 
 ```tsx
-import { useRouter } from 'next/navigation'
-import { ToastProvider, useToast } from '@/components/ui'
+import { useRouter } from 'next/navigation';
+import { ToastProvider, useToast } from '@/components/ui';
 
-const router = useRouter()
-const { showToast } = useToast()
+const router = useRouter();
+const { showToast } = useToast();
 
 showToast({
   title: 'درخواست ارسال شد',
@@ -148,7 +160,7 @@ showToast({
     label: 'مشاهده',
     onClick: () => router.push('/staff/requests'),
   },
-})
+});
 ```
 
 **Variants**: `success` (default), `error`, `info`

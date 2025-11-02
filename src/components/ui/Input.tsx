@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import React, { InputHTMLAttributes, forwardRef, useId } from 'react'
-import clsx from 'clsx'
+import React, { InputHTMLAttributes, forwardRef, useId } from 'react';
+import clsx from 'clsx';
 
-import { FieldShell } from './FieldShell'
+import { FieldShell } from './FieldShell';
 
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
-  label?: string
-  error?: string
-  helperText?: string
-  leftIcon?: React.ReactNode
-  rightIcon?: React.ReactNode
-  fullWidth?: boolean
+  label?: string;
+  error?: string;
+  helperText?: string;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  fullWidth?: boolean;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -28,16 +28,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       disabled,
       ...props
     },
-    ref
+    ref,
   ) => {
-    const reactId = useId()
-    const generatedId = id || `input-${reactId}`
+    const reactId = useId();
+    const generatedId = id || `input-${reactId}`;
 
     const describedBy = error
       ? `${generatedId}-error`
       : helperText
         ? `${generatedId}-helper`
-        : undefined
+        : undefined;
 
     return (
       <div className={clsx('flex flex-col gap-1.5', fullWidth && 'w-full')}>
@@ -57,7 +57,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             id={generatedId}
-            className={clsx('flex-1 w-full border-none outline-none bg-transparent text-sm leading-6 px-4 py-[0.625rem] transition-colors duration-200 ease-glass text-right disabled:cursor-not-allowed', className)}
+            className={clsx(
+              'flex-1 w-full border-none outline-none bg-transparent text-sm leading-6 px-4 py-[0.625rem] transition-colors duration-200 ease-glass text-right disabled:cursor-not-allowed',
+              className,
+            )}
             style={{ color: 'inherit', font: 'inherit', borderRadius: 'inherit' }}
             aria-invalid={error ? 'true' : 'false'}
             aria-describedby={describedBy}
@@ -68,7 +71,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         </FieldShell>
 
         {error ? (
-          <p id={`${generatedId}-error`} className="text-xs leading-5 text-right text-red-500 animate-field-message-in mt-1">
+          <p
+            id={`${generatedId}-error`}
+            className="text-xs leading-5 text-right text-red-500 animate-field-message-in mt-1"
+          >
             {error}
           </p>
         ) : helperText ? (
@@ -80,10 +86,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           </p>
         ) : null}
       </div>
-    )
-  }
-)
+    );
+  },
+);
 
-Input.displayName = 'Input'
+Input.displayName = 'Input';
 
-export { Input, type InputProps }
+export { Input, type InputProps };

@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import { HTMLAttributes, forwardRef } from 'react'
+import { HTMLAttributes, forwardRef } from 'react';
 
-import { GlassChip, type GlassChipTone, type GlassChipShape } from './glass'
+import { GlassChip, type GlassChipTone, type GlassChipShape } from './glass';
 
-type ChipVariant = 'default' | 'muted' | 'current' | 'active' | 'circle'
+type ChipVariant = 'default' | 'muted' | 'current' | 'active' | 'circle';
 
 interface ChipProps extends HTMLAttributes<HTMLDivElement> {
   /**
@@ -15,23 +15,23 @@ interface ChipProps extends HTMLAttributes<HTMLDivElement> {
    * - active: Accent/selected state
    * - circle: Circular chip
    */
-  variant?: ChipVariant
+  variant?: ChipVariant;
   /**
    * Make chip interactive (hover/focus states)
    */
-  interactive?: boolean
+  interactive?: boolean;
   /**
    * Optional metadata text (smaller, muted)
    */
-  meta?: string
+  meta?: string;
   /**
    * Left icon/element
    */
-  leftIcon?: React.ReactNode
+  leftIcon?: React.ReactNode;
   /**
    * Right icon/element
    */
-  rightIcon?: React.ReactNode
+  rightIcon?: React.ReactNode;
 }
 
 /**
@@ -57,22 +57,22 @@ const Chip = forwardRef<HTMLDivElement, ChipProps>(
       children,
       ...props
     },
-    ref
+    ref,
   ) => {
     const toneMap: Record<ChipVariant, GlassChipTone> = {
       default: 'default',
       muted: 'muted',
       current: 'current',
       active: 'active',
-      circle: 'default'
-    }
+      circle: 'default',
+    };
     const shapeMap: Record<ChipVariant, GlassChipShape> = {
       default: 'default',
       muted: 'default',
       current: 'default',
       active: 'default',
-      circle: 'circle'
-    }
+      circle: 'circle',
+    };
 
     return (
       <GlassChip
@@ -90,10 +90,10 @@ const Chip = forwardRef<HTMLDivElement, ChipProps>(
         </span>
         {rightIcon && <span className="inline-flex">{rightIcon}</span>}
       </GlassChip>
-    )
-  }
-)
+    );
+  },
+);
 
-Chip.displayName = 'Chip'
+Chip.displayName = 'Chip';
 
-export { Chip, type ChipProps, type ChipVariant }
+export { Chip, type ChipProps, type ChipVariant };

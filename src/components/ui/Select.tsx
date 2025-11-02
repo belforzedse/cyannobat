@@ -1,23 +1,23 @@
-'use client'
+'use client';
 
-import { SelectHTMLAttributes, forwardRef, useId } from 'react'
-import clsx from 'clsx'
+import { SelectHTMLAttributes, forwardRef, useId } from 'react';
+import clsx from 'clsx';
 
-import { FieldShell } from './FieldShell'
+import { FieldShell } from './FieldShell';
 
 interface SelectOption {
-  value: string
-  label: string
-  disabled?: boolean
+  value: string;
+  label: string;
+  disabled?: boolean;
 }
 
 interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
-  label?: string
-  error?: string
-  helperText?: string
-  options: SelectOption[]
-  placeholder?: string
-  fullWidth?: boolean
+  label?: string;
+  error?: string;
+  helperText?: string;
+  options: SelectOption[];
+  placeholder?: string;
+  fullWidth?: boolean;
 }
 
 const ChevronDown = () => (
@@ -34,7 +34,7 @@ const ChevronDown = () => (
   >
     <polyline points="6 9 12 15 18 9" />
   </svg>
-)
+);
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
   (
@@ -50,16 +50,16 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
       disabled,
       ...props
     },
-    ref
+    ref,
   ) => {
-    const reactId = useId()
-    const generatedId = id || `select-${reactId}`
+    const reactId = useId();
+    const generatedId = id || `select-${reactId}`;
 
     const describedBy = error
       ? `${generatedId}-error`
       : helperText
         ? `${generatedId}-helper`
-        : undefined
+        : undefined;
 
     return (
       <div className={clsx('flex flex-col gap-1.5', fullWidth && 'w-full')}>
@@ -78,7 +78,10 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           <select
             ref={ref}
             id={generatedId}
-            className={clsx('flex-1 w-full border-none outline-none bg-transparent text-sm leading-6 px-4 py-[0.625rem] appearance-none cursor-pointer transition-colors duration-200 ease-glass text-right disabled:cursor-not-allowed', className)}
+            className={clsx(
+              'flex-1 w-full border-none outline-none bg-transparent text-sm leading-6 px-4 py-[0.625rem] appearance-none cursor-pointer transition-colors duration-200 ease-glass text-right disabled:cursor-not-allowed',
+              className,
+            )}
             style={{ color: 'inherit', font: 'inherit', borderRadius: 'inherit' }}
             aria-invalid={error ? 'true' : 'false'}
             aria-describedby={describedBy}
@@ -91,11 +94,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
               </option>
             )}
             {options.map((option) => (
-              <option
-                key={option.value}
-                value={option.value}
-                disabled={option.disabled}
-              >
+              <option key={option.value} value={option.value} disabled={option.disabled}>
                 {option.label}
               </option>
             ))}
@@ -103,7 +102,10 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
         </FieldShell>
 
         {error ? (
-          <p id={`${generatedId}-error`} className="text-xs leading-5 text-right text-red-500 animate-field-message-in mt-1">
+          <p
+            id={`${generatedId}-error`}
+            className="text-xs leading-5 text-right text-red-500 animate-field-message-in mt-1"
+          >
             {error}
           </p>
         ) : helperText ? (
@@ -115,10 +117,10 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </p>
         ) : null}
       </div>
-    )
-  }
-)
+    );
+  },
+);
 
-Select.displayName = 'Select'
+Select.displayName = 'Select';
 
-export { Select, type SelectProps, type SelectOption }
+export { Select, type SelectProps, type SelectOption };

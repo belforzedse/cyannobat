@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 export const POST = async () => {
-  const response = NextResponse.json({ ok: true })
-  const secureCookies = process.env.NODE_ENV === 'production'
+  const response = NextResponse.json({ ok: true });
+  const secureCookies = process.env.NODE_ENV === 'production';
 
   response.cookies.set('payload-token', '', {
     path: '/',
@@ -12,7 +12,7 @@ export const POST = async () => {
     sameSite: 'lax',
     secure: secureCookies,
     maxAge: 0,
-  })
+  });
 
   response.cookies.set('payload-refresh-token', '', {
     path: '/',
@@ -20,7 +20,7 @@ export const POST = async () => {
     sameSite: 'lax',
     secure: secureCookies,
     maxAge: 0,
-  })
+  });
 
-  return response
-}
+  return response;
+};

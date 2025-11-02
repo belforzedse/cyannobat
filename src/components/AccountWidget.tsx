@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
-import { User } from "lucide-react";
+import { User } from 'lucide-react';
 
 type SessionState =
-  | { status: "loading" }
-  | { status: "unauthenticated" }
+  | { status: 'loading' }
+  | { status: 'unauthenticated' }
   | {
-      status: "authenticated";
+      status: 'authenticated';
       user: { id: string; email: string; name: string; phone: string; roles: string[] };
       isStaff: boolean;
     };
@@ -21,7 +21,7 @@ interface AccountWidgetProps {
 const UserIcon = User;
 const AccountWidget = React.forwardRef<HTMLAnchorElement, AccountWidgetProps>(
   ({ isActive = false, className }, ref) => {
-    const [session, setSession] = useState<SessionState>({ status: "loading" });
+    const [session, setSession] = useState<SessionState>({ status: 'loading' });
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -33,13 +33,13 @@ const AccountWidget = React.forwardRef<HTMLAnchorElement, AccountWidgetProps>(
 
       const fetchSession = async () => {
         try {
-          const response = await fetch("/api/account/session", {
-            credentials: "include",
-            cache: "no-store",
+          const response = await fetch('/api/account/session', {
+            credentials: 'include',
+            cache: 'no-store',
           });
 
           if (!response.ok) {
-            throw new Error("Failed to fetch session");
+            throw new Error('Failed to fetch session');
           }
 
           const data: {
@@ -54,16 +54,16 @@ const AccountWidget = React.forwardRef<HTMLAnchorElement, AccountWidgetProps>(
 
           if (data.authenticated && data.user) {
             const roles = Array.isArray(data.user.roles)
-              ? data.user.roles.filter((role): role is string => typeof role === "string")
+              ? data.user.roles.filter((role): role is string => typeof role === 'string')
               : [];
 
             setSession({
-              status: "authenticated",
+              status: 'authenticated',
               user: {
                 id: String(data.user.id),
-                email: data.user.email ?? "",
-                name: data.user.name ?? "",
-                phone: data.user.phone ?? "",
+                email: data.user.email ?? '',
+                name: data.user.name ?? '',
+                phone: data.user.phone ?? '',
                 roles,
               },
               isStaff: Boolean(data.isStaff),
@@ -71,10 +71,10 @@ const AccountWidget = React.forwardRef<HTMLAnchorElement, AccountWidgetProps>(
             return;
           }
 
-          setSession({ status: "unauthenticated" });
+          setSession({ status: 'unauthenticated' });
         } catch {
           if (isMounted) {
-            setSession({ status: "unauthenticated" });
+            setSession({ status: 'unauthenticated' });
           }
         }
       };
@@ -86,30 +86,30 @@ const AccountWidget = React.forwardRef<HTMLAnchorElement, AccountWidgetProps>(
       };
     }, []);
 
-    let accountHref = "/account";
+    let accountHref = '/account';
 
-    if (session.status === "authenticated") {
+    if (session.status === 'authenticated') {
       if (session.isStaff) {
         const roles = session.user.roles ?? [];
-        const hasDoctor = roles.includes("doctor");
-        const hasReceptionist = roles.includes("receptionist");
-        const isAdmin = roles.includes("admin");
+        const hasDoctor = roles.includes('doctor');
+        const hasReceptionist = roles.includes('receptionist');
+        const isAdmin = roles.includes('admin');
 
         if (hasDoctor && !hasReceptionist && !isAdmin) {
-          accountHref = "/staff/doctor";
+          accountHref = '/staff/doctor';
         } else if (hasReceptionist || isAdmin) {
-          accountHref = "/staff/receptionist";
+          accountHref = '/staff/receptionist';
         } else {
-          accountHref = "/staff";
+          accountHref = '/staff';
         }
       } else {
-        accountHref = "/account";
+        accountHref = '/account';
       }
     }
 
     const buttonClassName = clsx(
-      "group relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-white text-foreground  backdrop-blur-xl transition-all duration-300 ease-glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-black/80",
-      className
+      'group relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-white text-foreground  backdrop-blur-xl transition-all duration-300 ease-glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-black/80',
+      className,
     );
 
     if (!mounted) {
@@ -123,7 +123,7 @@ const AccountWidget = React.forwardRef<HTMLAnchorElement, AccountWidgetProps>(
       );
     }
 
-    if (session.status === "loading") {
+    if (session.status === 'loading') {
       return (
         <button aria-label="حساب کاربری" className={buttonClassName} type="button" disabled>
           <span className="sr-only">حساب کاربری</span>
@@ -134,7 +134,7 @@ const AccountWidget = React.forwardRef<HTMLAnchorElement, AccountWidgetProps>(
       );
     }
 
-    if (session.status === "unauthenticated") {
+    if (session.status === 'unauthenticated') {
       return (
         <Link href="/login" className={buttonClassName} aria-label="ورود یا ثبت‌نام">
           <span className="sr-only">ورود یا ثبت‌نام</span>
@@ -151,7 +151,7 @@ const AccountWidget = React.forwardRef<HTMLAnchorElement, AccountWidgetProps>(
         href={accountHref}
         className={buttonClassName}
         aria-label={`حساب کاربری - ${session.user.email}`}
-        aria-current={isActive ? "page" : undefined}
+        aria-current={isActive ? 'page' : undefined}
       >
         <span className="sr-only">حساب کاربری</span>
         <span aria-hidden="true" className="flex items-center justify-center">
@@ -159,7 +159,7 @@ const AccountWidget = React.forwardRef<HTMLAnchorElement, AccountWidgetProps>(
         </span>
       </Link>
     );
-  }
+  },
 );
 
 AccountWidget.displayName = 'AccountWidget';

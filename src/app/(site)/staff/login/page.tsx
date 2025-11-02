@@ -1,10 +1,9 @@
-import { redirect } from 'next/navigation'
+import { redirect } from 'next/navigation';
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 const LegacyStaffLoginPage = () => {
-  redirect('/login')
-}
+  redirect('/login');
+};
 
-export default LegacyStaffLoginPage
-
+export default LegacyStaffLoginPage;

@@ -1,16 +1,16 @@
-'use client'
+'use client';
 
-import { TextareaHTMLAttributes, forwardRef, useEffect, useId, useState } from 'react'
-import clsx from 'clsx'
+import { TextareaHTMLAttributes, forwardRef, useEffect, useId, useState } from 'react';
+import clsx from 'clsx';
 
 import { FieldShell } from './FieldShell';
 
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label?: string
-  error?: string
-  helperText?: string
-  fullWidth?: boolean
-  showCharCount?: boolean
+  label?: string;
+  error?: string;
+  helperText?: string;
+  fullWidth?: boolean;
+  showCharCount?: boolean;
 }
 
 const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
@@ -28,36 +28,31 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       onChange,
       ...props
     },
-    ref
+    ref,
   ) => {
-    const [charCount, setCharCount] = useState(
-      typeof value === 'string' ? value.length : 0
-    )
+    const [charCount, setCharCount] = useState(typeof value === 'string' ? value.length : 0);
 
     useEffect(() => {
       if (typeof value === 'string') {
-        setCharCount(value.length)
+        setCharCount(value.length);
       }
-    }, [value])
+    }, [value]);
 
-    const reactId = useId()
-    const generatedId = id || `textarea-${reactId}`
+    const reactId = useId();
+    const generatedId = id || `textarea-${reactId}`;
 
     const describedBy = error
       ? `${generatedId}-error`
       : helperText
         ? `${generatedId}-helper`
-        : undefined
+        : undefined;
 
     const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setCharCount(event.target.value.length)
-      onChange?.(event)
-    }
+      setCharCount(event.target.value.length);
+      onChange?.(event);
+    };
 
-    const valueProps =
-      value !== undefined
-        ? { value }
-        : {}
+    const valueProps = value !== undefined ? { value } : {};
 
     return (
       <div className={clsx('flex flex-col gap-1.5', fullWidth && 'w-full')}>
@@ -110,9 +105,9 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         </div>
       </div>
     );
-  }
-)
+  },
+);
 
-Textarea.displayName = 'Textarea'
+Textarea.displayName = 'Textarea';
 
-export { Textarea, type TextareaProps }
+export { Textarea, type TextareaProps };

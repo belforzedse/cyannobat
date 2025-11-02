@@ -1,33 +1,30 @@
-'use client'
+'use client';
 
-import { Plus } from 'lucide-react'
-import type { FC } from 'react'
+import { Plus } from 'lucide-react';
+import type { FC } from 'react';
 
-import { Button, Card } from '@/components/ui'
-import type { ProviderAvailabilityDayOption } from '@/lib/staff/constants/providerAvailability'
-import type {
-  StaffProvider,
-  StaffProviderAvailabilityWindow,
-} from '@/lib/staff/types'
+import { Button, Card } from '@/components/ui';
+import type { ProviderAvailabilityDayOption } from '@/lib/staff/constants/providerAvailability';
+import type { StaffProvider, StaffProviderAvailabilityWindow } from '@/lib/staff/types';
 
-import AvailabilityWindowFields from './AvailabilityWindowFields'
+import AvailabilityWindowFields from './AvailabilityWindowFields';
 
 type ProviderAvailabilityCardProps = {
-  provider: StaffProvider
-  windows: StaffProviderAvailabilityWindow[]
-  dayOptions: readonly ProviderAvailabilityDayOption[]
-  errorMessage: string | null
-  isSaving: boolean
-  hasChanges: boolean
-  onAddWindow: () => void
-  onSave: () => void
+  provider: StaffProvider;
+  windows: StaffProviderAvailabilityWindow[];
+  dayOptions: readonly ProviderAvailabilityDayOption[];
+  errorMessage: string | null;
+  isSaving: boolean;
+  hasChanges: boolean;
+  onAddWindow: () => void;
+  onSave: () => void;
   onWindowChange: (
     index: number,
     field: keyof StaffProviderAvailabilityWindow,
     value: string,
-  ) => void
-  onRemoveWindow: (index: number) => void
-}
+  ) => void;
+  onRemoveWindow: (index: number) => void;
+};
 
 const ProviderAvailabilityCard: FC<ProviderAvailabilityCardProps> = ({
   provider,
@@ -97,7 +94,7 @@ const ProviderAvailabilityCard: FC<ProviderAvailabilityCardProps> = ({
         </div>
       </div>
     </Card>
-  )
-}
+  );
+};
 
-export default ProviderAvailabilityCard
+export default ProviderAvailabilityCard;

@@ -32,16 +32,24 @@ const ContactSection = ({
         delayIn: 0.05,
       });
 
-  const motionStates = reduceMotion ? {} : { initial: 'initial' as const, animate: 'animate' as const };
+  const motionStates = reduceMotion
+    ? {}
+    : { initial: 'initial' as const, animate: 'animate' as const };
 
   return (
     <motion.section variants={sectionVariants} {...motionStates}>
       <Card variant="default" padding="lg" className="sm:rounded-3xl">
         <div className="flex flex-col items-end gap-1 sm:gap-2 text-right">
           <h3 className="text-sm font-semibold text-foreground">اطلاعات تماس</h3>
-          <p className="text-xs leading-6 text-muted-foreground">لطفاً راه‌های ارتباطی خود را وارد کنید تا هماهنگی‌ها سریع‌تر انجام شود.</p>
+          <p className="text-xs leading-6 text-muted-foreground">
+            لطفاً راه‌های ارتباطی خود را وارد کنید تا هماهنگی‌ها سریع‌تر انجام شود.
+          </p>
         </div>
-        <motion.div className="mt-3 grid gap-3 sm:mt-4 sm:grid-cols-3 sm:gap-4 lg:mt-5" variants={fieldsContainerVariants} {...motionStates}>
+        <motion.div
+          className="mt-3 grid gap-3 sm:mt-4 sm:grid-cols-3 sm:gap-4 lg:mt-5"
+          variants={fieldsContainerVariants}
+          {...motionStates}
+        >
           <motion.div variants={fieldVariants}>
             <Input
               label="نام و نام خانوادگی"

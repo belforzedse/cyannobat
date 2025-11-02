@@ -1,9 +1,9 @@
-import type { ZodIssue } from 'zod'
-import { sql } from 'drizzle-orm'
-import configPromise, { payloadDrizzle } from '@payload-config'
-import { bookingHold } from '@/lib/redis'
-import { bookingAvailabilityQuerySchema } from '@/lib/schemas/booking'
-import { getPayload } from 'payload'
+import type { ZodIssue } from 'zod';
+import { sql } from 'drizzle-orm';
+import configPromise, { payloadDrizzle } from '@payload-config';
+import { bookingHold } from '@/lib/redis';
+import { bookingAvailabilityQuerySchema } from '@/lib/schemas/booking';
+import { getPayload } from 'payload';
 
 const buildValidationErrorResponse = (issues: ZodIssue[]): Response => {
   return Response.json(
@@ -15,13 +15,13 @@ const buildValidationErrorResponse = (issues: ZodIssue[]): Response => {
       })),
     },
     { status: 400 },
-  )
-}
+  );
+};
 
 type RawService = Record<string, unknown> & {
-  isActive?: boolean | null
-  leadTimeHours?: number | null
-}
+  isActive?: boolean | null;
+  leadTimeHours?: number | null;
+};
 
 const ensureServiceIsBookable = async (
   payload: Awaited<ReturnType<typeof getPayload>>,
@@ -32,41 +32,44 @@ const ensureServiceIsBookable = async (
       collection: 'services',
       id: serviceId,
       depth: 0,
-    })) as unknown as RawService | null
+    })) as unknown as RawService | null;
 
     if (!service || typeof service !== 'object') {
-      return { service: null, errors: ['SERVICE_NOT_FOUND'] as const }
+      return { service: null, errors: ['SERVICE_NOT_FOUND'] as const };
     }
 
     if (service.isActive === false) {
-      return { service, errors: ['SERVICE_INACTIVE'] as const }
+      return { service, errors: ['SERVICE_INACTIVE'] as const };
     }
 
-    return { service, errors: [] as const }
+    return { service, errors: [] as const };
   } catch (error) {
     const notFound =
-      typeof error === 'object' && error !== null && 'status' in error && (error as { status?: number }).status === 404
+      typeof error === 'object' &&
+      error !== null &&
+      'status' in error &&
+      (error as { status?: number }).status === 404;
 
     if (notFound) {
-      return { service: null, errors: ['SERVICE_NOT_FOUND'] as const }
+      return { service: null, errors: ['SERVICE_NOT_FOUND'] as const };
     }
 
-    throw error
+    throw error;
   }
-}
+};
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 export const GET = async (request: Request): Promise<Response> => {
-  const rawParams = Object.fromEntries(new URL(request.url).searchParams.entries())
-  const parsed = bookingAvailabilityQuerySchema.safeParse(rawParams)
+  const rawParams = Object.fromEntries(new URL(request.url).searchParams.entries());
+  const parsed = bookingAvailabilityQuerySchema.safeParse(rawParams);
 
   if (!parsed.success) {
-    return buildValidationErrorResponse(parsed.error.issues)
+    return buildValidationErrorResponse(parsed.error.issues);
   }
 
-  const { serviceId, slot } = parsed.data
-  const slotDate = new Date(slot)
+  const { serviceId, slot } = parsed.data;
+  const slotDate = new Date(slot);
 
   if (Number.isNaN(slotDate.getTime())) {
     return Response.json(
@@ -75,16 +78,16 @@ export const GET = async (request: Request): Promise<Response> => {
         errors: [{ path: 'slot', message: 'slot must be a valid date' }],
       },
       { status: 400 },
-    )
+    );
   }
 
-  const normalizedSlot = slotDate.toISOString()
+  const normalizedSlot = slotDate.toISOString();
 
   const payload = await getPayload({
     config: configPromise,
-  })
+  });
 
-  const { service, errors: serviceErrors } = await ensureServiceIsBookable(payload, serviceId)
+  const { service, errors: serviceErrors } = await ensureServiceIsBookable(payload, serviceId);
 
   if (!service) {
     return Response.json(
@@ -96,48 +99,48 @@ export const GET = async (request: Request): Promise<Response> => {
         hold: null,
       },
       { status: 404 },
-    )
+    );
   }
 
-  const reasons: string[] = [...serviceErrors]
-  const now = new Date()
+  const reasons: string[] = [...serviceErrors];
+  const now = new Date();
 
   if (slotDate.getTime() < now.getTime()) {
-    reasons.push('PAST_SLOT')
+    reasons.push('PAST_SLOT');
   }
 
-  const leadTimeHours = typeof service.leadTimeHours === 'number' ? service.leadTimeHours : null
+  const leadTimeHours = typeof service.leadTimeHours === 'number' ? service.leadTimeHours : null;
   if (leadTimeHours && leadTimeHours > 0) {
-    const minStart = new Date(now.getTime() + leadTimeHours * 60 * 60 * 1000)
+    const minStart = new Date(now.getTime() + leadTimeHours * 60 * 60 * 1000);
     if (slotDate.getTime() < minStart.getTime()) {
-      reasons.push('LEAD_TIME_NOT_MET')
+      reasons.push('LEAD_TIME_NOT_MET');
     }
   }
 
-  let existingAppointment = false
+  let existingAppointment = false;
   try {
     const existing = await payloadDrizzle.execute(
       sql`select 1 from "appointments" where "service" = ${serviceId} and ("schedule"->>'start') = ${normalizedSlot} limit 1`,
-    )
+    );
 
-    existingAppointment = Array.isArray(existing?.rows) && existing.rows.length > 0
+    existingAppointment = Array.isArray(existing?.rows) && existing.rows.length > 0;
   } catch (error) {
-    payload.logger.error?.('Failed to check existing appointments', error)
+    payload.logger.error?.('Failed to check existing appointments', error);
   }
 
   if (existingAppointment) {
-    reasons.push('ALREADY_BOOKED')
+    reasons.push('ALREADY_BOOKED');
   }
 
-  let hold = null
+  let hold = null;
   try {
-    hold = await bookingHold.get({ serviceId, slot: normalizedSlot })
+    hold = await bookingHold.get({ serviceId, slot: normalizedSlot });
   } catch (error) {
-    payload.logger.error?.('Failed to read booking hold', error)
+    payload.logger.error?.('Failed to read booking hold', error);
   }
 
   if (hold && hold.ttlSeconds > 0) {
-    reasons.push('ON_HOLD')
+    reasons.push('ON_HOLD');
   }
 
   return Response.json({
@@ -146,5 +149,5 @@ export const GET = async (request: Request): Promise<Response> => {
     available: reasons.length === 0,
     reasons,
     hold,
-  })
-}
+  });
+};

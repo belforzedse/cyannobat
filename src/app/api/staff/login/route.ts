@@ -1,2 +1,1 @@
-export { dynamic, POST } from '../../login/route'
-
+export { dynamic, POST } from '../../login/route';

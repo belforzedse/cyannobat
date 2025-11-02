@@ -1,25 +1,25 @@
-'use client'
+'use client';
 
-import { Loader2, Edit3 } from 'lucide-react'
+import { Loader2, Edit3 } from 'lucide-react';
 
-import { glassPanelStyles } from '@/components/ui/glass'
-import { cn } from '@/lib/utils'
-import type { StaffAppointment } from '@/lib/staff/types'
+import { glassPanelStyles } from '@/components/ui/glass';
+import { cn } from '@/lib/utils';
+import type { StaffAppointment } from '@/lib/staff/types';
 
-import type { StatusOption } from '@/lib/staff/dashboard/constants'
+import type { StatusOption } from '@/lib/staff/dashboard/constants';
 
 export type AppointmentsListProps = {
-  appointments: StaffAppointment[]
-  showProviderColumn: boolean
-  statusOptions: StatusOption[]
-  onStatusChange: (id: string, status: StaffAppointment['status']) => void
-  updatingId: string | null
-  failedId: string | null
-  editingScheduleId: string | null
-  onEditSchedule: (appointment: StaffAppointment) => void
-  renderScheduleEditor: (appointment: StaffAppointment) => React.ReactNode
-  formatDateTime: (iso: string, timeZone: string) => string
-}
+  appointments: StaffAppointment[];
+  showProviderColumn: boolean;
+  statusOptions: StatusOption[];
+  onStatusChange: (id: string, status: StaffAppointment['status']) => void;
+  updatingId: string | null;
+  failedId: string | null;
+  editingScheduleId: string | null;
+  onEditSchedule: (appointment: StaffAppointment) => void;
+  renderScheduleEditor: (appointment: StaffAppointment) => React.ReactNode;
+  formatDateTime: (iso: string, timeZone: string) => string;
+};
 
 export const AppointmentsList = ({
   appointments,
@@ -36,9 +36,9 @@ export const AppointmentsList = ({
   <div className="flex flex-col gap-3 md:hidden">
     {appointments.length > 0 ? (
       appointments.map((appointment) => {
-        const isEditing = editingScheduleId === appointment.id
-        const isUpdating = updatingId === appointment.id
-        const hasFailed = failedId === appointment.id
+        const isEditing = editingScheduleId === appointment.id;
+        const isUpdating = updatingId === appointment.id;
+        const hasFailed = failedId === appointment.id;
 
         return (
           <div
@@ -54,9 +54,13 @@ export const AppointmentsList = ({
             <div className="flex flex-col gap-3 text-sm text-foreground">
               <div className="flex flex-col gap-1">
                 <span className="text-xs font-semibold text-muted-foreground">زمان نوبت</span>
-                <span className="font-medium">{formatDateTime(appointment.start, appointment.timeZone)}</span>
+                <span className="font-medium">
+                  {formatDateTime(appointment.start, appointment.timeZone)}
+                </span>
                 <span className="text-[11px] text-muted-foreground">
-                  تا {formatDateTime(appointment.end, appointment.timeZone).split('—')[1]?.trim() ?? ''}
+                  تا{' '}
+                  {formatDateTime(appointment.end, appointment.timeZone).split('—')[1]?.trim() ??
+                    ''}
                 </span>
               </div>
 
@@ -109,7 +113,12 @@ export const AppointmentsList = ({
                 <div className="flex items-center justify-between gap-3">
                   <select
                     value={appointment.status}
-                    onChange={(event) => onStatusChange(appointment.id, event.target.value as StaffAppointment['status'])}
+                    onChange={(event) =>
+                      onStatusChange(
+                        appointment.id,
+                        event.target.value as StaffAppointment['status'],
+                      )
+                    }
                     disabled={isUpdating}
                     className={cn(
                       glassPanelStyles(),
@@ -133,7 +142,7 @@ export const AppointmentsList = ({
               </div>
             </div>
           </div>
-        )
+        );
       })
     ) : (
       <div className="rounded-2xl border border-dashed border-white/20 bg-white/10 p-6 text-center text-sm text-muted-foreground dark:border-white/10">
@@ -141,4 +150,4 @@ export const AppointmentsList = ({
       </div>
     )}
   </div>
-)
+);

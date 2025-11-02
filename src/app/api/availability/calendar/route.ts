@@ -1,45 +1,45 @@
-import { NextResponse } from 'next/server'
-import { DateTime } from 'luxon'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import { NextResponse } from 'next/server';
+import { DateTime } from 'luxon';
+import configPromise from '@payload-config';
+import { getPayload } from 'payload';
 
 import {
   generateAvailability,
   type GenerateAvailabilityOptions,
-} from '@/lib/availability/generator'
+} from '@/lib/availability/generator';
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 const parseRangeDays = (value: string | null): number | undefined => {
-  if (!value) return undefined
-  const parsed = Number.parseInt(value, 10)
-  if (Number.isNaN(parsed) || parsed <= 0) return undefined
-  return parsed
-}
+  if (!value) return undefined;
+  const parsed = Number.parseInt(value, 10);
+  if (Number.isNaN(parsed) || parsed <= 0) return undefined;
+  return parsed;
+};
 
 export const GET = async (request: Request) => {
   const payload = await getPayload({
     config: configPromise,
-  })
+  });
 
-  const url = new URL(request.url)
+  const url = new URL(request.url);
 
   const options: GenerateAvailabilityOptions = {
     rangeDays: parseRangeDays(url.searchParams.get('rangeDays')),
-  }
+  };
 
-  const serviceId = url.searchParams.get('serviceId')
+  const serviceId = url.searchParams.get('serviceId');
   if (serviceId) {
-    options.serviceId = serviceId
+    options.serviceId = serviceId;
   }
 
-  const providerId = url.searchParams.get('providerId')
+  const providerId = url.searchParams.get('providerId');
   if (providerId) {
-    options.providerId = providerId
+    options.providerId = providerId;
   }
 
   try {
-    const result = await generateAvailability(payload, options)
+    const result = await generateAvailability(payload, options);
 
     return NextResponse.json({
       generatedAt: DateTime.utc().toISO(),
@@ -53,15 +53,14 @@ export const GET = async (request: Request) => {
         rangeDays: options.rangeDays ?? 14,
       },
       days: result.days,
-    })
+    });
   } catch (error) {
-    payload.logger.error?.('Failed to build availability calendar', error)
+    payload.logger.error?.('Failed to build availability calendar', error);
     return NextResponse.json(
       {
         message: 'Failed to build availability calendar',
       },
       { status: 500 },
-    )
+    );
   }
-}
-
+};

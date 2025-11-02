@@ -1,22 +1,23 @@
-import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
-import { userIsStaff } from '@/lib/auth'
+import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload';
+import { userIsStaff } from '@/lib/auth';
 
 const normalizeSlug = (input: string): string =>
   input
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)+/g, '')
+    .replace(/(^-|-$)+/g, '');
 
 const servicesSlugHook: CollectionBeforeValidateHook = async ({ data }) => {
-  if (!data) return data
+  if (!data) return data;
 
   if (data.title) {
-    const base = typeof data.slug === 'string' && data.slug.trim().length > 0 ? data.slug : data.title
-    data.slug = normalizeSlug(base)
+    const base =
+      typeof data.slug === 'string' && data.slug.trim().length > 0 ? data.slug : data.title;
+    data.slug = normalizeSlug(base);
   }
 
-  return data
-}
+  return data;
+};
 
 export const Services: CollectionConfig = {
   slug: 'services',
@@ -34,16 +35,16 @@ export const Services: CollectionConfig = {
   access: {
     read: () => true,
     create: async ({ req }) => {
-      if (!req.user) return false
-      return userIsStaff(req.user)
+      if (!req.user) return false;
+      return userIsStaff(req.user);
     },
     update: async ({ req }) => {
-      if (!req.user) return false
-      return userIsStaff(req.user)
+      if (!req.user) return false;
+      return userIsStaff(req.user);
     },
     delete: async ({ req }) => {
-      if (!req.user) return false
-      return userIsStaff(req.user)
+      if (!req.user) return false;
+      return userIsStaff(req.user);
     },
   },
   fields: [
@@ -158,4 +159,4 @@ export const Services: CollectionConfig = {
       label: 'Supporting media',
     },
   ],
-}
+};

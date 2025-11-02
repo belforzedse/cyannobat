@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import * as React from 'react'
+import * as React from 'react';
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
-type ElementType = React.ElementType
+type ElementType = React.ElementType;
 
 export type GlassSurfaceStyleOptions = {
-  interactive?: boolean
-}
+  interactive?: boolean;
+};
 
 const baseSurfaceClasses = [
   'relative rounded-[2rem] border border-white/50',
@@ -32,45 +32,37 @@ const interactiveSurfaceClasses = [
   'dark:hover:shadow-[0_36px_110px_-40px_#02061CD1,inset_0_1px_0_#78BEFF42,inset_0_-1px_0_#02061CB8,0_26px_60px_#2484FF47,0_0_0_1px_#78BEFF52]',
 ].join(' ');
 
-
 export const glassSurfaceStyles = ({ interactive = true }: GlassSurfaceStyleOptions = {}) =>
-  cn(baseSurfaceClasses, interactive && interactiveSurfaceClasses)
+  cn(baseSurfaceClasses, interactive && interactiveSurfaceClasses);
 
 type GlassSurfaceOwnProps = {
-  className?: string
-} & GlassSurfaceStyleOptions
+  className?: string;
+} & GlassSurfaceStyleOptions;
 
 type GlassSurfaceBaseProps = GlassSurfaceOwnProps & {
-  as?: ElementType
-}
+  as?: ElementType;
+};
 
 export type GlassSurfaceProps = GlassSurfaceBaseProps &
   Omit<React.HTMLAttributes<HTMLElement>, keyof GlassSurfaceBaseProps> & {
-    [key: string]: unknown
-  }
+    [key: string]: unknown;
+  };
 
 export const GlassSurface = React.forwardRef<HTMLElement, GlassSurfaceProps>(
-  (
-    { as, interactive, className, ...props },
-    ref,
-  ) => {
-    const Component = (as ?? 'div') as ElementType
+  ({ as, interactive, className, ...props }, ref) => {
+    const Component = (as ?? 'div') as ElementType;
     const resolvedInteractive =
-      typeof interactive === 'boolean' ? interactive : Boolean(interactive)
-    const resolvedClassName =
-      typeof className === 'string' ? className : undefined
+      typeof interactive === 'boolean' ? interactive : Boolean(interactive);
+    const resolvedClassName = typeof className === 'string' ? className : undefined;
 
     return (
       <Component
         ref={ref as React.Ref<HTMLElement>}
-        className={cn(
-          glassSurfaceStyles({ interactive: resolvedInteractive }),
-          resolvedClassName,
-        )}
+        className={cn(glassSurfaceStyles({ interactive: resolvedInteractive }), resolvedClassName)}
         {...(props as object)}
       />
-    )
+    );
   },
-)
+);
 
-GlassSurface.displayName = 'GlassSurface'
+GlassSurface.displayName = 'GlassSurface';

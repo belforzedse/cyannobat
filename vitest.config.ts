@@ -1,8 +1,8 @@
-import { defineConfig } from 'vitest/config'
-import path from 'path'
+import { defineConfig } from 'vitest/config';
+import path from 'path';
 
 export default defineConfig(async () => {
-  const { default: react } = await import('@vitejs/plugin-react')
+  const { default: react } = await import('@vitejs/plugin-react');
 
   return {
     plugins: [react()],
@@ -23,6 +23,5 @@ export default defineConfig(async () => {
         '@payload-config': path.resolve(__dirname, './src/payload.config.ts'),
       },
     },
-  }
-})
-
+  };
+});

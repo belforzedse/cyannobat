@@ -49,9 +49,17 @@ const ThemeToggle = () => {
       <AnimatePresence initial={false} mode="wait">
         <motion.span
           key={resolvedTheme}
-          initial={{ opacity: prefersReducedMotion ? 1 : 0, scale: prefersReducedMotion ? 1 : 0.5, rotate: prefersReducedMotion ? 0 : -90 }}
+          initial={{
+            opacity: prefersReducedMotion ? 1 : 0,
+            scale: prefersReducedMotion ? 1 : 0.5,
+            rotate: prefersReducedMotion ? 0 : -90,
+          }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          exit={{ opacity: prefersReducedMotion ? 1 : 0, scale: prefersReducedMotion ? 1 : 0.5, rotate: prefersReducedMotion ? 0 : 90 }}
+          exit={{
+            opacity: prefersReducedMotion ? 1 : 0,
+            scale: prefersReducedMotion ? 1 : 0.5,
+            rotate: prefersReducedMotion ? 0 : 90,
+          }}
           transition={prefersReducedMotion ? { duration: 0 } : liquidSpring}
           className="flex items-center justify-center"
         >

@@ -1,27 +1,27 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import { Plus, RefreshCw } from 'lucide-react'
+import { motion } from 'framer-motion';
+import { Plus, RefreshCw } from 'lucide-react';
 
-import { Button } from '@/components/ui'
-import { glassPanelStyles } from '@/components/ui/glass'
-import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui';
+import { glassPanelStyles } from '@/components/ui/glass';
+import { cn } from '@/lib/utils';
 
-import type { StatusOption } from '@/lib/staff/dashboard/constants'
+import type { StatusOption } from '@/lib/staff/dashboard/constants';
 
 export type AppointmentsToolbarProps = {
-  filterStatus: string
-  onFilterChange: (value: string) => void
-  searchTerm: string
-  onSearchChange: (value: string) => void
-  searchPlaceholder: string
-  canCreateAppointments: boolean
-  onCreateClick: () => void
-  onRefresh: () => void
-  isRefreshing: boolean
-  prefersReducedMotion: boolean
-  statusOptions: StatusOption[]
-}
+  filterStatus: string;
+  onFilterChange: (value: string) => void;
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  searchPlaceholder: string;
+  canCreateAppointments: boolean;
+  onCreateClick: () => void;
+  onRefresh: () => void;
+  isRefreshing: boolean;
+  prefersReducedMotion: boolean;
+  statusOptions: StatusOption[];
+};
 
 export const AppointmentsToolbar = ({
   filterStatus,
@@ -84,10 +84,16 @@ export const AppointmentsToolbar = ({
           رزرو نوبت جدید
         </Button>
       )}
-      <Button variant="secondary" size="sm" onClick={onRefresh} disabled={isRefreshing} className="gap-2">
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={onRefresh}
+        disabled={isRefreshing}
+        className="gap-2"
+      >
         <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
         به‌روزرسانی
       </Button>
     </div>
   </motion.div>
-)
+);

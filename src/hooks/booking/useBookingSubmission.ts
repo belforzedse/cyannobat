@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import type { ToastOptions } from '@/components/ui/ToastProvider'
+import type { ToastOptions } from '@/components/ui/ToastProvider';
 
-import { type CustomerInfo, type SelectedSchedule } from '@/lib/booking/types'
+import { type CustomerInfo, type SelectedSchedule } from '@/lib/booking/types';
 
-const HOLD_TTL_SECONDS = 5 * 60
+const HOLD_TTL_SECONDS = 5 * 60;
 
 const reasonMessages: Record<string, string> = {
   ALREADY_BOOKED: 'این زمان پیش‌تر رزرو شده است.',
@@ -18,57 +18,57 @@ const reasonMessages: Record<string, string> = {
   PROVIDER_REQUIRED: 'انتخاب پزشک برای این رزرو ضروری است.',
   SERVICE_INACTIVE: 'این خدمت در حال حاضر فعال نیست.',
   SERVICE_NOT_FOUND: 'خدمت انتخابی یافت نشد.',
-}
+};
 
-type HoldKey = { serviceId: string; slot: string; customerId: string }
+type HoldKey = { serviceId: string; slot: string; customerId: string };
 
 type UseBookingSubmissionParams = {
-  additionalReason: string
-  customerInfo: CustomerInfo
-  customerNotes: string
-  reasonSummary: string[]
-  router: { push: (href: string) => void }
-  selectedReasons: string[]
-  selectedSchedule: SelectedSchedule | null
-  setActivity: (key: string, isActive: boolean, message?: string) => void
-  showToast: (options: ToastOptions) => void
-  isContinueDisabled: boolean
-}
+  additionalReason: string;
+  customerInfo: CustomerInfo;
+  customerNotes: string;
+  reasonSummary: string[];
+  router: { push: (href: string) => void };
+  selectedReasons: string[];
+  selectedSchedule: SelectedSchedule | null;
+  setActivity: (key: string, isActive: boolean, message?: string) => void;
+  showToast: (options: ToastOptions) => void;
+  isContinueDisabled: boolean;
+};
 
 type BookingSubmissionState = {
-  isSubmitting: boolean
-  submitError: string | null
-  validationErrors: string[]
-  bookingReference: string | null
-}
+  isSubmitting: boolean;
+  submitError: string | null;
+  validationErrors: string[];
+  bookingReference: string | null;
+};
 
 type BookingSubmissionResult = BookingSubmissionState & {
-  isActionDisabled: boolean
-  handleContinue: () => Promise<void>
-}
+  isActionDisabled: boolean;
+  handleContinue: () => Promise<void>;
+};
 
 const extractErrorMessages = (payload: unknown): string[] => {
-  if (!payload || typeof payload !== 'object') return []
+  if (!payload || typeof payload !== 'object') return [];
 
-  const details: string[] = []
+  const details: string[] = [];
   if ('errors' in payload && Array.isArray((payload as { errors?: unknown }).errors)) {
     for (const issue of (payload as { errors?: unknown[] }).errors ?? []) {
-      if (!issue || typeof issue !== 'object') continue
+      if (!issue || typeof issue !== 'object') continue;
       if ('message' in issue && typeof issue.message === 'string') {
-        details.push(issue.message)
+        details.push(issue.message);
       }
     }
   }
 
   if ('reasons' in payload && Array.isArray((payload as { reasons?: unknown }).reasons)) {
     for (const reason of (payload as { reasons?: unknown[] }).reasons ?? []) {
-      if (typeof reason !== 'string') continue
-      details.push(reasonMessages[reason] ?? reason)
+      if (typeof reason !== 'string') continue;
+      details.push(reasonMessages[reason] ?? reason);
     }
   }
 
-  return details
-}
+  return details;
+};
 
 export const useBookingSubmission = ({
   additionalReason,
@@ -87,8 +87,8 @@ export const useBookingSubmission = ({
     submitError: null,
     validationErrors: [],
     bookingReference: null,
-  })
-  const holdKeyRef = useRef<HoldKey | null>(null)
+  });
+  const holdKeyRef = useRef<HoldKey | null>(null);
 
   const normalizedCustomer = useMemo(
     () => ({
@@ -97,53 +97,53 @@ export const useBookingSubmission = ({
       phone: customerInfo.phone.trim(),
     }),
     [customerInfo.email, customerInfo.fullName, customerInfo.phone],
-  )
+  );
 
   const releaseHold = useCallback(async () => {
     if (!holdKeyRef.current) {
-      return
+      return;
     }
 
-    const holdKey = holdKeyRef.current
+    const holdKey = holdKeyRef.current;
 
     try {
       const response = await fetch('/api/hold', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(holdKey),
-      })
+      });
 
       if (!response.ok) {
-        const payload = await response.json().catch(() => null)
+        const payload = await response.json().catch(() => null);
         console.warn('Failed to release booking hold', {
           status: response.status,
           payload,
-        })
+        });
         showToast({
           variant: 'error',
           title: 'مشکل در آزادسازی نوبت',
           description: 'رزرو موقت آزاد نشد. در صورت تکرار، صفحه را تازه‌سازی کنید.',
-        })
+        });
       }
     } catch (error) {
-      console.error('Failed to release booking hold', error)
+      console.error('Failed to release booking hold', error);
       showToast({
         variant: 'error',
         title: 'مشکل در آزادسازی نوبت',
         description: 'رزرو موقت آزاد نشد. در صورت تکرار، صفحه را تازه‌سازی کنید.',
-      })
+      });
     } finally {
-      holdKeyRef.current = null
+      holdKeyRef.current = null;
     }
-  }, [showToast])
+  }, [showToast]);
 
   useEffect(() => {
     return () => {
       if (holdKeyRef.current) {
-        void releaseHold()
+        void releaseHold();
       }
-    }
-  }, [releaseHold])
+    };
+  }, [releaseHold]);
 
   const handleContinue = useCallback(async () => {
     if (!selectedSchedule) {
@@ -152,26 +152,26 @@ export const useBookingSubmission = ({
         isSubmitting: false,
         submitError: 'لطفاً پیش از ادامه، زمان ملاقات را انتخاب کنید.',
         validationErrors: [],
-      }))
-      return
+      }));
+      return;
     }
 
-    const resolvedCustomerId = normalizedCustomer.email || normalizedCustomer.phone
-    const trimmedNotes = customerNotes.trim()
-    const trimmedAdditionalReason = additionalReason.trim()
+    const resolvedCustomerId = normalizedCustomer.email || normalizedCustomer.phone;
+    const trimmedNotes = customerNotes.trim();
+    const trimmedAdditionalReason = additionalReason.trim();
 
     setState({
       isSubmitting: true,
       submitError: null,
       validationErrors: [],
       bookingReference: null,
-    })
+    });
 
-    holdKeyRef.current = null
+    holdKeyRef.current = null;
 
     try {
-      setActivity('booking-submit', true, 'در حال نهایی‌سازی نوبت...')
-      const slot = selectedSchedule.slot
+      setActivity('booking-submit', true, 'در حال نهایی‌سازی نوبت...');
+      const slot = selectedSchedule.slot;
       const holdResponse = await fetch('/api/hold', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -192,9 +192,9 @@ export const useBookingSubmission = ({
             customerNotes: trimmedNotes || undefined,
           },
         }),
-      })
+      });
 
-      const holdPayload = await holdResponse.json().catch(() => null)
+      const holdPayload = await holdResponse.json().catch(() => null);
 
       if (!holdResponse.ok) {
         setState({
@@ -202,8 +202,8 @@ export const useBookingSubmission = ({
           submitError: 'امکان نگه‌داشت موقت نوبت وجود ندارد. لطفاً دوباره تلاش کنید.',
           validationErrors: extractErrorMessages(holdPayload),
           bookingReference: null,
-        })
-        return
+        });
+        return;
       }
 
       if (
@@ -213,7 +213,11 @@ export const useBookingSubmission = ({
         holdPayload.hold &&
         typeof holdPayload.hold === 'object'
       ) {
-        const hold = holdPayload.hold as { serviceId?: unknown; slot?: unknown; customerId?: unknown }
+        const hold = holdPayload.hold as {
+          serviceId?: unknown;
+          slot?: unknown;
+          customerId?: unknown;
+        };
         if (
           typeof hold.serviceId === 'string' &&
           typeof hold.slot === 'string' &&
@@ -223,7 +227,7 @@ export const useBookingSubmission = ({
             serviceId: hold.serviceId,
             slot: hold.slot,
             customerId: hold.customerId,
-          }
+          };
         }
       }
 
@@ -247,51 +251,51 @@ export const useBookingSubmission = ({
             customerInfo: normalizedCustomer,
           },
         }),
-      })
+      });
 
-      const bookingPayload = await bookingResponse.json().catch(() => null)
+      const bookingPayload = await bookingResponse.json().catch(() => null);
 
       if (!bookingResponse.ok) {
-        await releaseHold()
+        await releaseHold();
         setState({
           isSubmitting: false,
           submitError: 'ثبت نهایی نوبت با خطا مواجه شد. لطفاً دوباره تلاش کنید.',
           validationErrors: extractErrorMessages(bookingPayload),
           bookingReference: null,
-        })
-        return
+        });
+        return;
       }
 
       const appointmentReference =
         bookingPayload && typeof bookingPayload === 'object'
           ? (bookingPayload as { appointment?: { reference?: unknown } }).appointment?.reference
-          : null
+          : null;
 
-      const reference = typeof appointmentReference === 'string' ? appointmentReference : null
+      const reference = typeof appointmentReference === 'string' ? appointmentReference : null;
 
       setState({
         isSubmitting: false,
         submitError: null,
         validationErrors: [],
         bookingReference: reference,
-      })
+      });
 
       if (reference) {
-        router.push(`/reserve/confirmation?reference=${encodeURIComponent(reference)}`)
+        router.push(`/reserve/confirmation?reference=${encodeURIComponent(reference)}`);
       } else {
-        router.push('/reserve/confirmation')
+        router.push('/reserve/confirmation');
       }
     } catch (error) {
-      console.error('Failed to complete booking flow', error)
-      await releaseHold()
+      console.error('Failed to complete booking flow', error);
+      await releaseHold();
       setState({
         isSubmitting: false,
         submitError: 'ثبت نوبت با خطا مواجه شد. لطفاً دوباره تلاش کنید.',
         validationErrors: [],
         bookingReference: null,
-      })
+      });
     } finally {
-      setActivity('booking-submit', false)
+      setActivity('booking-submit', false);
     }
   }, [
     additionalReason,
@@ -303,13 +307,13 @@ export const useBookingSubmission = ({
     selectedReasons,
     selectedSchedule,
     setActivity,
-  ])
+  ]);
 
   return {
     ...state,
     isActionDisabled: isContinueDisabled || state.isSubmitting,
     handleContinue,
-  }
-}
+  };
+};
 
-export type UseBookingSubmissionReturn = ReturnType<typeof useBookingSubmission>
+export type UseBookingSubmissionReturn = ReturnType<typeof useBookingSubmission>;

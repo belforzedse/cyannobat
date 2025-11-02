@@ -1,15 +1,15 @@
-import React from 'react'
-import { render } from '@testing-library/react'
+import React from 'react';
+import { render } from '@testing-library/react';
 
-import { Button } from '../Button'
+import { Button } from '../Button';
 
 describe('Button', () => {
   it('matches the primary variant snapshot', () => {
     const { getByRole } = render(
       <Button disableAnimation variant="primary">
         Primary CTA
-      </Button>
-    )
+      </Button>,
+    );
 
     expect(getByRole('button')).toMatchInlineSnapshot(`
       <button
@@ -19,15 +19,15 @@ describe('Button', () => {
           Primary CTA
         </span>
       </button>
-    `)
-  })
+    `);
+  });
 
   it('matches the secondary variant snapshot', () => {
     const { getByRole } = render(
       <Button disableAnimation variant="secondary">
         Secondary CTA
-      </Button>
-    )
+      </Button>,
+    );
 
     expect(getByRole('button')).toMatchInlineSnapshot(`
       <button
@@ -37,15 +37,15 @@ describe('Button', () => {
           Secondary CTA
         </span>
       </button>
-    `)
-  })
+    `);
+  });
 
   it('matches the glass pill variant snapshot', () => {
     const { getByRole } = render(
       <Button disableAnimation variant="glass-pill">
         Glass CTA
-      </Button>
-    )
+      </Button>,
+    );
 
     expect(getByRole('button')).toMatchInlineSnapshot(`
       <button
@@ -55,7 +55,6 @@ describe('Button', () => {
           Glass CTA
         </span>
       </button>
-    `)
-  })
-})
-
+    `);
+  });
+});

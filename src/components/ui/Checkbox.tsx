@@ -1,34 +1,65 @@
-'use client'
+'use client';
 
-import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
-import { Check, Minus } from 'lucide-react'
-import React, { CSSProperties, forwardRef, useId } from 'react'
+import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
+import { Check, Minus } from 'lucide-react';
+import React, { CSSProperties, forwardRef, useId } from 'react';
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
-type CheckboxTone = 'accent' | 'neutral' | 'muted'
-type CheckboxSize = 'sm' | 'md' | 'lg'
+type CheckboxTone = 'accent' | 'neutral' | 'muted';
+type CheckboxSize = 'sm' | 'md' | 'lg';
 
 const checkboxToneStyles = {
-  accent: { '--checkbox-border': 'rgba(var(--accent-rgb), 0.45)', '--checkbox-border-hover': 'rgba(var(--accent-rgb), 0.65)', '--checkbox-border-active': 'rgba(var(--accent-rgb), 0.75)', '--checkbox-bg': 'color-mix(in srgb, var(--accent) 18%, var(--card))', '--checkbox-bg-hover': 'color-mix(in srgb, var(--accent) 24%, var(--card))', '--checkbox-bg-checked': 'linear-gradient(145deg, color-mix(in srgb, var(--accent-strong) 85%, white 12%), color-mix(in srgb, var(--accent) 92%, white 8%))', '--checkbox-indicator': 'rgb(30 41 59)', '--checkbox-shadow-checked': '0 18px 32px -20px rgba(var(--accent-rgb), 0.55)' } as CSSProperties,
-  neutral: { '--checkbox-border': 'rgba(var(--border-rgb), 0.7)', '--checkbox-border-hover': 'rgba(var(--border-rgb), 0.9)', '--checkbox-border-active': 'rgba(var(--border-rgb), 0.95)', '--checkbox-bg': 'color-mix(in srgb, var(--card) 90%, transparent)', '--checkbox-bg-hover': 'color-mix(in srgb, var(--card) 98%, transparent)', '--checkbox-bg-checked': 'linear-gradient(150deg, color-mix(in srgb, rgb(var(--fg-rgb)) 18%, white 82%), color-mix(in srgb, rgb(var(--fg-rgb)) 12%, transparent))', '--checkbox-indicator': 'rgb(var(--fg-rgb))', '--checkbox-shadow-checked': '0 16px 30px -24px rgba(var(--fg-rgb), 0.35)' } as CSSProperties,
-  muted: { '--checkbox-border': 'rgba(var(--muted-foreground-rgb, 78 94 120), 0.55)', '--checkbox-border-hover': 'rgba(var(--muted-foreground-rgb, 78 94 120), 0.75)', '--checkbox-border-active': 'rgba(var(--muted-foreground-rgb, 78 94 120), 0.9)', '--checkbox-bg': 'color-mix(in srgb, var(--muted) 65%, transparent)', '--checkbox-bg-hover': 'color-mix(in srgb, var(--muted) 78%, transparent)', '--checkbox-bg-checked': 'linear-gradient(135deg, color-mix(in srgb, var(--muted) 85%, white 6%), color-mix(in srgb, var(--muted) 92%, white 4%))', '--checkbox-indicator': 'rgb(var(--fg-rgb))', '--checkbox-shadow-checked': '0 18px 32px -22px rgba(var(--muted-foreground-rgb, 78 94 120), 0.35)' } as CSSProperties,
-}
+  accent: {
+    '--checkbox-border': 'rgba(var(--accent-rgb), 0.45)',
+    '--checkbox-border-hover': 'rgba(var(--accent-rgb), 0.65)',
+    '--checkbox-border-active': 'rgba(var(--accent-rgb), 0.75)',
+    '--checkbox-bg': 'color-mix(in srgb, var(--accent) 18%, var(--card))',
+    '--checkbox-bg-hover': 'color-mix(in srgb, var(--accent) 24%, var(--card))',
+    '--checkbox-bg-checked':
+      'linear-gradient(145deg, color-mix(in srgb, var(--accent-strong) 85%, white 12%), color-mix(in srgb, var(--accent) 92%, white 8%))',
+    '--checkbox-indicator': 'rgb(30 41 59)',
+    '--checkbox-shadow-checked': '0 18px 32px -20px rgba(var(--accent-rgb), 0.55)',
+  } as CSSProperties,
+  neutral: {
+    '--checkbox-border': 'rgba(var(--border-rgb), 0.7)',
+    '--checkbox-border-hover': 'rgba(var(--border-rgb), 0.9)',
+    '--checkbox-border-active': 'rgba(var(--border-rgb), 0.95)',
+    '--checkbox-bg': 'color-mix(in srgb, var(--card) 90%, transparent)',
+    '--checkbox-bg-hover': 'color-mix(in srgb, var(--card) 98%, transparent)',
+    '--checkbox-bg-checked':
+      'linear-gradient(150deg, color-mix(in srgb, rgb(var(--fg-rgb)) 18%, white 82%), color-mix(in srgb, rgb(var(--fg-rgb)) 12%, transparent))',
+    '--checkbox-indicator': 'rgb(var(--fg-rgb))',
+    '--checkbox-shadow-checked': '0 16px 30px -24px rgba(var(--fg-rgb), 0.35)',
+  } as CSSProperties,
+  muted: {
+    '--checkbox-border': 'rgba(var(--muted-foreground-rgb, 78 94 120), 0.55)',
+    '--checkbox-border-hover': 'rgba(var(--muted-foreground-rgb, 78 94 120), 0.75)',
+    '--checkbox-border-active': 'rgba(var(--muted-foreground-rgb, 78 94 120), 0.9)',
+    '--checkbox-bg': 'color-mix(in srgb, var(--muted) 65%, transparent)',
+    '--checkbox-bg-hover': 'color-mix(in srgb, var(--muted) 78%, transparent)',
+    '--checkbox-bg-checked':
+      'linear-gradient(135deg, color-mix(in srgb, var(--muted) 85%, white 6%), color-mix(in srgb, var(--muted) 92%, white 4%))',
+    '--checkbox-indicator': 'rgb(var(--fg-rgb))',
+    '--checkbox-shadow-checked':
+      '0 18px 32px -22px rgba(var(--muted-foreground-rgb, 78 94 120), 0.35)',
+  } as CSSProperties,
+};
 
 const sizeClassNames: Record<CheckboxSize, string> = {
   sm: '[--checkbox-size:1.05rem] gap-[0.6rem] text-[0.85rem]',
   md: '[--checkbox-size:1.25rem]',
   lg: '[--checkbox-size:1.45rem] gap-[0.85rem] text-[1rem]',
-}
+};
 
 interface CheckboxProps extends Omit<CheckboxPrimitive.CheckboxProps, 'children'> {
-  label?: React.ReactNode
-  description?: React.ReactNode
-  tone?: CheckboxTone
-  size?: CheckboxSize
-  helperText?: React.ReactNode
-  className?: string
-  controlClassName?: string
+  label?: React.ReactNode;
+  description?: React.ReactNode;
+  tone?: CheckboxTone;
+  size?: CheckboxSize;
+  helperText?: React.ReactNode;
+  className?: string;
+  controlClassName?: string;
 }
 
 /**
@@ -56,13 +87,13 @@ const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
       disabled,
       ...props
     },
-    ref
+    ref,
   ) => {
-    const reactId = useId()
-    const checkboxId = id ?? `checkbox-${reactId}`
-    const descriptionId = description ? `${checkboxId}-description` : undefined
-    const helperId = helperText ? `${checkboxId}-helper` : undefined
-    const describedBy = [descriptionId, helperId].filter(Boolean).join(' ') || undefined
+    const reactId = useId();
+    const checkboxId = id ?? `checkbox-${reactId}`;
+    const descriptionId = description ? `${checkboxId}-description` : undefined;
+    const helperId = helperText ? `${checkboxId}-helper` : undefined;
+    const describedBy = [descriptionId, helperId].filter(Boolean).join(' ') || undefined;
 
     return (
       <label
@@ -75,7 +106,7 @@ const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
           'dark:[--checkbox-shadow:inset_0_1px_0_rgba(120,190,255,0.18)]',
           sizeClassNames[size],
           'data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-65 data-[disabled=true]:[filter:saturate(0.75)]',
-          className
+          className,
         )}
         style={checkboxToneStyles[tone]}
         data-disabled={disabled ? 'true' : undefined}
@@ -91,7 +122,7 @@ const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
             'data-[state=indeterminate]:border-[var(--checkbox-border-active)] data-[state=indeterminate]:bg-[var(--checkbox-bg-checked)] data-[state=indeterminate]:shadow-[var(--checkbox-shadow-checked)]',
             'focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_color-mix(in_srgb,var(--accent)_25%,transparent),0_0_0_5px_rgb(var(--ring-rgb)/0.35)]',
             'data-[disabled=true]:pointer-events-none disabled:pointer-events-none',
-            controlClassName
+            controlClassName,
           )}
           disabled={disabled}
           data-disabled={disabled ? 'true' : undefined}
@@ -105,7 +136,7 @@ const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
               '[&>svg]:scale-90 [&>svg]:opacity-0 [&>svg]:transition-all [&>svg]:duration-150 [&>svg]:ease-glass',
               '[&>svg]:stroke-[2.25] [&>svg]:text-current',
               'data-[state=checked]:[&>svg:first-child]:opacity-100 data-[state=checked]:[&>svg:first-child]:scale-100',
-              'data-[state=indeterminate]:[&>svg:last-child]:opacity-100 data-[state=indeterminate]:[&>svg:last-child]:scale-100'
+              'data-[state=indeterminate]:[&>svg:last-child]:opacity-100 data-[state=indeterminate]:[&>svg:last-child]:scale-100',
             )}
           >
             <Check aria-hidden className="pointer-events-none" />
@@ -135,10 +166,10 @@ const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
           </span>
         )}
       </label>
-    )
-  }
-)
+    );
+  },
+);
 
-Checkbox.displayName = 'Checkbox'
+Checkbox.displayName = 'Checkbox';
 
-export { Checkbox, type CheckboxProps, type CheckboxTone, type CheckboxSize }
+export { Checkbox, type CheckboxProps, type CheckboxTone, type CheckboxSize };

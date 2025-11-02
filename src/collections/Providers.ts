@@ -1,22 +1,23 @@
-import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
-import { userIsAdmin, userIsStaff } from '@/lib/auth'
+import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload';
+import { userIsAdmin, userIsStaff } from '@/lib/auth';
 
 const normalizeSlug = (input: string): string =>
   input
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)+/g, '')
+    .replace(/(^-|-$)+/g, '');
 
 const providerSlugHook: CollectionBeforeValidateHook = async ({ data }) => {
-  if (!data) return data
+  if (!data) return data;
 
   if (data.displayName) {
-    const base = typeof data.slug === 'string' && data.slug.trim().length > 0 ? data.slug : data.displayName
-    data.slug = normalizeSlug(base)
+    const base =
+      typeof data.slug === 'string' && data.slug.trim().length > 0 ? data.slug : data.displayName;
+    data.slug = normalizeSlug(base);
   }
 
-  return data
-}
+  return data;
+};
 
 export const Providers: CollectionConfig = {
   slug: 'providers',
@@ -35,18 +36,18 @@ export const Providers: CollectionConfig = {
     read: () => true,
     create: ({ req }) => Boolean(req.user) && userIsStaff(req.user),
     update: async ({ req }) => {
-      if (!req.user) return false
-      if (userIsStaff(req.user)) return true
+      if (!req.user) return false;
+      if (userIsStaff(req.user)) return true;
 
       return {
         account: {
           equals: req.user.id,
         },
-      }
+      };
     },
     delete: ({ req }) => {
-      if (!req.user) return false
-      return userIsAdmin(req.user)
+      if (!req.user) return false;
+      return userIsAdmin(req.user);
     },
   },
   fields: [
@@ -171,7 +172,8 @@ export const Providers: CollectionConfig = {
           type: 'number',
           min: 0,
           admin: {
-            description: 'Default appointment duration in minutes when no service duration is specified.',
+            description:
+              'Default appointment duration in minutes when no service duration is specified.',
           },
         },
         {
@@ -254,4 +256,4 @@ export const Providers: CollectionConfig = {
       ],
     },
   ],
-}
+};

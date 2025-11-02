@@ -1,19 +1,21 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
-const serviceIdSchema = z.string({ required_error: 'serviceId is required' }).min(1, 'serviceId is required')
+const serviceIdSchema = z
+  .string({ required_error: 'serviceId is required' })
+  .min(1, 'serviceId is required');
 const slotSchema = z
   .string({ required_error: 'slot is required' })
-  .datetime({ message: 'slot must be an ISO 8601 date string' })
+  .datetime({ message: 'slot must be an ISO 8601 date string' });
 const metadataSchema = z.record(z.unknown(), {
   invalid_type_error: 'metadata must be an object',
-})
+});
 
 export const bookingAvailabilityQuerySchema = z.object({
   serviceId: serviceIdSchema,
   slot: slotSchema,
-})
+});
 
-export type BookingAvailabilityQueryInput = z.infer<typeof bookingAvailabilityQuerySchema>
+export type BookingAvailabilityQueryInput = z.infer<typeof bookingAvailabilityQuerySchema>;
 
 export const bookingHoldReleaseSchema = z
   .object({
@@ -23,9 +25,9 @@ export const bookingHoldReleaseSchema = z
       .string({ required_error: 'customerId is required' })
       .min(1, 'customerId is required'),
   })
-  .strict()
+  .strict();
 
-export type BookingHoldReleaseInput = z.infer<typeof bookingHoldReleaseSchema>
+export type BookingHoldReleaseInput = z.infer<typeof bookingHoldReleaseSchema>;
 
 export const bookingHoldRequestSchema = z
   .object({
@@ -41,9 +43,9 @@ export const bookingHoldRequestSchema = z
     providerId: z.string().min(1).optional(),
     metadata: metadataSchema.optional(),
   })
-  .strict()
+  .strict();
 
-export type BookingHoldRequestInput = z.infer<typeof bookingHoldRequestSchema>
+export type BookingHoldRequestInput = z.infer<typeof bookingHoldRequestSchema>;
 
 export const bookingRequestSchema = z
   .object({
@@ -59,6 +61,6 @@ export const bookingRequestSchema = z
     clientNotes: z.string().max(2000).optional(),
     metadata: metadataSchema.optional(),
   })
-  .strict()
+  .strict();
 
-export type BookingRequestInput = z.infer<typeof bookingRequestSchema>
+export type BookingRequestInput = z.infer<typeof bookingRequestSchema>;

@@ -1,38 +1,38 @@
-'use client'
+'use client';
 
-import { useMemo } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
-import clsx from 'clsx'
+import { useMemo } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import clsx from 'clsx';
 
-import { GlassPanel, GlassChip } from '@/components/ui/glass'
+import { GlassPanel, GlassChip } from '@/components/ui/glass';
 
-import type { AvailabilityDay, AvailabilitySlot } from '@/lib/booking/types'
-import { luxuryContainer, luxurySlideFade } from '@/lib/luxuryAnimations'
+import type { AvailabilityDay, AvailabilitySlot } from '@/lib/booking/types';
+import { luxuryContainer, luxurySlideFade } from '@/lib/luxuryAnimations';
 
 type SchedulePickerProps = {
-  availability?: AvailabilityDay[]
-  selectedDay?: string | null
-  selectedSlotId?: string | null
-  onSelectDay?: (day: AvailabilityDay) => void
-  onSelectSlot?: (slot: AvailabilitySlot, day: AvailabilityDay) => void
-  isLoading?: boolean
-  placeholderMessage?: string
-  emptyMessage?: string
-}
+  availability?: AvailabilityDay[];
+  selectedDay?: string | null;
+  selectedSlotId?: string | null;
+  onSelectDay?: (day: AvailabilityDay) => void;
+  onSelectSlot?: (slot: AvailabilitySlot, day: AvailabilityDay) => void;
+  isLoading?: boolean;
+  placeholderMessage?: string;
+  emptyMessage?: string;
+};
 
 const formatDayHeading = (date: string) => {
   try {
-    const dateInstance = new Date(`${date}T12:00:00Z`)
-    const weekday = new Intl.DateTimeFormat('fa-IR', { weekday: 'long' }).format(dateInstance)
+    const dateInstance = new Date(`${date}T12:00:00Z`);
+    const weekday = new Intl.DateTimeFormat('fa-IR', { weekday: 'long' }).format(dateInstance);
     const label = new Intl.DateTimeFormat('fa-IR', {
       month: 'long',
       day: 'numeric',
-    }).format(dateInstance)
-    return { weekday, label }
+    }).format(dateInstance);
+    return { weekday, label };
   } catch {
-    return { weekday: '', label: date }
+    return { weekday: '', label: date };
   }
-}
+};
 
 const formatTime = (isoDate: string, timeZone: string) => {
   try {
@@ -41,14 +41,14 @@ const formatTime = (isoDate: string, timeZone: string) => {
       minute: '2-digit',
       hour12: false,
       timeZone: timeZone || 'UTC',
-    }).format(new Date(isoDate))
+    }).format(new Date(isoDate));
   } catch {
-    return isoDate
+    return isoDate;
   }
-}
+};
 
 const formatSlotLabel = (slot: AvailabilitySlot) =>
-  `${formatTime(slot.start, slot.timeZone)} تا ${formatTime(slot.end, slot.timeZone)}`
+  `${formatTime(slot.start, slot.timeZone)} تا ${formatTime(slot.end, slot.timeZone)}`;
 
 const SchedulePicker = ({
   availability,
@@ -60,34 +60,36 @@ const SchedulePicker = ({
   placeholderMessage,
   emptyMessage,
 }: SchedulePickerProps) => {
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = useReducedMotion();
   const totalSlots = useMemo(
     () =>
       availability?.reduce((count, day) => {
-        return count + day.slots.length
+        return count + day.slots.length;
       }, 0) ?? 0,
     [availability],
-  )
-  const hasDenseSchedule = totalSlots > 24
-  const reduceInteractiveMotion = Boolean(prefersReducedMotion) || hasDenseSchedule
-  const containerVariants = reduceInteractiveMotion ? undefined : luxuryContainer
+  );
+  const hasDenseSchedule = totalSlots > 24;
+  const reduceInteractiveMotion = Boolean(prefersReducedMotion) || hasDenseSchedule;
+  const containerVariants = reduceInteractiveMotion ? undefined : luxuryContainer;
   const dayVariants = reduceInteractiveMotion
     ? undefined
     : luxurySlideFade('up', {
         distance: 24,
         duration: 0.55,
         delayIn: 0.05,
-      })
-  const slotContainerVariants = reduceInteractiveMotion ? undefined : luxuryContainer
+      });
+  const slotContainerVariants = reduceInteractiveMotion ? undefined : luxuryContainer;
   const slotVariants = reduceInteractiveMotion
     ? undefined
     : luxurySlideFade('up', {
         distance: 16,
         duration: 0.45,
         delayIn: 0.04,
-      })
+      });
 
-  const motionStates = reduceInteractiveMotion ? {} : { initial: 'initial' as const, animate: 'animate' as const }
+  const motionStates = reduceInteractiveMotion
+    ? {}
+    : { initial: 'initial' as const, animate: 'animate' as const };
 
   if (isLoading) {
     return (
@@ -107,15 +109,16 @@ const SchedulePicker = ({
           </GlassPanel>
         ))}
       </div>
-    )
+    );
   }
 
   if (!availability) {
     return (
       <GlassPanel variant="muted" className="border-dashed p-6 text-sm text-muted-foreground">
-        {placeholderMessage ?? 'ابتدا یک روز یا خدمت را انتخاب کنید تا زمان‌های آزاد نمایش داده شود.'}
+        {placeholderMessage ??
+          'ابتدا یک روز یا خدمت را انتخاب کنید تا زمان‌های آزاد نمایش داده شود.'}
       </GlassPanel>
-    )
+    );
   }
 
   if (availability.length === 0) {
@@ -123,7 +126,7 @@ const SchedulePicker = ({
       <GlassPanel variant="muted" className="border-dashed p-6 text-sm text-muted-foreground">
         {emptyMessage ?? 'در حال حاضر زمانی در دسترس نیست. لطفاً به زودی دوباره سر بزنید.'}
       </GlassPanel>
-    )
+    );
   }
 
   return (
@@ -133,10 +136,10 @@ const SchedulePicker = ({
       {...motionStates}
     >
       {availability.map((day) => {
-        const isActiveDay = selectedDay === day.date
-        const { weekday, label } = formatDayHeading(day.date)
-        const dayLabelParts = [weekday, label].filter(Boolean)
-        const dayDescription = dayLabelParts.length > 0 ? dayLabelParts.join('، ') : day.date
+        const isActiveDay = selectedDay === day.date;
+        const { weekday, label } = formatDayHeading(day.date);
+        const dayLabelParts = [weekday, label].filter(Boolean);
+        const dayDescription = dayLabelParts.length > 0 ? dayLabelParts.join('، ') : day.date;
 
         return (
           <GlassPanel
@@ -148,7 +151,7 @@ const SchedulePicker = ({
               'flex h-full flex-col gap-3 rounded-2xl p-4 sm:rounded-3xl',
               reduceInteractiveMotion
                 ? 'transition-opacity duration-200'
-                : 'transition-all duration-300'
+                : 'transition-all duration-300',
             )}
             variants={dayVariants}
           >
@@ -162,16 +165,20 @@ const SchedulePicker = ({
                 reduceInteractiveMotion
                   ? 'transition-opacity duration-150 hover:opacity-95 focus-visible:opacity-95'
                   : 'transition-transform duration-200 hover:-translate-y-0.5',
-                'text-xs'
+                'text-xs',
               )}
               onClick={() => onSelectDay?.(day)}
               aria-pressed={isActiveDay}
               aria-label={dayDescription}
             >
-              <span className="text-xs font-semibold text-muted-foreground dark:text-slate-300">{weekday || '—'}</span>
+              <span className="text-xs font-semibold text-muted-foreground dark:text-slate-300">
+                {weekday || '—'}
+              </span>
               <span className="text-sm font-bold text-foreground dark:text-white">{label}</span>
               {day.note ? (
-                <span className="text-[11px] text-accent-strong/80 dark:text-accent-foreground/90">{day.note}</span>
+                <span className="text-[11px] text-accent-strong/80 dark:text-accent-foreground/90">
+                  {day.note}
+                </span>
               ) : null}
             </GlassChip>
 
@@ -187,16 +194,16 @@ const SchedulePicker = ({
                   {...motionStates}
                 >
                   {day.slots.map((slot) => {
-                    const slotId = slot.id
-                    const isSelected = isActiveDay && selectedSlotId === slotId
+                    const slotId = slot.id;
+                    const isSelected = isActiveDay && selectedSlotId === slotId;
                     const slotAriaLabelParts = [
                       dayDescription,
                       formatSlotLabel(slot),
                       slot.providerName ? `با ${slot.providerName}` : undefined,
                       slot.serviceName ? `برای ${slot.serviceName}` : undefined,
                       slot.kind === 'virtual' ? 'مشاوره آنلاین' : undefined,
-                    ].filter((part): part is string => Boolean(part))
-                    const slotAriaLabel = slotAriaLabelParts.join('، ')
+                    ].filter((part): part is string => Boolean(part));
+                    const slotAriaLabel = slotAriaLabelParts.join('، ');
 
                     return (
                       <GlassChip
@@ -209,33 +216,39 @@ const SchedulePicker = ({
                           'flex flex-col items-end gap-1 text-right text-xs font-medium',
                           reduceInteractiveMotion
                             ? 'transition-opacity duration-150 hover:opacity-95 focus-visible:opacity-95'
-                            : 'transition-transform duration-200 hover:-translate-y-0.5'
+                            : 'transition-transform duration-200 hover:-translate-y-0.5',
                         )}
                         onClick={() => {
-                          onSelectDay?.(day)
-                          onSelectSlot?.(slot, day)
+                          onSelectDay?.(day);
+                          onSelectSlot?.(slot, day);
                         }}
                         aria-pressed={isSelected}
                         aria-label={slotAriaLabel}
                         variants={slotVariants}
                       >
                         <span className="font-semibold">{formatSlotLabel(slot)}</span>
-                        <span className="text-[10px] text-muted-foreground dark:text-muted-foreground">{slot.providerName}</span>
-                        <span className="text-[10px] text-muted-foreground dark:text-muted-foreground">{slot.serviceName}</span>
+                        <span className="text-[10px] text-muted-foreground dark:text-muted-foreground">
+                          {slot.providerName}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground dark:text-muted-foreground">
+                          {slot.serviceName}
+                        </span>
                         {slot.kind === 'virtual' ? (
-                          <span className="text-[10px] text-accent-strong/80 dark:text-accent-foreground/90">مشاوره آنلاین</span>
+                          <span className="text-[10px] text-accent-strong/80 dark:text-accent-foreground/90">
+                            مشاوره آنلاین
+                          </span>
                         ) : null}
                       </GlassChip>
-                    )
+                    );
                   })}
                 </motion.div>
               )}
             </div>
           </GlassPanel>
-        )
+        );
       })}
     </motion.div>
-  )
-}
+  );
+};
 
-export default SchedulePicker
+export default SchedulePicker;

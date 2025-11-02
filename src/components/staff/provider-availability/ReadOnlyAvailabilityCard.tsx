@@ -1,16 +1,16 @@
-'use client'
+'use client';
 
-import type { FC } from 'react'
+import type { FC } from 'react';
 
-import { Card } from '@/components/ui'
-import { glassPanelStyles } from '@/components/ui/glass'
-import { cn } from '@/lib/utils'
-import { DAY_LABEL_LOOKUP } from '@/lib/staff/constants/providerAvailability'
-import type { StaffProvider } from '@/lib/staff/types'
+import { Card } from '@/components/ui';
+import { glassPanelStyles } from '@/components/ui/glass';
+import { cn } from '@/lib/utils';
+import { DAY_LABEL_LOOKUP } from '@/lib/staff/constants/providerAvailability';
+import type { StaffProvider } from '@/lib/staff/types';
 
 type ReadOnlyAvailabilityCardProps = {
-  provider: StaffProvider
-}
+  provider: StaffProvider;
+};
 
 const ReadOnlyAvailabilityCard: FC<ReadOnlyAvailabilityCardProps> = ({ provider }) => {
   return (
@@ -51,7 +51,7 @@ const ReadOnlyAvailabilityCard: FC<ReadOnlyAvailabilityCardProps> = ({ provider 
         </p>
       </div>
     </Card>
-  )
-}
+  );
+};
 
-export default ReadOnlyAvailabilityCard
+export default ReadOnlyAvailabilityCard;

@@ -2,8 +2,8 @@ export {
   GlassSurface,
   type GlassSurfaceStyleOptions,
   type GlassSurfaceProps,
-  glassSurfaceStyles
-} from './GlassSurface'
+  glassSurfaceStyles,
+} from './GlassSurface';
 export {
   GlassPanel,
   type GlassPanelProps,
@@ -11,19 +11,19 @@ export {
   type GlassPanelVariant,
   type GlassPanelState,
   type GlassPanelDensity,
-  glassPanelStyles
-} from './GlassPanel'
+  glassPanelStyles,
+} from './GlassPanel';
 export {
   GlassChip,
   type GlassChipProps,
   type GlassChipStyleOptions,
   type GlassChipTone,
   type GlassChipShape,
-  glassChipStyles
-} from './GlassChip'
+  glassChipStyles,
+} from './GlassChip';
 export {
   GlassPill,
   type GlassPillProps,
   type GlassPillStyleOptions,
-  glassPillStyles
-} from './GlassPill'
+  glassPillStyles,
+} from './GlassPill';

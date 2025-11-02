@@ -25,7 +25,13 @@
 
 html {
   min-height: 100vh;
-  font-family: 'Peyda', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    'Peyda',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   background-color: var(--bg);
 }
 
@@ -34,7 +40,11 @@ body {
   margin: 0;
   color: var(--fg);
   background-color: var(--bg);
-  background-image: radial-gradient(160% 150% at 50% -20%, #E9F0FA 0%, #DCE9F9 100%);
+  background-image: radial-gradient(
+    160% 150% at 50% -20%,
+    #e9f0fa 0%,
+    #dce9f9 100%
+  );
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
@@ -43,7 +53,11 @@ body {
 
 [data-theme='dark'] body {
   background-color: var(--bg);
-  background-image: radial-gradient(165% 155% at 50% -25%, #0F1A26 0%, #1C2432 100%);
+  background-image: radial-gradient(
+    165% 155% at 50% -25%,
+    #0f1a26 0%,
+    #1c2432 100%
+  );
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -62,8 +76,16 @@ body {
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(720px 520px at 12% 18%, rgba(255, 255, 255, 0.08), transparent 55%),
-      radial-gradient(820px 560px at 88% 26%, rgba(255, 255, 255, 0.1), transparent 60%);
+      radial-gradient(
+        720px 520px at 12% 18%,
+        rgba(255, 255, 255, 0.08),
+        transparent 55%
+      ),
+      radial-gradient(
+        820px 560px at 88% 26%,
+        rgba(255, 255, 255, 0.1),
+        transparent 60%
+      );
     pointer-events: none;
     mix-blend-mode: screen;
     z-index: -1;
@@ -74,9 +96,21 @@ body {
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(880px 640px at 18% 16%, rgba(86, 154, 222, 0.08), transparent 60%),
-      radial-gradient(840px 600px at 84% 66%, rgba(54, 132, 210, 0.06), transparent 58%),
-      radial-gradient(720px 520px at 50% -15%, rgba(180, 215, 255, 0.06), transparent 65%);
+      radial-gradient(
+        880px 640px at 18% 16%,
+        rgba(86, 154, 222, 0.08),
+        transparent 60%
+      ),
+      radial-gradient(
+        840px 600px at 84% 66%,
+        rgba(54, 132, 210, 0.06),
+        transparent 58%
+      ),
+      radial-gradient(
+        720px 520px at 50% -15%,
+        rgba(180, 215, 255, 0.06),
+        transparent 65%
+      );
     mix-blend-mode: lighten;
     pointer-events: none;
     z-index: -2;
@@ -114,7 +148,9 @@ body {
 
 :focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 85%, transparent), 0 0 0 6px rgba(255, 255, 255, 0.25);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--ring) 85%, transparent),
+    0 0 0 6px rgba(255, 255, 255, 0.25);
 }
 
 button:focus-visible {

@@ -1,26 +1,26 @@
-'use client'
+'use client';
 
-import { Loader2, Edit3 } from 'lucide-react'
+import { Loader2, Edit3 } from 'lucide-react';
 
-import { glassPanelStyles } from '@/components/ui/glass'
-import { cn } from '@/lib/utils'
-import type { StaffAppointment } from '@/lib/staff/types'
+import { glassPanelStyles } from '@/components/ui/glass';
+import { cn } from '@/lib/utils';
+import type { StaffAppointment } from '@/lib/staff/types';
 
-import type { StatusOption } from '@/lib/staff/dashboard/constants'
+import type { StatusOption } from '@/lib/staff/dashboard/constants';
 
 export type AppointmentsTableProps = {
-  appointments: StaffAppointment[]
-  showProviderColumn: boolean
-  statusOptions: StatusOption[]
-  onStatusChange: (id: string, status: StaffAppointment['status']) => void
-  updatingId: string | null
-  failedId: string | null
-  editingScheduleId: string | null
-  onEditSchedule: (appointment: StaffAppointment) => void
-  renderScheduleEditor: (appointment: StaffAppointment) => React.ReactNode
-  formatDateTime: (iso: string, timeZone: string) => string
-  totalColumns: number
-}
+  appointments: StaffAppointment[];
+  showProviderColumn: boolean;
+  statusOptions: StatusOption[];
+  onStatusChange: (id: string, status: StaffAppointment['status']) => void;
+  updatingId: string | null;
+  failedId: string | null;
+  editingScheduleId: string | null;
+  onEditSchedule: (appointment: StaffAppointment) => void;
+  renderScheduleEditor: (appointment: StaffAppointment) => React.ReactNode;
+  formatDateTime: (iso: string, timeZone: string) => string;
+  totalColumns: number;
+};
 
 export const AppointmentsTable = ({
   appointments,
@@ -50,9 +50,9 @@ export const AppointmentsTable = ({
       </thead>
       <tbody className="divide-y divide-white/5 text-foreground">
         {appointments.map((appointment) => {
-          const isEditing = editingScheduleId === appointment.id
-          const isUpdating = updatingId === appointment.id
-          const hasFailed = failedId === appointment.id
+          const isEditing = editingScheduleId === appointment.id;
+          const isUpdating = updatingId === appointment.id;
+          const hasFailed = failedId === appointment.id;
 
           return (
             <tr
@@ -65,9 +65,14 @@ export const AppointmentsTable = ({
               <td className="px-3 py-3 text-xs font-medium lg:px-4">
                 <div className="flex flex-col gap-2">
                   <div>
-                    <span className="block">{formatDateTime(appointment.start, appointment.timeZone)}</span>
+                    <span className="block">
+                      {formatDateTime(appointment.start, appointment.timeZone)}
+                    </span>
                     <span className="block text-[11px] text-muted-foreground">
-                      تا {formatDateTime(appointment.end, appointment.timeZone).split('—')[1]?.trim() ?? ''}
+                      تا{' '}
+                      {formatDateTime(appointment.end, appointment.timeZone)
+                        .split('—')[1]
+                        ?.trim() ?? ''}
                     </span>
                   </div>
                   {isEditing ? (
@@ -87,7 +92,9 @@ export const AppointmentsTable = ({
                 </div>
               </td>
               <td className="px-3 py-3 text-xs lg:px-4">{appointment.clientEmail}</td>
-              {showProviderColumn && <td className="px-3 py-3 text-xs lg:px-4">{appointment.providerName}</td>}
+              {showProviderColumn && (
+                <td className="px-3 py-3 text-xs lg:px-4">{appointment.providerName}</td>
+              )}
               <td className="px-3 py-3 text-xs lg:px-4">{appointment.serviceTitle}</td>
               <td className="px-3 py-3 text-xs lg:px-4">{appointment.reference ?? '—'}</td>
               <td className="px-3 py-3 text-[11px] text-muted-foreground lg:px-4">
@@ -97,7 +104,12 @@ export const AppointmentsTable = ({
                 <div className="flex items-center gap-2">
                   <select
                     value={appointment.status}
-                    onChange={(event) => onStatusChange(appointment.id, event.target.value as StaffAppointment['status'])}
+                    onChange={(event) =>
+                      onStatusChange(
+                        appointment.id,
+                        event.target.value as StaffAppointment['status'],
+                      )
+                    }
                     disabled={isUpdating}
                     className={cn(
                       glassPanelStyles(),
@@ -120,11 +132,14 @@ export const AppointmentsTable = ({
                 </div>
               </td>
             </tr>
-          )
+          );
         })}
         {appointments.length === 0 && (
           <tr>
-            <td colSpan={totalColumns} className="px-4 py-6 text-center text-sm text-muted-foreground">
+            <td
+              colSpan={totalColumns}
+              className="px-4 py-6 text-center text-sm text-muted-foreground"
+            >
               نوبتی با این شرایط یافت نشد.
             </td>
           </tr>
@@ -132,4 +147,4 @@ export const AppointmentsTable = ({
       </tbody>
     </table>
   </div>
-)
+);

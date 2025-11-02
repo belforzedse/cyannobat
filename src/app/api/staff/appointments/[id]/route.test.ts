@@ -1,21 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { NextRequest, NextResponse } from 'next/server';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { PATCH } from './route'
-import { authenticateStaffRequest, unauthorizedResponse } from '@/lib/api/auth'
+import { PATCH } from './route';
+import { authenticateStaffRequest, unauthorizedResponse } from '@/lib/api/auth';
 
 vi.mock('@/lib/api/auth', () => ({
   authenticateStaffRequest: vi.fn(),
-  unauthorizedResponse: vi.fn(() => NextResponse.json({ message: 'Unauthorized' }, { status: 401 })),
-}))
+  unauthorizedResponse: vi.fn(() =>
+    NextResponse.json({ message: 'Unauthorized' }, { status: 401 }),
+  ),
+}));
 
-const authenticateStaffRequestMock = vi.mocked(authenticateStaffRequest)
-const unauthorizedResponseMock = vi.mocked(unauthorizedResponse)
+const authenticateStaffRequestMock = vi.mocked(authenticateStaffRequest);
+const unauthorizedResponseMock = vi.mocked(unauthorizedResponse);
 
 describe('PATCH /api/staff/appointments/[id]', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   it('updates the appointment schedule when valid data is provided', async () => {
     const payloadUpdate = vi.fn().mockResolvedValue({
@@ -36,7 +38,7 @@ describe('PATCH /api/staff/appointments/[id]', () => {
         email: 'patient@example.com',
       },
       createdAt: '2023-12-31T12:00:00.000Z',
-    })
+    });
 
     authenticateStaffRequestMock.mockResolvedValue({
       payload: {
@@ -44,7 +46,7 @@ describe('PATCH /api/staff/appointments/[id]', () => {
         logger: { error: vi.fn() },
       } as never,
       user: { id: 'staff-user' } as never,
-    })
+    });
 
     const request = new NextRequest('http://localhost/api/staff/appointments/appointment-1', {
       method: 'PATCH',
@@ -57,19 +59,19 @@ describe('PATCH /api/staff/appointments/[id]', () => {
         },
       }),
       duplex: 'half',
-    })
+    });
 
-    const response = await PATCH(request, { params: Promise.resolve({ id: 'appointment-1' }) })
+    const response = await PATCH(request, { params: Promise.resolve({ id: 'appointment-1' }) });
 
-    expect(response.status).toBe(200)
-    const json = (await response.json()) as { appointment: Record<string, unknown> }
+    expect(response.status).toBe(200);
+    const json = (await response.json()) as { appointment: Record<string, unknown> };
     expect(json.appointment).toMatchObject({
       id: 'appointment-1',
       status: 'confirmed',
       start: '2024-01-01T10:00:00.000Z',
       end: '2024-01-01T10:30:00.000Z',
       providerName: 'Dr. Example',
-    })
+    });
 
     expect(payloadUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -85,8 +87,8 @@ describe('PATCH /api/staff/appointments/[id]', () => {
           },
         },
       }),
-    )
-  })
+    );
+  });
 
   it('returns 400 when schedule validation fails', async () => {
     authenticateStaffRequestMock.mockResolvedValue({
@@ -95,7 +97,7 @@ describe('PATCH /api/staff/appointments/[id]', () => {
         logger: { error: vi.fn() },
       } as never,
       user: { id: 'staff-user' } as never,
-    })
+    });
 
     const request = new NextRequest('http://localhost/api/staff/appointments/appointment-1', {
       method: 'PATCH',
@@ -107,31 +109,31 @@ describe('PATCH /api/staff/appointments/[id]', () => {
         },
       }),
       duplex: 'half',
-    })
+    });
 
-    const response = await PATCH(request, { params: Promise.resolve({ id: 'appointment-1' }) })
-    expect(response.status).toBe(400)
-    const json = await response.json()
-    expect(json).toMatchObject({ message: 'Invalid request body' })
-  })
+    const response = await PATCH(request, { params: Promise.resolve({ id: 'appointment-1' }) });
+    expect(response.status).toBe(400);
+    const json = await response.json();
+    expect(json).toMatchObject({ message: 'Invalid request body' });
+  });
 
   it('returns unauthorized when the user is missing', async () => {
-    const unauthorized = NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
-    unauthorizedResponseMock.mockReturnValueOnce(unauthorized)
+    const unauthorized = NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    unauthorizedResponseMock.mockReturnValueOnce(unauthorized);
     authenticateStaffRequestMock.mockResolvedValue({
       payload: {
         update: vi.fn(),
         logger: { error: vi.fn() },
       } as never,
       user: null,
-    })
+    });
 
     const request = new NextRequest('http://localhost/api/staff/appointments/appointment-1', {
       method: 'PATCH',
-    })
+    });
 
-    const response = await PATCH(request, { params: Promise.resolve({ id: 'appointment-1' }) })
-    expect(response.status).toBe(401)
-    expect(unauthorizedResponseMock).toHaveBeenCalled()
-  })
-})
+    const response = await PATCH(request, { params: Promise.resolve({ id: 'appointment-1' }) });
+    expect(response.status).toBe(401);
+    expect(unauthorizedResponseMock).toHaveBeenCalled();
+  });
+});

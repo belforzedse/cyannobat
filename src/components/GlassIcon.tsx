@@ -65,7 +65,7 @@ const GlassIcon = ({
         // Smooth transitions
         'transition-all duration-300 ease-out',
         sizeClasses[size],
-        className
+        className,
       )}
       aria-label={label}
       {...motionProps}
@@ -98,7 +98,7 @@ const GlassIcon = ({
         className={clsx(
           'relative z-10 transition-colors duration-300',
           'text-foreground/80',
-          iconSizes[size]
+          iconSizes[size],
         )}
         aria-hidden
       />

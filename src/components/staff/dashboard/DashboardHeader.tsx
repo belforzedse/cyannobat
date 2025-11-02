@@ -1,18 +1,18 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import { LogOut } from 'lucide-react'
+import { motion } from 'framer-motion';
+import { LogOut } from 'lucide-react';
 
-import { Card, Button } from '@/components/ui'
+import { Card, Button } from '@/components/ui';
 
 export type DashboardHeaderProps = {
-  title: string
-  description: string
-  email: string
-  roleSummary: string
-  prefersReducedMotion: boolean
-  onLogout: () => void
-}
+  title: string;
+  description: string;
+  email: string;
+  roleSummary: string;
+  prefersReducedMotion: boolean;
+  onLogout: () => void;
+};
 
 export const DashboardHeader = ({
   title,
@@ -33,7 +33,10 @@ export const DashboardHeader = ({
           <motion.h1
             initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: prefersReducedMotion ? 0 : 0.2, duration: prefersReducedMotion ? 0 : 0.5 }}
+            transition={{
+              delay: prefersReducedMotion ? 0 : 0.2,
+              duration: prefersReducedMotion ? 0 : 0.5,
+            }}
             className="text-2xl font-semibold text-foreground"
           >
             {title}
@@ -41,7 +44,10 @@ export const DashboardHeader = ({
           <motion.p
             initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: prefersReducedMotion ? 0 : 0.3, duration: prefersReducedMotion ? 0 : 0.5 }}
+            transition={{
+              delay: prefersReducedMotion ? 0 : 0.3,
+              duration: prefersReducedMotion ? 0 : 0.5,
+            }}
             className="text-sm leading-relaxed text-muted-foreground"
           >
             {description}
@@ -49,9 +55,15 @@ export const DashboardHeader = ({
         </div>
 
         <motion.div
-          initial={{ opacity: prefersReducedMotion ? 1 : 0, scale: prefersReducedMotion ? 1 : 0.95 }}
+          initial={{
+            opacity: prefersReducedMotion ? 1 : 0,
+            scale: prefersReducedMotion ? 1 : 0.95,
+          }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: prefersReducedMotion ? 0 : 0.35, duration: prefersReducedMotion ? 0 : 0.5 }}
+          transition={{
+            delay: prefersReducedMotion ? 0 : 0.35,
+            duration: prefersReducedMotion ? 0 : 0.5,
+          }}
           className="flex flex-col items-end gap-3 text-sm text-muted-foreground"
         >
           <div>
@@ -67,4 +79,4 @@ export const DashboardHeader = ({
       </div>
     </Card>
   </motion.div>
-)
+);

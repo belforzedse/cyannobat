@@ -1,24 +1,24 @@
-'use client'
+'use client';
 
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import clsx from 'clsx'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import clsx from 'clsx';
 
-import { Card } from '@/components/ui'
-import { type CustomerInfo } from '@/lib/booking/types'
-import { luxuryContainer, luxuryPresets, luxurySlideFade } from '@/lib/luxuryAnimations'
+import { Card } from '@/components/ui';
+import { type CustomerInfo } from '@/lib/booking/types';
+import { luxuryContainer, luxuryPresets, luxurySlideFade } from '@/lib/luxuryAnimations';
 
 type BookingSummaryProps = {
-  prefersReducedMotion: boolean | null
-  isContinueDisabled: boolean
-  formattedDate: string
-  formattedTime: string
-  reasonSummary: string[]
-  customerInfo: CustomerInfo
-  customerNotes: string
-  isCustomerComplete: boolean
-  serviceLabel: string
-  providerLabel: string
-}
+  prefersReducedMotion: boolean | null;
+  isContinueDisabled: boolean;
+  formattedDate: string;
+  formattedTime: string;
+  reasonSummary: string[];
+  customerInfo: CustomerInfo;
+  customerNotes: string;
+  isCustomerComplete: boolean;
+  serviceLabel: string;
+  providerLabel: string;
+};
 
 const BookingSummary = ({
   prefersReducedMotion,
@@ -33,7 +33,9 @@ const BookingSummary = ({
   providerLabel,
 }: BookingSummaryProps) => {
   const reducedMotionPreference = useReducedMotion();
-  const reduceMotion = (typeof prefersReducedMotion === 'boolean' ? prefersReducedMotion : null) ?? Boolean(reducedMotionPreference);
+  const reduceMotion =
+    (typeof prefersReducedMotion === 'boolean' ? prefersReducedMotion : null) ??
+    Boolean(reducedMotionPreference);
 
   const sectionVariants = reduceMotion ? undefined : luxuryPresets.silk('up');
   const listVariants = reduceMotion ? undefined : luxuryContainer;
@@ -45,7 +47,9 @@ const BookingSummary = ({
         delayIn: 0.08,
       });
 
-  const motionStates = reduceMotion ? {} : { initial: 'initial' as const, animate: 'animate' as const };
+  const motionStates = reduceMotion
+    ? {}
+    : { initial: 'initial' as const, animate: 'animate' as const };
 
   return (
     <motion.section variants={sectionVariants} {...motionStates}>
@@ -85,7 +89,11 @@ const BookingSummary = ({
             </motion.span>
           </AnimatePresence>
         </div>
-        <motion.dl className="mt-4 grid gap-2 text-sm sm:mt-5 sm:grid-cols-2 sm:gap-3 lg:mt-6" variants={listVariants} {...motionStates}>
+        <motion.dl
+          className="mt-4 grid gap-2 text-sm sm:mt-5 sm:grid-cols-2 sm:gap-3 lg:mt-6"
+          variants={listVariants}
+          {...motionStates}
+        >
           <motion.div className="flex flex-col items-end gap-1" variants={itemVariants}>
             <dt className="text-xs font-medium text-muted-foreground">تاریخ نوبت</dt>
             <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground backdrop-blur-sm dark:border-white/15 dark:bg-black/40">
@@ -124,7 +132,10 @@ const BookingSummary = ({
                 : 'کامل نشده'}
             </dd>
           </motion.div>
-          <motion.div className="flex flex-col items-end gap-1 sm:col-span-2" variants={itemVariants}>
+          <motion.div
+            className="flex flex-col items-end gap-1 sm:col-span-2"
+            variants={itemVariants}
+          >
             <dt className="text-xs font-medium text-muted-foreground">توضیحات تکمیلی</dt>
             <dd className="w-full rounded-2xl border border-white/20 bg-white/45 px-4 py-2 text-sm text-foreground backdrop-blur-sm dark:border-white/15 dark:bg-black/40">
               {customerNotes.trim() ? customerNotes.trim() : 'توضیحی ثبت نشده است.'}
@@ -134,6 +145,6 @@ const BookingSummary = ({
       </Card>
     </motion.section>
   );
-}
+};
 
-export default BookingSummary
+export default BookingSummary;

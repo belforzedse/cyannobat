@@ -1,6 +1,6 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig } from 'payload';
 
-import { userIsStaff } from '@/lib/auth'
+import { userIsStaff } from '@/lib/auth';
 
 export const SupportTickets: CollectionConfig = {
   slug: 'supportTickets',
@@ -98,4 +98,4 @@ export const SupportTickets: CollectionConfig = {
       },
     },
   ],
-}
+};

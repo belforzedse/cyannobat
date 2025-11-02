@@ -1,18 +1,49 @@
-'use client'
+'use client';
 
-import React, { ButtonHTMLAttributes, CSSProperties, forwardRef } from 'react'
-import { motion, type HTMLMotionProps } from 'framer-motion'
-import { cva, type VariantProps } from 'class-variance-authority'
+import React, { ButtonHTMLAttributes, CSSProperties, forwardRef } from 'react';
+import { motion, type HTMLMotionProps } from 'framer-motion';
+import { cva, type VariantProps } from 'class-variance-authority';
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
-import { glassPillStyles } from './glass'
+import { glassPillStyles } from './glass';
 
 const buttonToneStyles = {
-  primary: { '--button-border': 'color-mix(in srgb, var(--accent) 55%, transparent)', '--button-border-hover': 'color-mix(in srgb, var(--accent) 65%, transparent)', '--button-bg': 'linear-gradient(135deg, var(--accent-strong), var(--accent))', '--button-bg-hover': 'linear-gradient(135deg, color-mix(in srgb, var(--accent-strong) 82%, white 12%), color-mix(in srgb, var(--accent) 90%, white 8%))', '--button-color': 'rgb(12 22 38)', '--button-shadow': '0 20px 48px -24px rgb(var(--accent-rgb) / 0.45), 0 12px 24px -18px rgba(42, 74, 125, 0.32)', '--button-shadow-hover': '0 28px 60px -24px rgb(var(--accent-rgb) / 0.55), 0 16px 32px -20px rgba(42, 74, 125, 0.38)', '--button-translate-hover': '-1.5px' } as CSSProperties,
-  secondary: { '--button-border': 'rgba(var(--border-rgb), 0.65)', '--button-border-hover': 'color-mix(in srgb, var(--accent) 35%, rgba(var(--border-rgb), 0.65))', '--button-bg': 'linear-gradient(145deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.4))', '--button-bg-hover': 'linear-gradient(145deg, rgba(255, 255, 255, 0.78), color-mix(in srgb, var(--accent) 16%, transparent))', '--button-color': 'rgb(var(--fg-rgb))', '--button-shadow': 'var(--shadow-glass-soft)', '--button-shadow-hover': 'var(--shadow-glass-strong)', '--button-translate-hover': '-1px' } as CSSProperties,
-  ghost: { '--button-border': 'rgba(var(--accent-rgb), 0.35)', '--button-border-hover': 'rgba(var(--accent-rgb), 0.55)', '--button-bg': 'transparent', '--button-bg-hover': 'rgba(var(--accent-rgb), 0.12)', '--button-color': 'rgb(var(--accent-rgb))', '--button-shadow': 'none', '--button-shadow-hover': '0 16px 32px -24px rgba(var(--accent-rgb), 0.24)', '--button-translate-hover': '-0.75px' } as CSSProperties,
-}
+  primary: {
+    '--button-border': 'color-mix(in srgb, var(--accent) 55%, transparent)',
+    '--button-border-hover': 'color-mix(in srgb, var(--accent) 65%, transparent)',
+    '--button-bg': 'linear-gradient(135deg, var(--accent-strong), var(--accent))',
+    '--button-bg-hover':
+      'linear-gradient(135deg, color-mix(in srgb, var(--accent-strong) 82%, white 12%), color-mix(in srgb, var(--accent) 90%, white 8%))',
+    '--button-color': 'rgb(12 22 38)',
+    '--button-shadow':
+      '0 20px 48px -24px rgb(var(--accent-rgb) / 0.45), 0 12px 24px -18px rgba(42, 74, 125, 0.32)',
+    '--button-shadow-hover':
+      '0 28px 60px -24px rgb(var(--accent-rgb) / 0.55), 0 16px 32px -20px rgba(42, 74, 125, 0.38)',
+    '--button-translate-hover': '-1.5px',
+  } as CSSProperties,
+  secondary: {
+    '--button-border': 'rgba(var(--border-rgb), 0.65)',
+    '--button-border-hover': 'color-mix(in srgb, var(--accent) 35%, rgba(var(--border-rgb), 0.65))',
+    '--button-bg': 'linear-gradient(145deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.4))',
+    '--button-bg-hover':
+      'linear-gradient(145deg, rgba(255, 255, 255, 0.78), color-mix(in srgb, var(--accent) 16%, transparent))',
+    '--button-color': 'rgb(var(--fg-rgb))',
+    '--button-shadow': 'var(--shadow-glass-soft)',
+    '--button-shadow-hover': 'var(--shadow-glass-strong)',
+    '--button-translate-hover': '-1px',
+  } as CSSProperties,
+  ghost: {
+    '--button-border': 'rgba(var(--accent-rgb), 0.35)',
+    '--button-border-hover': 'rgba(var(--accent-rgb), 0.55)',
+    '--button-bg': 'transparent',
+    '--button-bg-hover': 'rgba(var(--accent-rgb), 0.12)',
+    '--button-color': 'rgb(var(--accent-rgb))',
+    '--button-shadow': 'none',
+    '--button-shadow-hover': '0 16px 32px -24px rgba(var(--accent-rgb), 0.24)',
+    '--button-translate-hover': '-0.75px',
+  } as CSSProperties,
+};
 
 const buttonVariants = cva(
   'relative inline-flex items-center justify-center gap-2 rounded-pill font-medium focus-visible:outline-none transition-transform duration-200 ease-glass',
@@ -52,13 +83,12 @@ const buttonVariants = cva(
       variant: 'primary',
       size: 'md',
     },
-  }
-)
+  },
+);
 
-type ButtonVariantsConfig = VariantProps<typeof buttonVariants>
-type ButtonVariant = NonNullable<ButtonVariantsConfig['variant']>
-type ButtonSize = NonNullable<ButtonVariantsConfig['size']>
-
+type ButtonVariantsConfig = VariantProps<typeof buttonVariants>;
+type ButtonVariant = NonNullable<ButtonVariantsConfig['variant']>;
+type ButtonSize = NonNullable<ButtonVariantsConfig['size']>;
 
 const gradientButtonBaseClasses = [
   '[--button-border:transparent] [--button-border-hover:transparent] [--button-bg:transparent] [--button-bg-hover:transparent]',
@@ -72,20 +102,20 @@ const gradientButtonBaseClasses = [
   'hover:-translate-y-[var(--button-translate-hover)] active:translate-y-[var(--button-translate-active,0)]',
   'focus-visible:shadow-[0_0_0_3px_rgb(var(--ring-rgb)/0.45),var(--button-shadow,0_0_0_0_transparent)] focus-visible:after:opacity-100',
   'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-70 disabled:[filter:saturate(0.85)] disabled:after:opacity-40',
-].join(' ')
+].join(' ');
 
 interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
-  variant?: ButtonVariant
-  size?: ButtonSize
-  fullWidth?: boolean
-  isLoading?: boolean
-  leftIcon?: React.ReactNode
-  rightIcon?: React.ReactNode
-  disableAnimation?: boolean
-  className?: string
-  whileHover?: HTMLMotionProps<'button'>['whileHover']
-  whileTap?: HTMLMotionProps<'button'>['whileTap']
-  transition?: HTMLMotionProps<'button'>['transition']
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
+  isLoading?: boolean;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  disableAnimation?: boolean;
+  className?: string;
+  whileHover?: HTMLMotionProps<'button'>['whileHover'];
+  whileTap?: HTMLMotionProps<'button'>['whileTap'];
+  transition?: HTMLMotionProps<'button'>['transition'];
 }
 
 /**
@@ -117,23 +147,26 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       transition: motionTransition,
       ...props
     },
-    ref
+    ref,
   ) => {
-    const isDisabled = Boolean(disabled || isLoading)
+    const isDisabled = Boolean(disabled || isLoading);
 
     const computedClasses = cn(
       buttonVariants({ variant, size, fullWidth }),
       variant !== 'glass-pill' && gradientButtonBaseClasses,
       variant === 'glass-pill' && glassPillStyles({ interactive: !isDisabled }),
-      className
-    )
+      className,
+    );
 
-    const buttonStyle = variant !== 'glass-pill' ? buttonToneStyles[variant as keyof typeof buttonToneStyles] : undefined
+    const buttonStyle =
+      variant !== 'glass-pill'
+        ? buttonToneStyles[variant as keyof typeof buttonToneStyles]
+        : undefined;
 
     const shouldReduceMotion =
       typeof window !== 'undefined' &&
       typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const content = (
       <>
@@ -164,7 +197,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         <span>{children}</span>
         {rightIcon && <span className="inline-flex">{rightIcon}</span>}
       </>
-    )
+    );
 
     // Use Framer Motion for smooth hover/tap interactions
     // Primary/secondary use CSS transform but Framer adds smoothness
@@ -173,14 +206,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         variant === 'primary'
           ? { y: -3, transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] } }
           : variant === 'secondary'
-          ? { y: -2, transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] } }
-          : variant === 'ghost'
-          ? { y: -2, transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1] } }
-          : { scale: 1.02, transition: { duration: 0.15, ease: 'easeOut' } }
+            ? { y: -2, transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] } }
+            : variant === 'ghost'
+              ? { y: -2, transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1] } }
+              : { scale: 1.02, transition: { duration: 0.15, ease: 'easeOut' } };
 
-      const tapAnimation = variant === 'glass-pill'
-        ? { scale: 0.98 }
-        : { y: 0 }
+      const tapAnimation = variant === 'glass-pill' ? { scale: 0.98 } : { y: 0 };
 
       return (
         <motion.button
@@ -196,7 +227,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         >
           {content}
         </motion.button>
-      )
+      );
     }
 
     // Fallback for reduced motion preference
@@ -211,10 +242,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {content}
       </button>
-    )
-  }
-)
+    );
+  },
+);
 
-Button.displayName = 'Button'
+Button.displayName = 'Button';
 
-export { Button, type ButtonProps, type ButtonVariant, type ButtonSize }
+export { Button, type ButtonProps, type ButtonVariant, type ButtonSize };

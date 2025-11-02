@@ -1,1 +1,1 @@
-export type DashboardMode = 'doctor' | 'receptionist'
+export type DashboardMode = 'doctor' | 'receptionist';

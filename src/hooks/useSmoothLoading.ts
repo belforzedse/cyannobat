@@ -27,7 +27,7 @@ interface UseSmoothLoadingOptions {
 
 export default function useSmoothLoading(
   loading: boolean,
-  { showDelayMs = 120, minVisibleMs = 300 }: UseSmoothLoadingOptions = {}
+  { showDelayMs = 120, minVisibleMs = 300 }: UseSmoothLoadingOptions = {},
 ): boolean {
   const [visible, setVisible] = useState(false);
   const showTimerRef = useRef<NodeJS.Timeout | null>(null);

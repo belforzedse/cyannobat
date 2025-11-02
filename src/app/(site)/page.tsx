@@ -14,17 +14,20 @@ import { luxuryContainer, luxurySlideFade } from '@/lib/luxuryAnimations';
 const steps = [
   {
     title: 'انتخاب خدمت',
-    description: 'از میان خدمات تخصصی و بسته‌های سفارشی‌شده، بهترین گزینه را برای نیاز خود برگزینید.',
+    description:
+      'از میان خدمات تخصصی و بسته‌های سفارشی‌شده، بهترین گزینه را برای نیاز خود برگزینید.',
     icon: Search,
   },
   {
     title: 'انتخاب تاریخ و زمان',
-    description: 'بازه دلخواه خود را از میان زمان‌های آزاد انتخاب کنید؛ ارائه‌دهنده مناسب با همان بازه هماهنگ است.',
+    description:
+      'بازه دلخواه خود را از میان زمان‌های آزاد انتخاب کنید؛ ارائه‌دهنده مناسب با همان بازه هماهنگ است.',
     icon: Calendar,
   },
   {
     title: 'تایید جزئیات',
-    description: 'اطلاعات تماس و خلاصه نوبت را مرور کنید و پیش از ثبت نهایی، همه چیز را یک‌جا تایید نمایید.',
+    description:
+      'اطلاعات تماس و خلاصه نوبت را مرور کنید و پیش از ثبت نهایی، همه چیز را یک‌جا تایید نمایید.',
     icon: CheckCircle2,
   },
 ];
@@ -64,8 +67,8 @@ const HeroPage = () => {
   const heroCardVariants = configureSlideFade('right', {
     distance: 32,
     duration: 0.9,
-    scale: 0.96,        // Subtle scale (96% vs 95%)
-    blur: 0,            // No blur for main card (performance)
+    scale: 0.96, // Subtle scale (96% vs 95%)
+    blur: 0, // No blur for main card (performance)
     delayIn: 0.1,
   });
 
@@ -73,7 +76,7 @@ const HeroPage = () => {
     distance: 16,
     duration: 0.8,
     scale: 0.98,
-    blur: 0,            // No blur (performance)
+    blur: 0, // No blur (performance)
     delayIn: 0.2,
   });
 
@@ -81,7 +84,7 @@ const HeroPage = () => {
     distance: 24,
     duration: 0.9,
     scale: 0.96,
-    blur: 1,            // Minimal blur (1px) for premium feel
+    blur: 1, // Minimal blur (1px) for premium feel
     delayIn: 0.3,
   });
 

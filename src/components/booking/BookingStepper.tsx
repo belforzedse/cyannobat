@@ -13,7 +13,10 @@ const BookingStepper = ({ steps, prefersReducedMotion }: BookingStepperProps) =>
   <motion.ul
     initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: prefersReducedMotion ? 0 : 0.35, duration: prefersReducedMotion ? 0 : 0.5 }}
+    transition={{
+      delay: prefersReducedMotion ? 0 : 0.35,
+      duration: prefersReducedMotion ? 0 : 0.5,
+    }}
     className="grid gap-3 text-sm sm:grid-cols-3"
   >
     {steps.map((step) => (
@@ -34,8 +37,10 @@ const BookingStepper = ({ steps, prefersReducedMotion }: BookingStepperProps) =>
           <span
             className={clsx(
               'flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]',
-              step.status === 'complete' && 'bg-gradient-to-br from-accent to-accent/80 text-slate-900',
-              step.status === 'current' && 'bg-gradient-to-br from-card/95 to-card/70 text-foreground dark:from-card/80 dark:to-card/55 dark:text-foreground',
+              step.status === 'complete' &&
+                'bg-gradient-to-br from-accent to-accent/80 text-slate-900',
+              step.status === 'current' &&
+                'bg-gradient-to-br from-card/95 to-card/70 text-foreground dark:from-card/80 dark:to-card/55 dark:text-foreground',
               step.status === 'upcoming' && 'bg-card/70 text-muted-foreground dark:bg-card/45',
             )}
           >

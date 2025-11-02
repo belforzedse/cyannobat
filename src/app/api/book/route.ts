@@ -1,9 +1,9 @@
-import type { ZodIssue } from 'zod'
-import { sql } from 'drizzle-orm'
-import configPromise, { payloadDrizzle } from '@payload-config'
-import { bookingHold, BookingHoldStoreError } from '@/lib/redis'
-import { bookingRequestSchema } from '@/lib/schemas/booking'
-import { getPayload } from 'payload'
+import type { ZodIssue } from 'zod';
+import { sql } from 'drizzle-orm';
+import configPromise, { payloadDrizzle } from '@payload-config';
+import { bookingHold, BookingHoldStoreError } from '@/lib/redis';
+import { bookingRequestSchema } from '@/lib/schemas/booking';
+import { getPayload } from 'payload';
 
 const buildValidationErrorResponse = (issues: ZodIssue[]): Response =>
   Response.json(
@@ -15,17 +15,17 @@ const buildValidationErrorResponse = (issues: ZodIssue[]): Response =>
       })),
     },
     { status: 400 },
-  )
+  );
 
 type RawService = Record<string, unknown> & {
-  isActive?: boolean | null
-  leadTimeHours?: number | null
-  providers?: unknown
-  durationMinutes?: number | null
-  bufferMinutesBefore?: number | null
-  bufferMinutesAfter?: number | null
-  pricing?: Record<string, unknown> | null
-}
+  isActive?: boolean | null;
+  leadTimeHours?: number | null;
+  providers?: unknown;
+  durationMinutes?: number | null;
+  bufferMinutesBefore?: number | null;
+  bufferMinutesAfter?: number | null;
+  pricing?: Record<string, unknown> | null;
+};
 
 const ensureServiceIsBookable = async (
   payload: Awaited<ReturnType<typeof getPayload>>,
@@ -36,69 +36,75 @@ const ensureServiceIsBookable = async (
       collection: 'services',
       id: serviceId,
       depth: 0,
-    })) as unknown as RawService | null
+    })) as unknown as RawService | null;
 
     if (!service || typeof service !== 'object') {
-      return { service: null, errors: ['SERVICE_NOT_FOUND'] as const }
+      return { service: null, errors: ['SERVICE_NOT_FOUND'] as const };
     }
 
     if (service.isActive === false) {
-      return { service, errors: ['SERVICE_INACTIVE'] as const }
+      return { service, errors: ['SERVICE_INACTIVE'] as const };
     }
 
-    return { service, errors: [] as const }
+    return { service, errors: [] as const };
   } catch (error) {
     const notFound =
-      typeof error === 'object' && error !== null && 'status' in error && (error as { status?: number }).status === 404
+      typeof error === 'object' &&
+      error !== null &&
+      'status' in error &&
+      (error as { status?: number }).status === 404;
 
     if (notFound) {
-      return { service: null, errors: ['SERVICE_NOT_FOUND'] as const }
+      return { service: null, errors: ['SERVICE_NOT_FOUND'] as const };
     }
 
-    throw error
+    throw error;
   }
-}
+};
 
 const extractProviderIdFromService = (service: RawService, requestedProviderId?: string) => {
-  if (requestedProviderId) return requestedProviderId
+  if (requestedProviderId) return requestedProviderId;
 
-  const providers = Array.isArray(service.providers) ? (service.providers as unknown[]) : []
+  const providers = Array.isArray(service.providers) ? (service.providers as unknown[]) : [];
   if (providers.length === 1) {
-    const [onlyProvider] = providers
+    const [onlyProvider] = providers;
     if (onlyProvider && typeof onlyProvider === 'object') {
-      if ('value' in onlyProvider && typeof (onlyProvider as { value?: unknown }).value === 'string') {
-        return (onlyProvider as { value?: unknown }).value
+      if (
+        'value' in onlyProvider &&
+        typeof (onlyProvider as { value?: unknown }).value === 'string'
+      ) {
+        return (onlyProvider as { value?: unknown }).value;
       }
       if ('id' in onlyProvider && typeof (onlyProvider as { id?: unknown }).id === 'string') {
-        return (onlyProvider as { id?: unknown }).id
+        return (onlyProvider as { id?: unknown }).id;
       }
     }
   }
 
-  return null
-}
+  return null;
+};
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 export const POST = async (request: Request): Promise<Response> => {
-  let payload
+  let payload;
   try {
     payload = await getPayload({
       config: configPromise,
-    })
+    });
   } catch (error) {
-    console.error('Failed to initialize Payload instance for booking route', error)
+    console.error('Failed to initialize Payload instance for booking route', error);
     return Response.json(
       {
         message: 'Failed to initialize backend services',
       },
       { status: 500 },
-    )
+    );
   }
 
-  let rawBody: unknown
+  let rawBody: unknown;
   try {
-    rawBody = await request.json()
+    rawBody = await request.json();
   } catch {
     return Response.json(
       {
@@ -106,17 +112,18 @@ export const POST = async (request: Request): Promise<Response> => {
         errors: [{ path: 'body', message: 'Request body must be valid JSON' }],
       },
       { status: 400 },
-    )
+    );
   }
-  const parsed = bookingRequestSchema.safeParse(rawBody)
+  const parsed = bookingRequestSchema.safeParse(rawBody);
 
   if (!parsed.success) {
-    return buildValidationErrorResponse(parsed.error.issues)
+    return buildValidationErrorResponse(parsed.error.issues);
   }
 
-  const { serviceId, slot, clientId, providerId, status, timeZone, clientNotes, metadata } = parsed.data
+  const { serviceId, slot, clientId, providerId, status, timeZone, clientNotes, metadata } =
+    parsed.data;
 
-  const slotDate = new Date(slot)
+  const slotDate = new Date(slot);
   if (Number.isNaN(slotDate.getTime())) {
     return Response.json(
       {
@@ -124,21 +131,21 @@ export const POST = async (request: Request): Promise<Response> => {
         errors: [{ path: 'slot', message: 'slot must be a valid date' }],
       },
       { status: 400 },
-    )
+    );
   }
 
-  const normalizedSlot = slotDate.toISOString()
+  const normalizedSlot = slotDate.toISOString();
 
-  const { service, errors: serviceErrors } = await ensureServiceIsBookable(payload, serviceId)
+  const { service, errors: serviceErrors } = await ensureServiceIsBookable(payload, serviceId);
 
   if (!service) {
-    const reasons = serviceErrors.length > 0 ? serviceErrors : ['SERVICE_NOT_FOUND']
+    const reasons = serviceErrors.length > 0 ? serviceErrors : ['SERVICE_NOT_FOUND'];
     payload.logger.warn?.('Booking confirmation rejected due to service issue', {
       reason: reasons[0],
       serviceId,
       slot: normalizedSlot,
       userId: clientId ?? 'unknown',
-    })
+    });
 
     return Response.json(
       {
@@ -146,10 +153,10 @@ export const POST = async (request: Request): Promise<Response> => {
         reasons,
       },
       { status: 404 },
-    )
+    );
   }
 
-  const resolvedProviderId = extractProviderIdFromService(service, providerId)
+  const resolvedProviderId = extractProviderIdFromService(service, providerId);
 
   if (!resolvedProviderId) {
     payload.logger.warn?.('Booking confirmation conflict detected', {
@@ -157,7 +164,7 @@ export const POST = async (request: Request): Promise<Response> => {
       serviceId,
       slot: normalizedSlot,
       userId: clientId ?? 'unknown',
-    })
+    });
 
     return Response.json(
       {
@@ -165,13 +172,13 @@ export const POST = async (request: Request): Promise<Response> => {
         reasons: ['PROVIDER_REQUIRED'],
       },
       { status: 409 },
-    )
+    );
   }
 
   try {
     const existingAppointment = await payloadDrizzle.execute(
       sql`select 1 from "appointments" where "service" = ${serviceId} and ("schedule"->>'start') = ${normalizedSlot} limit 1`,
-    )
+    );
 
     if (Array.isArray(existingAppointment?.rows) && existingAppointment.rows.length > 0) {
       payload.logger.warn?.('Booking confirmation conflict detected', {
@@ -179,7 +186,7 @@ export const POST = async (request: Request): Promise<Response> => {
         serviceId,
         slot: normalizedSlot,
         userId: clientId ?? 'unknown',
-      })
+      });
 
       return Response.json(
         {
@@ -187,23 +194,23 @@ export const POST = async (request: Request): Promise<Response> => {
           reasons: ['ALREADY_BOOKED'],
         },
         { status: 409 },
-      )
+      );
     }
   } catch (error) {
-    payload.logger.error?.('Failed to check existing appointments before booking', error)
+    payload.logger.error?.('Failed to check existing appointments before booking', error);
     return Response.json(
       {
         message: 'Unable to confirm booking',
       },
       { status: 500 },
-    )
+    );
   }
 
-  let hold
+  let hold;
   try {
-    hold = await bookingHold.get({ serviceId, slot: normalizedSlot })
+    hold = await bookingHold.get({ serviceId, slot: normalizedSlot });
   } catch (error) {
-    payload.logger.error?.('Failed to read booking hold before booking', error)
+    payload.logger.error?.('Failed to read booking hold before booking', error);
 
     if (error instanceof BookingHoldStoreError) {
       return Response.json(
@@ -212,7 +219,7 @@ export const POST = async (request: Request): Promise<Response> => {
           reasons: ['HOLD_SERVICE_UNAVAILABLE'],
         },
         { status: 503 },
-      )
+      );
     }
 
     return Response.json(
@@ -220,7 +227,7 @@ export const POST = async (request: Request): Promise<Response> => {
         message: 'Unable to confirm booking',
       },
       { status: 500 },
-    )
+    );
   }
 
   if (!hold || hold.ttlSeconds <= 0) {
@@ -229,7 +236,7 @@ export const POST = async (request: Request): Promise<Response> => {
       serviceId,
       slot: normalizedSlot,
       userId: clientId ?? 'unknown',
-    })
+    });
 
     return Response.json(
       {
@@ -237,7 +244,7 @@ export const POST = async (request: Request): Promise<Response> => {
         reasons: ['HOLD_NOT_FOUND'],
       },
       { status: 409 },
-    )
+    );
   }
 
   if (hold.customerId && hold.customerId !== clientId) {
@@ -246,7 +253,7 @@ export const POST = async (request: Request): Promise<Response> => {
       serviceId,
       slot: normalizedSlot,
       userId: clientId ?? 'unknown',
-    })
+    });
 
     return Response.json(
       {
@@ -254,7 +261,7 @@ export const POST = async (request: Request): Promise<Response> => {
         reasons: ['HOLD_RESERVED_FOR_DIFFERENT_CUSTOMER'],
       },
       { status: 409 },
-    )
+    );
   }
 
   if (hold.providerId && hold.providerId !== resolvedProviderId) {
@@ -263,7 +270,7 @@ export const POST = async (request: Request): Promise<Response> => {
       serviceId,
       slot: normalizedSlot,
       userId: clientId ?? 'unknown',
-    })
+    });
 
     return Response.json(
       {
@@ -271,15 +278,18 @@ export const POST = async (request: Request): Promise<Response> => {
         reasons: ['HOLD_RESERVED_FOR_DIFFERENT_PROVIDER'],
       },
       { status: 409 },
-    )
+    );
   }
 
-  const durationMinutes = typeof service.durationMinutes === 'number' ? service.durationMinutes : 0
-  const end = new Date(slotDate.getTime() + Math.max(durationMinutes, 0) * 60 * 1000).toISOString()
+  const durationMinutes = typeof service.durationMinutes === 'number' ? service.durationMinutes : 0;
+  const end = new Date(slotDate.getTime() + Math.max(durationMinutes, 0) * 60 * 1000).toISOString();
 
-  const bufferBefore = typeof service.bufferMinutesBefore === 'number' ? service.bufferMinutesBefore : 0
-  const bufferAfter = typeof service.bufferMinutesAfter === 'number' ? service.bufferMinutesAfter : 0
-  const pricing = typeof service.pricing === 'object' && service.pricing !== null ? service.pricing : {}
+  const bufferBefore =
+    typeof service.bufferMinutesBefore === 'number' ? service.bufferMinutesBefore : 0;
+  const bufferAfter =
+    typeof service.bufferMinutesAfter === 'number' ? service.bufferMinutesAfter : 0;
+  const pricing =
+    typeof service.pricing === 'object' && service.pricing !== null ? service.pricing : {};
 
   try {
     const appointment = await payload.create({
@@ -307,22 +317,31 @@ export const POST = async (request: Request): Promise<Response> => {
         },
         pricingSnapshot: {
           amount: typeof (pricing as { amount?: unknown }).amount === 'number' ? pricing.amount : 0,
-          currency: typeof (pricing as { currency?: unknown }).currency === 'string' ? pricing.currency : 'USD',
-          durationMinutes: durationMinutes > 0 ? durationMinutes : Math.max(Math.round((new Date(end).getTime() - slotDate.getTime()) / 60000), 0),
-          taxRate: typeof (pricing as { taxRate?: unknown }).taxRate === 'number' ? pricing.taxRate : undefined,
+          currency:
+            typeof (pricing as { currency?: unknown }).currency === 'string'
+              ? pricing.currency
+              : 'USD',
+          durationMinutes:
+            durationMinutes > 0
+              ? durationMinutes
+              : Math.max(Math.round((new Date(end).getTime() - slotDate.getTime()) / 60000), 0),
+          taxRate:
+            typeof (pricing as { taxRate?: unknown }).taxRate === 'number'
+              ? pricing.taxRate
+              : undefined,
         },
         clientNotes,
         metadata,
       } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-    })
+    });
 
     try {
-      await bookingHold.release({ serviceId, slot: normalizedSlot })
+      await bookingHold.release({ serviceId, slot: normalizedSlot });
     } catch (error) {
       if (error instanceof BookingHoldStoreError) {
-        payload.logger.warn?.('Appointment created but failed to release hold in Redis', error)
+        payload.logger.warn?.('Appointment created but failed to release hold in Redis', error);
       } else {
-        payload.logger.warn?.('Appointment created but failed to release hold', error)
+        payload.logger.warn?.('Appointment created but failed to release hold', error);
       }
     }
 
@@ -337,14 +356,14 @@ export const POST = async (request: Request): Promise<Response> => {
         },
       },
       { status: 201 },
-    )
+    );
   } catch (error) {
-    payload.logger.error?.('Failed to create appointment', error)
+    payload.logger.error?.('Failed to create appointment', error);
     return Response.json(
       {
         message: 'Unable to confirm booking',
       },
       { status: 500 },
-    )
+    );
   }
-}
+};

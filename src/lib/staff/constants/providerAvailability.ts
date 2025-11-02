@@ -1,7 +1,7 @@
 export type ProviderAvailabilityDayOption = {
-  value: string
-  label: string
-}
+  value: string;
+  label: string;
+};
 
 export const DAY_OPTIONS: readonly ProviderAvailabilityDayOption[] = [
   { value: 'saturday', label: 'شنبه' },
@@ -11,12 +11,12 @@ export const DAY_OPTIONS: readonly ProviderAvailabilityDayOption[] = [
   { value: 'wednesday', label: 'چهارشنبه' },
   { value: 'thursday', label: 'پنج‌شنبه' },
   { value: 'friday', label: 'جمعه' },
-] as const
+] as const;
 
 export const DAY_LABEL_LOOKUP: Record<string, string> = DAY_OPTIONS.reduce(
   (accumulator, option) => {
-    accumulator[option.value] = option.label
-    return accumulator
+    accumulator[option.value] = option.label;
+    return accumulator;
   },
   {} as Record<string, string>,
-)
+);

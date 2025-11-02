@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import React from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
-import { GlassSurface } from '@/components/ui/glass'
+import { GlassSurface } from '@/components/ui/glass';
 
-import useSmoothLoading from '@/hooks/useSmoothLoading'
+import useSmoothLoading from '@/hooks/useSmoothLoading';
 
 interface GlobalLoadingOverlayProps {
   /** Whether the loading state is active */
-  active: boolean
+  active: boolean;
   /** Message to display while loading */
-  message?: string
+  message?: string;
 }
 
 /**
@@ -23,21 +23,41 @@ const GlobalLoadingOverlay = ({
   active,
   message = 'در حال بارگذاری...',
 }: GlobalLoadingOverlayProps) => {
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = useReducedMotion();
 
   // Smooth loading prevents flicker for quick loads
   const visible = useSmoothLoading(active, {
     showDelayMs: 0, // Show immediately (navigation should be visible)
     minVisibleMs: 300, // Keep visible for minimum time to prevent jitter
-  })
+  });
 
   const overlayTransitions = prefersReducedMotion
-    ? { initial: { opacity: 1 }, animate: { opacity: 1 }, exit: { opacity: 1 }, transition: { duration: 0 } }
-    : { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.2 } }
+    ? {
+        initial: { opacity: 1 },
+        animate: { opacity: 1 },
+        exit: { opacity: 1 },
+        transition: { duration: 0 },
+      }
+    : {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0.2 },
+      };
 
   const panelTransitions = prefersReducedMotion
-    ? { initial: { opacity: 1, scale: 1 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 1, scale: 1 }, transition: { duration: 0 } }
-    : { initial: { scale: 0.9, opacity: 0 }, animate: { scale: 1, opacity: 1 }, exit: { scale: 0.95, opacity: 0 }, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } }
+    ? {
+        initial: { opacity: 1, scale: 1 },
+        animate: { opacity: 1, scale: 1 },
+        exit: { opacity: 1, scale: 1 },
+        transition: { duration: 0 },
+      }
+    : {
+        initial: { scale: 0.9, opacity: 0 },
+        animate: { scale: 1, opacity: 1 },
+        exit: { scale: 0.95, opacity: 0 },
+        transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
+      };
 
   return (
     <AnimatePresence mode="wait">
@@ -70,6 +90,6 @@ const GlobalLoadingOverlay = ({
       )}
     </AnimatePresence>
   );
-}
+};
 
-export default GlobalLoadingOverlay
+export default GlobalLoadingOverlay;

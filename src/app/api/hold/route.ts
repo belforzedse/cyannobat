@@ -1,10 +1,10 @@
-import type { ZodIssue } from 'zod'
-import { randomUUID } from 'node:crypto'
-import { sql } from 'drizzle-orm'
-import configPromise, { payloadDrizzle } from '@payload-config'
-import { bookingHold, BookingHoldConflictError, BookingHoldStoreError } from '@/lib/redis'
-import { bookingHoldReleaseSchema, bookingHoldRequestSchema } from '@/lib/schemas/booking'
-import { getPayload } from 'payload'
+import type { ZodIssue } from 'zod';
+import { randomUUID } from 'node:crypto';
+import { sql } from 'drizzle-orm';
+import configPromise, { payloadDrizzle } from '@payload-config';
+import { bookingHold, BookingHoldConflictError, BookingHoldStoreError } from '@/lib/redis';
+import { bookingHoldReleaseSchema, bookingHoldRequestSchema } from '@/lib/schemas/booking';
+import { getPayload } from 'payload';
 
 const buildValidationErrorResponse = (issues: ZodIssue[]): Response =>
   Response.json(
@@ -16,13 +16,13 @@ const buildValidationErrorResponse = (issues: ZodIssue[]): Response =>
       })),
     },
     { status: 400 },
-  )
+  );
 
 type RawService = Record<string, unknown> & {
-  isActive?: boolean | null
-  leadTimeHours?: number | null
-  providers?: unknown
-}
+  isActive?: boolean | null;
+  leadTimeHours?: number | null;
+  providers?: unknown;
+};
 
 const ensureServiceIsBookable = async (
   payload: Awaited<ReturnType<typeof getPayload>>,
@@ -33,68 +33,71 @@ const ensureServiceIsBookable = async (
       collection: 'services',
       id: serviceId,
       depth: 0,
-    })) as unknown as RawService | null
+    })) as unknown as RawService | null;
 
     if (!service || typeof service !== 'object') {
-      return { service: null, errors: ['SERVICE_NOT_FOUND'] as const }
+      return { service: null, errors: ['SERVICE_NOT_FOUND'] as const };
     }
 
     if (service.isActive === false) {
-      return { service, errors: ['SERVICE_INACTIVE'] as const }
+      return { service, errors: ['SERVICE_INACTIVE'] as const };
     }
 
-    return { service, errors: [] as const }
+    return { service, errors: [] as const };
   } catch (error) {
     const notFound =
-      typeof error === 'object' && error !== null && 'status' in error && (error as { status?: number }).status === 404
+      typeof error === 'object' &&
+      error !== null &&
+      'status' in error &&
+      (error as { status?: number }).status === 404;
 
     if (notFound) {
-      return { service: null, errors: ['SERVICE_NOT_FOUND'] as const }
+      return { service: null, errors: ['SERVICE_NOT_FOUND'] as const };
     }
 
-    throw error
+    throw error;
   }
-}
+};
 
 const assertProviderBelongsToService = (service: RawService, providerId?: string): boolean => {
-  if (!providerId) return true
-  const providers = Array.isArray(service?.providers) ? (service.providers as unknown[]) : []
+  if (!providerId) return true;
+  const providers = Array.isArray(service?.providers) ? (service.providers as unknown[]) : [];
   return providers.some((provider) => {
-    if (!provider || typeof provider !== 'object') return false
+    if (!provider || typeof provider !== 'object') return false;
 
     if ('value' in provider && typeof (provider as { value?: unknown }).value === 'string') {
-      return (provider as { value?: unknown }).value === providerId
+      return (provider as { value?: unknown }).value === providerId;
     }
 
     if ('id' in provider && typeof (provider as { id?: unknown }).id === 'string') {
-      return (provider as { id?: unknown }).id === providerId
+      return (provider as { id?: unknown }).id === providerId;
     }
 
-    return false
-  })
-}
+    return false;
+  });
+};
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 export const POST = async (request: Request): Promise<Response> => {
-  let payload
+  let payload;
   try {
     payload = await getPayload({
       config: configPromise,
-    })
+    });
   } catch (error) {
-    console.error('Failed to initialize Payload instance for booking hold route', error)
+    console.error('Failed to initialize Payload instance for booking hold route', error);
     return Response.json(
       {
         message: 'Failed to initialize backend services',
       },
       { status: 500 },
-    )
+    );
   }
 
-  let rawBody: unknown
+  let rawBody: unknown;
   try {
-    rawBody = await request.json()
+    rawBody = await request.json();
   } catch {
     return Response.json(
       {
@@ -102,12 +105,12 @@ export const POST = async (request: Request): Promise<Response> => {
         errors: [{ path: 'body', message: 'Request body must be valid JSON' }],
       },
       { status: 400 },
-    )
+    );
   }
-  const parsed = bookingHoldRequestSchema.safeParse(rawBody)
+  const parsed = bookingHoldRequestSchema.safeParse(rawBody);
 
   if (!parsed.success) {
-    return buildValidationErrorResponse(parsed.error.issues)
+    return buildValidationErrorResponse(parsed.error.issues);
   }
 
   const {
@@ -117,9 +120,9 @@ export const POST = async (request: Request): Promise<Response> => {
     customerId: providedCustomerId,
     providerId,
     metadata,
-  } = parsed.data
-  const holdOwnerId = providedCustomerId ?? randomUUID()
-  const slotDate = new Date(slot)
+  } = parsed.data;
+  const holdOwnerId = providedCustomerId ?? randomUUID();
+  const slotDate = new Date(slot);
 
   if (Number.isNaN(slotDate.getTime())) {
     return Response.json(
@@ -128,21 +131,21 @@ export const POST = async (request: Request): Promise<Response> => {
         errors: [{ path: 'slot', message: 'slot must be a valid date' }],
       },
       { status: 400 },
-    )
+    );
   }
 
-  const normalizedSlot = slotDate.toISOString()
+  const normalizedSlot = slotDate.toISOString();
 
-  const { service, errors: serviceErrors } = await ensureServiceIsBookable(payload, serviceId)
+  const { service, errors: serviceErrors } = await ensureServiceIsBookable(payload, serviceId);
 
   if (!service) {
-    const reasons = serviceErrors.length > 0 ? serviceErrors : ['SERVICE_NOT_FOUND']
+    const reasons = serviceErrors.length > 0 ? serviceErrors : ['SERVICE_NOT_FOUND'];
     payload.logger.warn?.('Booking hold rejected due to service issue', {
       reason: reasons[0],
       serviceId,
       slot: normalizedSlot,
       userId: holdOwnerId,
-    })
+    });
 
     return Response.json(
       {
@@ -150,17 +153,17 @@ export const POST = async (request: Request): Promise<Response> => {
         reasons,
       },
       { status: 404 },
-    )
+    );
   }
 
-  const now = new Date()
+  const now = new Date();
   if (slotDate.getTime() < now.getTime()) {
     payload.logger.warn?.('Booking hold conflict detected', {
       reason: 'PAST_SLOT',
       serviceId,
       slot: normalizedSlot,
       userId: holdOwnerId,
-    })
+    });
 
     return Response.json(
       {
@@ -168,19 +171,19 @@ export const POST = async (request: Request): Promise<Response> => {
         reasons: ['PAST_SLOT'],
       },
       { status: 409 },
-    )
+    );
   }
 
-  const leadTimeHours = typeof service.leadTimeHours === 'number' ? service.leadTimeHours : null
+  const leadTimeHours = typeof service.leadTimeHours === 'number' ? service.leadTimeHours : null;
   if (leadTimeHours && leadTimeHours > 0) {
-    const minStart = new Date(now.getTime() + leadTimeHours * 60 * 60 * 1000)
+    const minStart = new Date(now.getTime() + leadTimeHours * 60 * 60 * 1000);
     if (slotDate.getTime() < minStart.getTime()) {
       payload.logger.warn?.('Booking hold conflict detected', {
         reason: 'LEAD_TIME_NOT_MET',
         serviceId,
         slot: normalizedSlot,
         userId: holdOwnerId,
-      })
+      });
 
       return Response.json(
         {
@@ -188,7 +191,7 @@ export const POST = async (request: Request): Promise<Response> => {
           reasons: ['LEAD_TIME_NOT_MET'],
         },
         { status: 409 },
-      )
+      );
     }
   }
 
@@ -198,7 +201,7 @@ export const POST = async (request: Request): Promise<Response> => {
       serviceId,
       slot: normalizedSlot,
       userId: holdOwnerId,
-    })
+    });
 
     return Response.json(
       {
@@ -206,13 +209,13 @@ export const POST = async (request: Request): Promise<Response> => {
         reasons: ['PROVIDER_NOT_AVAILABLE_FOR_SERVICE'],
       },
       { status: 409 },
-    )
+    );
   }
 
   try {
     const existingAppointment = await payloadDrizzle.execute(
       sql`select 1 from "appointments" where "service" = ${serviceId} and ("schedule"->>'start') = ${normalizedSlot} limit 1`,
-    )
+    );
 
     if (Array.isArray(existingAppointment?.rows) && existingAppointment.rows.length > 0) {
       payload.logger.warn?.('Booking hold conflict detected', {
@@ -220,7 +223,7 @@ export const POST = async (request: Request): Promise<Response> => {
         serviceId,
         slot: normalizedSlot,
         userId: holdOwnerId,
-      })
+      });
 
       return Response.json(
         {
@@ -228,27 +231,27 @@ export const POST = async (request: Request): Promise<Response> => {
           reasons: ['ALREADY_BOOKED'],
         },
         { status: 409 },
-      )
+      );
     }
   } catch (error) {
-    payload.logger.error?.('Failed to check existing appointments before creating hold', error)
+    payload.logger.error?.('Failed to check existing appointments before creating hold', error);
     return Response.json(
       {
         message: 'Unable to create booking hold',
       },
       { status: 500 },
-    )
+    );
   }
 
   try {
-    const existingHold = await bookingHold.get({ serviceId, slot: normalizedSlot })
+    const existingHold = await bookingHold.get({ serviceId, slot: normalizedSlot });
     if (existingHold && existingHold.ttlSeconds > 0) {
       payload.logger.info?.('Booking hold request matched existing hold', {
         reason: 'ALREADY_ON_HOLD',
         serviceId,
         slot: normalizedSlot,
         userId: holdOwnerId,
-      })
+      });
 
       return Response.json(
         {
@@ -257,10 +260,10 @@ export const POST = async (request: Request): Promise<Response> => {
           hold: existingHold,
         },
         { status: 409 },
-      )
+      );
     }
   } catch (error) {
-    payload.logger.error?.('Failed to read existing booking hold', error)
+    payload.logger.error?.('Failed to read existing booking hold', error);
     if (error instanceof BookingHoldStoreError) {
       return Response.json(
         {
@@ -268,7 +271,7 @@ export const POST = async (request: Request): Promise<Response> => {
           reasons: ['HOLD_SERVICE_UNAVAILABLE'],
         },
         { status: 503 },
-      )
+      );
     }
 
     return Response.json(
@@ -276,7 +279,7 @@ export const POST = async (request: Request): Promise<Response> => {
         message: 'Unable to create booking hold',
       },
       { status: 500 },
-    )
+    );
   }
 
   try {
@@ -289,7 +292,7 @@ export const POST = async (request: Request): Promise<Response> => {
         providerId,
         metadata,
       },
-    })
+    });
 
     return Response.json(
       {
@@ -297,9 +300,9 @@ export const POST = async (request: Request): Promise<Response> => {
         hold,
       },
       { status: 201 },
-    )
+    );
   } catch (error) {
-    payload.logger.error?.('Failed to create booking hold', error)
+    payload.logger.error?.('Failed to create booking hold', error);
 
     if (error instanceof BookingHoldConflictError) {
       return Response.json(
@@ -309,7 +312,7 @@ export const POST = async (request: Request): Promise<Response> => {
           hold: error.hold ?? undefined,
         },
         { status: 409 },
-      )
+      );
     }
 
     if (error instanceof BookingHoldStoreError) {
@@ -319,7 +322,7 @@ export const POST = async (request: Request): Promise<Response> => {
           reasons: ['HOLD_SERVICE_UNAVAILABLE'],
         },
         { status: 503 },
-      )
+      );
     }
 
     return Response.json(
@@ -327,14 +330,14 @@ export const POST = async (request: Request): Promise<Response> => {
         message: 'Unable to create booking hold',
       },
       { status: 500 },
-    )
+    );
   }
-}
+};
 
 export const DELETE = async (request: Request): Promise<Response> => {
-  let rawBody: unknown
+  let rawBody: unknown;
   try {
-    rawBody = await request.json()
+    rawBody = await request.json();
   } catch {
     return Response.json(
       {
@@ -342,17 +345,17 @@ export const DELETE = async (request: Request): Promise<Response> => {
         errors: [{ path: 'body', message: 'Request body must be valid JSON' }],
       },
       { status: 400 },
-    )
+    );
   }
 
-  const parsed = bookingHoldReleaseSchema.safeParse(rawBody)
+  const parsed = bookingHoldReleaseSchema.safeParse(rawBody);
 
   if (!parsed.success) {
-    return buildValidationErrorResponse(parsed.error.issues)
+    return buildValidationErrorResponse(parsed.error.issues);
   }
 
-  const { serviceId, slot, customerId } = parsed.data
-  const slotDate = new Date(slot)
+  const { serviceId, slot, customerId } = parsed.data;
+  const slotDate = new Date(slot);
 
   if (Number.isNaN(slotDate.getTime())) {
     return Response.json(
@@ -361,13 +364,13 @@ export const DELETE = async (request: Request): Promise<Response> => {
         errors: [{ path: 'slot', message: 'slot must be a valid date' }],
       },
       { status: 400 },
-    )
+    );
   }
 
-  const normalizedSlot = slotDate.toISOString()
+  const normalizedSlot = slotDate.toISOString();
 
   try {
-    const hold = await bookingHold.get({ serviceId, slot: normalizedSlot })
+    const hold = await bookingHold.get({ serviceId, slot: normalizedSlot });
 
     if (!hold || hold.ttlSeconds <= 0) {
       return Response.json(
@@ -377,7 +380,7 @@ export const DELETE = async (request: Request): Promise<Response> => {
           released: false,
         },
         { status: 404 },
-      )
+      );
     }
 
     if (typeof hold.customerId !== 'string' || hold.customerId !== customerId) {
@@ -388,10 +391,10 @@ export const DELETE = async (request: Request): Promise<Response> => {
           released: false,
         },
         { status: 403 },
-      )
+      );
     }
 
-    const released = await bookingHold.release({ serviceId, slot: normalizedSlot })
+    const released = await bookingHold.release({ serviceId, slot: normalizedSlot });
 
     if (!released) {
       return Response.json(
@@ -401,7 +404,7 @@ export const DELETE = async (request: Request): Promise<Response> => {
           released: false,
         },
         { status: 404 },
-      )
+      );
     }
 
     return Response.json(
@@ -410,7 +413,7 @@ export const DELETE = async (request: Request): Promise<Response> => {
         released: true,
       },
       { status: 200 },
-    )
+    );
   } catch (error) {
     if (error instanceof BookingHoldStoreError) {
       return Response.json(
@@ -419,15 +422,15 @@ export const DELETE = async (request: Request): Promise<Response> => {
           reasons: ['HOLD_SERVICE_UNAVAILABLE'],
         },
         { status: 503 },
-      )
+      );
     }
 
-    console.error('Failed to release booking hold', error)
+    console.error('Failed to release booking hold', error);
     return Response.json(
       {
         message: 'Unable to release booking hold',
       },
       { status: 500 },
-    )
+    );
   }
-}
+};
