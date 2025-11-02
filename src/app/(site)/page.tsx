@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import GlassCard from '@/components/GlassCard';
 import { Button } from '@/components/ui';
@@ -161,20 +162,20 @@ const HeroPage = () => {
             className="absolute -right-32 top-0 h-64 w-64 rounded-full bg-accent/30 blur-3xl"
             aria-hidden
           />
-          <div className="flex flex-1 flex-col items-end gap-8">
-            <motion.span
-              variants={badgeVariants}
-              initial="initial"
-              animate="animate"
-              className="rounded-full border border-white/25 bg-white/20 px-4 py-1.5 text-xs font-medium text-muted-foreground shadow-inner backdrop-blur-sm dark:bg-white/10"
-            >
-              سایان نوبت — cyannobat
-            </motion.span>
+          <div className="relative flex flex-1 flex-col items-end gap-8">
+            <Image
+              src="/images/image 50.png"
+              alt="Saayan"
+              width={400}
+              height={500}
+              className="absolute -right-24 -top-16 w-[600px] z-20 h-auto pointer-events-none"
+              priority
+            />
             <motion.h1
               variants={titleVariants}
               initial="initial"
               animate="animate"
-              className="max-w-3xl text-balance bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-4xl font-bold leading-tight tracking-tight text-transparent sm:text-5xl lg:text-7xl"
+              className="relative z-10 max-w-3xl text-balance bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-4xl font-bold leading-tight tracking-tight text-transparent sm:text-5xl lg:text-7xl"
             >
               سایان نوبت
             </motion.h1>
@@ -182,7 +183,7 @@ const HeroPage = () => {
               variants={descriptionVariants}
               initial="initial"
               animate="animate"
-              className="max-w-2xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg"
+              className="relative z-10 max-w-2xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg"
             >
               رزرو نوبت سریع، ساده و شفاف؛ تجربه‌ای الهام‌گرفته از دقت و ظرافت طراحی اپل برای مدیریت
               درمان شما.
