@@ -130,15 +130,10 @@ const HeroPage = () => {
               initial="initial"
               animate="animate"
             >
-              <GlassCard className="h-full min-h-[200px] rounded-3xl p-5 sm:p-6">
+              <GlassCard className="h-full min-h-[230px] rounded-3xl p-5 sm:p-6">
                 <div className="flex flex-col gap-5">
                   <div className="flex items-center gap-3 text-foreground">
-                    <GlassIcon
-                      icon={step.icon}
-                      size="sm"
-                      label={step.title}
-                      className="shrink-0"
-                    />
+                    <GlassIcon icon={step.icon} size="sm" label={step.title} className="shrink-0" />
                     <h3 className="text-base font-semibold leading-tight sm:text-lg">
                       {step.title}
                     </h3>
@@ -151,10 +146,7 @@ const HeroPage = () => {
                       <Fragment key={`${step.title}-${bulletIndex}`}>
                         <span className="whitespace-nowrap">{bullet}</span>
                         {bulletIndex < step.bullets.length - 1 ? (
-                          <span
-                            aria-hidden
-                            className="px-1 text-accent/70"
-                          >
+                          <span aria-hidden className="px-1 text-accent/70">
                             •
                           </span>
                         ) : null}
