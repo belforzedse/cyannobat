@@ -177,7 +177,7 @@ const HeroPage = () => {
               animate="animate"
               className="relative z-10 max-w-3xl text-balance bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-4xl font-bold leading-tight tracking-tight text-transparent sm:text-5xl lg:text-7xl"
             >
-              سایان نوبت
+              سایـــــــــان نوبت{' '}
             </motion.h1>
             <motion.p
               variants={descriptionVariants}
@@ -185,8 +185,7 @@ const HeroPage = () => {
               animate="animate"
               className="relative z-10 max-w-2xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg"
             >
-              رزرو نوبت سریع، ساده و شفاف؛ تجربه‌ای الهام‌گرفته از دقت و ظرافت طراحی اپل برای مدیریت
-              درمان شما.
+              نوبت‌دهی راحت برای شما، تجربه‌ی حرفه‌ای برای بیماران.
             </motion.p>
             <motion.div
               variants={buttonsVariants}

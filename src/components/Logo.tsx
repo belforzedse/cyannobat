@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const Logo = () => {
   return (
-    <div className=" hidden lg:flex fixed  h-20 w-20 items-center justify-center p-4 z-50 ">
+    <div className="  lg:flex fixed  h-[72px]  w-[72px] lg:h-20 lg:w-20 items-center justify-center p-4 z-50 ">
       <Image
         src="/group 4.png"
         alt="سایان نوبت - لوگو"

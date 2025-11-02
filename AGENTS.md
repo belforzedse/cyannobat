@@ -1,62 +1,26 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-
-- Next.js source lives in src/app; (site) renders the public shell and (payload) bundles the Payload admin and server handlers.
-- API routes stay under src/app/<route>/route.ts; Payload collections sit in src/collections with generated types in src/payload-types.ts.
-- Shared styling lives in styles/; client scripts and setup helpers belong in scripts/.
-- Static files (favicons, images, fonts) go in public/; adjust global Payload config through src/payload.config.ts.
+Next.js sources live in `src/app`; `(site)` renders the public shell and `(payload)` bundles the admin UI plus server handlers. API routes reside in `src/app/<route>/route.ts`, Payload collections in `src/collections`, and generated types in `src/payload-types.ts`. Shared styling sits in `styles/`, scripts in `scripts/`, static assets in `public/`, and global config in `src/payload.config.ts`.
 
 ## Build, Test, and Development Commands
-
-- pnpm install - install workspace dependencies.
-- pnpm dev - run Next.js plus Payload locally on http://localhost:3000 with hot reload.
-- pnpm build && pnpm start - create and serve a production build.
-- pnpm lint - run ESLint (Next.js core-web-vitals profile); fix or document any warnings before push.
-- docker-compose up --build - boot the app alongside Postgres and Redis for full-stack testing.
+- `pnpm install` - Install workspace dependencies.
+- `pnpm dev` - Run Next.js and Payload with hot reload on http://localhost:3000.
+- `pnpm build && pnpm start` - Compile and serve the production bundle.
+- `pnpm lint` - Run ESLint (core-web-vitals profile); fix or justify warnings.
+- `docker-compose up --build` - Launch app, Postgres, and Redis for full-stack testing.
 
 ## Coding Style & Naming Conventions
-
-- TypeScript strict mode is enforced; favor typed functional components and narrow props.
-- Follow two-space indentation and single quotes in imports; group JSX props logically (layout first, behaviour second).
-- Prefer path aliases (@/\*, @payload-config) over deep relative imports; colocate SCSS overrides with (payload) layouts.
-- Use ESLint autofix where practical; no automatic formatter is configured, so keep diffs minimal and targeted.
+TypeScript strict mode is on; prefer typed functional components with narrow props. Indent with two spaces, keep single quotes in imports, and order JSX props layout before behavior. Use path aliases `@/*` and `@payload-config`; colocate `(payload)` SCSS overrides; apply ESLint autofix when safe and keep diffs tight.
 
 ## Testing Guidelines
-
-- No automated suite ships yet; always run pnpm lint, load the public site, and verify /admin authentication before submitting changes.
-- When adding tests, colocate \*.test.ts beside the module, keep test names descriptive, and document any new scripts in package.json.
-- Capture regressions in Payload collections with fixtures or seed scripts under scripts/ when feasible.
+Automated tests are sparse, so always run `pnpm lint`, load http://localhost:3000, and confirm `/admin` authentication before shipping. Add new tests beside modules as `*.test.ts` with descriptive names. Document any new scripts in `package.json`, and seed data via `pnpm seed:staff` when validating bookings.
 
 ## Commit & Pull Request Guidelines
-
-- Write short, imperative commit subjects (mirroring the existing "Initial commit" style) and keep each commit scoped.
-- PR descriptions should state intent, list key changes, call out config or environment updates, and attach UI/admin screenshots when relevant.
-- Link tracking issues or tickets, confirm pnpm lint status, and note any required migrations or seed steps before requesting review.
+Write short imperative commit subjects (e.g., `Add staff dashboard guard`) and keep each commit focused. PRs should outline intent, key changes, config or env updates, and link issues. Attach relevant UI or admin screenshots, confirm `pnpm lint`, and call out migrations or seeding steps.
 
 ## Security & Configuration Tips
+Maintain a local `.env` defining `PAYLOAD_SECRET` and `DATABASE_URI`; never commit credentials. Ensure ports 3000/5432/6379 are free before starting Docker, and rotate demo logins before sharing builds. Use `pnpm seed:staff` to refresh staff accounts without duplicates.
 
-- Create a local .env defining PAYLOAD_SECRET and DATABASE_URI; never commit secrets or temporary credentials.
-- Ensure ports 3000/5432/6379 are free before running Docker; rotate credentials before sharing review builds and revoke any exposed keys immediately.
-
-## Windows CLI Encoding
-
-- PowerShell defaults to cp1252, which garbles RTL copy. Kick off sessions with `powershell -NoLogo -NoProfile -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8"` so subsequent commands stream UTF-8 text correctly.
-- When reading files in scripts, prefer `Get-Content -Encoding UTF8` or `rg --encoding utf8` to avoid mojibake without extra conversion steps.
-
-## Availability API
-
-- `/api/availability/calendar` now builds real slots from Payload data (services, providers, appointments). The generator lives in `src/lib/availability/generator.ts`; update there when adding new scheduling rules.
-- Frontend hooks (`useBookingState`) consume that endpoint client-side, so seed Providers/Services in Payload before testing booking flows or the UI will show the empty-state placeholder.
-
-## Roles & Seeding
-
-- User accounts carry a `roles` multi-select (`patient`, `doctor`, `receptionist`, `admin`). Staff checks live in `src/lib/auth.ts`; use `userIsStaff` for doctor/receptionist/admin gates.
-- Seed baseline accounts with `pnpm seed:staff` (honours `PAYLOAD_SECRET`, updates existing emails instead of duplicating). Credentials land at `patient|doctor|reception@example.com` with simple demo passwords�rotate them before shipping.
-
-## Auth & Dashboards
-
-- Public login lives at `/login` and posts to `/api/login`. Successful staff accounts redirect to `/staff`, everyone else lands on `/account`.
-- `/account` renders a role-aware dashboard (patients see upcoming bookings, staff get a quick link into the staff console). Both routes rely on the same Payload session cookies.
-- `/staff` still exposes the richer management UI, and requires a staff session via `authenticateStaffRequest`. Logout remains at `/api/staff/logout`.
-- Dashboard APIs (`/api/staff/appointments`, `/api/staff/providers`, `/api/staff/appointments/:id`) all enforce `userIsStaff`.
+## Availability & Auth Notes
+`/api/availability/calendar` assembles slots via `src/lib/availability/generator.ts`; update rules there and seed Providers or Services so booking flows populate. Enforce staff access with `userIsStaff` from `src/lib/auth.ts`. `/login` posts to `/api/login`, redirecting staff to `/staff` and patients to `/account`, with logout at `/api/staff/logout`.
