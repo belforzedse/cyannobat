@@ -54,18 +54,18 @@ const interactiveClasses = [
 
 const darkBaseOverrides = [
   'dark:border-border/55',
-  'dark:bg-[linear-gradient(150deg,color-mix(in_srgb,var(--card)_70%,transparent),color-mix(in_srgb,var(--card)_58%,transparent))]',
+  'dark:bg-[linear-gradient(150deg,rgba(20,27,40,0.7),rgba(20,27,40,0.58))]',
   'dark:text-[color:var(--fg)]',
-  'dark:shadow-[0_20px_40px_-28px_rgba(2,6,28,0.7)]',
+  'dark:shadow-[0_20px_40px_-28px_rgba(10,17,23,0.7)]',
 ].join(' ');
 
 const darkToneOverrides: Record<GlassChipTone, string> = {
   default: '',
   muted: 'dark:text-[color:var(--muted-foreground)]',
   current:
-    'dark:border-accent/45 dark:bg-[color-mix(in_srgb,var(--card)_62%,transparent)] dark:shadow-[0_24px_48px_-30px_rgba(36,132,255,0.32)]',
+    'dark:border-accent/45 dark:bg-[color-mix(in_srgb,var(--card)_62%,transparent)] dark:shadow-[0_24px_48px_-30px_rgba(75,141,212,0.3)]',
   active:
-    'dark:border-accent/50 dark:bg-[color-mix(in_srgb,var(--accent)_22%,transparent)] dark:shadow-[0_30px_56px_-32px_rgba(36,132,255,0.4)]',
+    'dark:border-accent/50 dark:bg-[color-mix(in_srgb,var(--accent)_22%,transparent)] dark:shadow-[0_30px_56px_-32px_rgba(75,141,212,0.38)]',
 };
 
 export const glassChipStyles = ({

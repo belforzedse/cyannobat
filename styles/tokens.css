@@ -98,26 +98,26 @@
 }
 
 [data-theme='dark'] {
-  --bg: #020617;
-  --bg-rgb: 2 6 23;
-  --fg: #dce8ff;
-  --fg-rgb: 220 232 255;
-  --muted: #101b33;
-  --muted-rgb: 16 27 51;
-  --muted-foreground: #8fa6d1;
-  --muted-foreground-rgb: 143 166 209;
-  --card: #0b1426;
-  --card-rgb: 11 20 38;
-  --border: #1b2946;
-  --border-rgb: 27 41 70;
-  --accent: #3b82f6;
-  --accent-rgb: 59 130 246;
+  --bg: #0a1117;
+  --bg-rgb: 10 17 23;
+  --fg: #dce8f5;
+  --fg-rgb: 220 232 245;
+  --muted: #161f2d;
+  --muted-rgb: 22 31 45;
+  --muted-foreground: #8a96a8;
+  --muted-foreground-rgb: 138 150 168;
+  --card: #141b28;
+  --card-rgb: 20 27 40;
+  --border: #1f2a3b;
+  --border-rgb: 31 42 59;
+  --accent: #4b8dd4;
+  --accent-rgb: 75 141 212;
   --accent-foreground: #f5f9ff;
   --accent-foreground-rgb: 245 249 255;
-  --accent-strong: #2563eb;
-  --accent-strong-rgb: 37 99 235;
-  --accent-deep: #1d4ed8;
-  --accent-deep-rgb: 29 78 216;
+  --accent-strong: #3a74be;
+  --accent-strong-rgb: 58 116 190;
+  --accent-deep: #2d5fab;
+  --accent-deep-rgb: 45 95 171;
   --destructive: #f87171;
   --destructive-rgb: 248 113 113;
   --destructive-foreground: #450a0a;
@@ -128,50 +128,50 @@
   --status-error-rgb: 248 113 113;
   --status-info: #60a5fa;
   --status-info-rgb: 96 165 250;
-  --glass: #0b1426e0;
-  --glass-rgb: 11 20 38;
-  --ring: #2563eb;
-  --ring-rgb: 37 99 235;
-  --shadow-primary: 0 26px 62px -32px rgb(var(--accent-deep-rgb) / 0.28);
+  --glass: #1f2f45e0;
+  --glass-rgb: 31 47 69;
+  --ring: #4a7fd9;
+  --ring-rgb: 74 127 217;
+  --shadow-primary: 0 26px 62px -32px rgb(var(--accent-deep-rgb) / 0.32);
   --shadow-glass:
-    0 28px 64px -32px rgba(2, 6, 28, 0.88),
-    inset 0 1px 0 rgb(var(--accent-strong-rgb) / 0.18);
-  --shadow-glass-soft: 0 20px 50px -30px rgba(2, 6, 28, 0.65);
+    0 28px 64px -32px rgba(15, 26, 42, 0.88),
+    inset 0 1px 0 rgb(var(--accent-strong-rgb) / 0.2);
+  --shadow-glass-soft: 0 20px 50px -30px rgba(15, 26, 42, 0.7);
   --shadow-glass-strong: 0 34px 72px -30px rgb(var(--accent-strong-rgb) / 0.5);
-  --button-primary-color: rgb(4 10 24);
+  --button-primary-color: rgb(229 235 245);
   --button-primary-shadow:
-    0 20px 48px -24px rgb(var(--accent-rgb) / 0.45),
-    0 14px 30px -20px rgb(var(--accent-strong-rgb) / 0.45),
-    0 12px 24px -20px rgb(var(--accent-deep-rgb) / 0.32);
+    0 20px 48px -24px rgb(var(--accent-rgb) / 0.5),
+    0 14px 30px -20px rgb(var(--accent-strong-rgb) / 0.5),
+    0 12px 24px -20px rgb(var(--accent-deep-rgb) / 0.36);
   --button-primary-shadow-hover:
-    0 30px 60px -26px rgb(var(--accent-rgb) / 0.55),
-    0 18px 36px -22px rgb(var(--accent-strong-rgb) / 0.5),
-    0 14px 28px -22px rgb(var(--accent-deep-rgb) / 0.36);
-  --button-secondary-border: rgb(var(--accent-rgb) / 0.28);
-  --button-secondary-border-hover: rgb(var(--accent-rgb) / 0.5);
+    0 30px 60px -26px rgb(var(--accent-rgb) / 0.6),
+    0 18px 36px -22px rgb(var(--accent-strong-rgb) / 0.55),
+    0 14px 28px -22px rgb(var(--accent-deep-rgb) / 0.4);
+  --button-secondary-border: rgb(var(--accent-rgb) / 0.35);
+  --button-secondary-border-hover: rgb(var(--accent-rgb) / 0.6);
   --button-secondary-bg: linear-gradient(
     145deg,
-    rgba(12, 22, 38, 0.85),
-    rgba(12, 22, 38, 0.62)
+    rgba(26, 39, 58, 0.85),
+    rgba(26, 39, 58, 0.62)
   );
   --button-secondary-bg-hover: linear-gradient(
     145deg,
-    rgb(var(--accent-rgb) / 0.2),
-    rgba(12, 22, 38, 0.78)
+    rgb(var(--accent-rgb) / 0.22),
+    rgba(26, 39, 58, 0.78)
   );
-  --button-secondary-color: rgb(200 220 255);
+  --button-secondary-color: rgb(229 235 245);
   --button-secondary-shadow:
     0 22px 48px -28px rgb(var(--bg-rgb) / 0.72),
-    inset 0 1px 0 rgb(var(--accent-strong-rgb) / 0.18);
+    inset 0 1px 0 rgb(var(--accent-strong-rgb) / 0.22);
   --button-secondary-shadow-hover:
-    0 30px 58px -30px rgb(var(--accent-strong-rgb) / 0.32),
-    inset 0 1px 0 rgb(var(--accent-rgb) / 0.22);
-  --button-ghost-border: rgb(var(--accent-rgb) / 0.4);
-  --button-ghost-border-hover: rgb(var(--accent-rgb) / 0.6);
+    0 30px 58px -30px rgb(var(--accent-strong-rgb) / 0.36),
+    inset 0 1px 0 rgb(var(--accent-rgb) / 0.28);
+  --button-ghost-border: rgb(var(--accent-rgb) / 0.45);
+  --button-ghost-border-hover: rgb(var(--accent-rgb) / 0.65);
   --button-ghost-bg: transparent;
-  --button-ghost-bg-hover: rgb(var(--accent-rgb) / 0.18);
-  --button-ghost-color: rgb(200 220 255);
+  --button-ghost-bg-hover: rgb(var(--accent-rgb) / 0.22);
+  --button-ghost-color: rgb(229 235 245);
   --button-ghost-shadow: none;
   --button-ghost-shadow-hover: 0 16px 32px -24px
-    rgb(var(--accent-strong-rgb) / 0.24);
+    rgb(var(--accent-strong-rgb) / 0.28);
 }

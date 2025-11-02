@@ -3,6 +3,7 @@ import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import ThemeProvider from '@/components/ThemeProvider';
 
+
 export const metadata = {
   title: 'سایان نوبت | cyannobat',
   description: 'رزرو نوبت سریع، ساده و شفاف',

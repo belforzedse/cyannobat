@@ -27,15 +27,15 @@ const interactivePillClasses = [
 ].join(' ');
 
 const darkBaseOverrides = [
-  'dark:border-[rgba(120,190,255,0.25)]',
-  'dark:bg-[linear-gradient(145deg,rgba(12,22,38,0.88),rgba(12,22,38,0.64))]',
-  'dark:shadow-[0_18px_42px_-26px_rgba(2,6,28,0.72),inset_0_1px_0_rgba(120,190,255,0.16)]',
+  'dark:border-[rgba(75,141,212,0.25)]',
+  'dark:bg-[linear-gradient(145deg,rgba(20,27,40,0.88),rgba(20,27,40,0.64))]',
+  'dark:shadow-[0_18px_42px_-26px_rgba(10,17,23,0.72),inset_0_1px_0_rgba(75,141,212,0.16)]',
 ].join(' ');
 
 const darkInteractiveOverrides = [
-  'dark:hover:border-[rgba(120,190,255,0.5)]',
-  'dark:hover:bg-[linear-gradient(145deg,rgba(36,132,255,0.22),rgba(12,22,38,0.76))]',
-  'dark:hover:shadow-[0_28px_52px_-28px_rgba(36,132,255,0.35),0_18px_36px_-26px_rgba(2,6,28,0.68)]',
+  'dark:hover:border-[rgba(75,141,212,0.5)]',
+  'dark:hover:bg-[linear-gradient(145deg,rgba(58,116,190,0.22),rgba(20,27,40,0.76))]',
+  'dark:hover:shadow-[0_28px_52px_-28px_rgba(75,141,212,0.35),0_18px_36px_-26px_rgba(10,17,23,0.68)]',
 ].join(' ');
 
 export const glassPillStyles = ({ interactive = true }: GlassPillStyleOptions = {}) =>

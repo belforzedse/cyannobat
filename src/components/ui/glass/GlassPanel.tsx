@@ -46,7 +46,7 @@ const stateClasses: Record<GlassPanelState, string> = {
     'border-accent/40 shadow-[0_36px_76px_-34px_rgba(86,154,222,0.32)]',
     '-translate-y-0.5',
     'dark:border-accent/50',
-    'dark:shadow-[0_42px_96px_-38px_rgba(36,132,255,0.4)]',
+    'dark:shadow-[0_42px_96px_-38px_rgba(75,141,212,0.35)]',
   ].join(' '),
 };
 
@@ -57,8 +57,8 @@ const densityClasses: Record<GlassPanelDensity, string> = {
 
 const darkBaseOverrides = [
   'dark:border-border/60',
-  'dark:bg-[linear-gradient(160deg,color-mix(in_srgb,var(--card)_90%,transparent),color-mix(in_srgb,var(--card)_72%,transparent))]',
-  'dark:shadow-[0_36px_90px_-36px_rgba(2,6,28,0.78)]',
+  'dark:bg-[linear-gradient(160deg,rgba(20,27,40,0.9),rgba(20,27,40,0.72))]',
+  'dark:shadow-[0_36px_90px_-36px_rgba(10,17,23,0.78)]',
 ].join(' ');
 
 export const glassPanelStyles = ({

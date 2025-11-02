@@ -54,7 +54,7 @@ const ModalContent = forwardRef<ModalContentElement, ModalContentProps>(
       <DialogPrimitive.Overlay
         className={cn(
           'fixed inset-0 z-50 bg-[color-mix(in_srgb,rgb(var(--bg-rgb))_30%,rgba(8,20,38,0.78))] backdrop-blur-[18px] backdrop-saturate-[1.25] animate-modal-overlay-in',
-          'dark:bg-[color-mix(in_srgb,rgba(0,4,14,0.82)_85%,rgba(12,22,38,0.9))]',
+          'dark:bg-[color-mix(in_srgb,rgba(0,0,0,0.82)_85%,rgba(10,17,23,0.9))]',
           overlayClassName,
         )}
       />

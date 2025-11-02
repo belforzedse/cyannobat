@@ -13,7 +13,7 @@ const Header = () => {
     <GlassSurface
       as="header"
       role="banner"
-      className=" sticky top-4 z-30 ml-6 mr-4 flex items-center justify-between gap-3 rounded-[20px] px-6 py-2 text-right shadow-lg shadow-black/5 transition-all duration-300 ease-glass animate-fade-in-down sm:gap-6 sm:px-6 sm:py-2 backdrop-blur-md backdrop-saturate-30"
+      className="sticky top-4 z-30 mx-4 flex items-center justify-between gap-3 rounded-[20px] border border-accent px-8 py-4 text-right shadow-lg shadow-black/5 transition-all duration-300 ease-glass animate-fade-in-down sm:gap-6 sm:px-8 sm:py-4 backdrop-blur-md backdrop-saturate-30"
     >
       {/* soft accent glow */}
       <div
