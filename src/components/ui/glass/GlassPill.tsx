@@ -11,39 +11,24 @@ export interface GlassPillStyleOptions {
 }
 
 const basePillClasses = [
-  'inline-flex items-center justify-center gap-2 rounded-full border border-white/45',
-  'bg-[linear-gradient(145deg,rgba(255,255,255,0.7),rgba(255,255,255,0.4))]',
-  'shadow-[0_14px_32px_-22px_rgba(42,74,125,0.38),inset_0_1px_0_rgba(255,255,255,0.6)]',
-  'backdrop-blur-[16px]',
-  'transition-[box-shadow,border-color,background,transform] duration-250 ease-glass',
+  'inline-flex items-center justify-center gap-2 rounded-full border border-[color:var(--pill-border)]',
+  'bg-[var(--pill-bg)]',
+  'shadow-[var(--pill-shadow)]',
+  'backdrop-blur-[var(--pill-backdrop-blur)]',
+  'transition-[box-shadow,border-color,background,transform,backdrop-filter] duration-300 ease-glass',
 ].join(' ');
 
 const interactivePillClasses = [
   'cursor-pointer',
-  'hover:border-accent/40',
-  'hover:bg-[linear-gradient(145deg,rgba(255,255,255,0.78),color-mix(in_srgb,var(--accent)_18%,transparent))]',
-  'hover:shadow-[0_22px_42px_-26px_rgba(86,154,222,0.32),0_12px_30px_-20px_rgba(42,74,125,0.32)]',
+  'hover:border-[color:var(--pill-border-hover)]',
+  'hover:bg-[var(--pill-bg-hover)]',
+  'hover:shadow-[var(--pill-shadow-hover)]',
+  'hover:backdrop-blur-[var(--pill-backdrop-blur-hover)]',
   'hover:-translate-y-0.5',
 ].join(' ');
 
-const darkBaseOverrides = [
-  'dark:border-[rgba(75,141,212,0.25)]',
-  'dark:bg-[linear-gradient(145deg,rgba(20,27,40,0.88),rgba(20,27,40,0.64))]',
-  'dark:shadow-[0_18px_42px_-26px_rgba(10,17,23,0.72),inset_0_1px_0_rgba(75,141,212,0.16)]',
-].join(' ');
-
-const darkInteractiveOverrides = [
-  'dark:hover:border-[rgba(75,141,212,0.5)]',
-  'dark:hover:bg-[linear-gradient(145deg,rgba(58,116,190,0.22),rgba(20,27,40,0.76))]',
-  'dark:hover:shadow-[0_28px_52px_-28px_rgba(75,141,212,0.35),0_18px_36px_-26px_rgba(10,17,23,0.68)]',
-].join(' ');
-
 export const glassPillStyles = ({ interactive = true }: GlassPillStyleOptions = {}) =>
-  cn(
-    basePillClasses,
-    darkBaseOverrides,
-    interactive && [interactivePillClasses, darkInteractiveOverrides],
-  );
+  cn(basePillClasses, interactive && interactivePillClasses);
 
 type GlassPillOwnProps = {
   className?: string;
