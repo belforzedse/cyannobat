@@ -22,12 +22,6 @@ const dirname = path.dirname(filename);
 const rawConnectionString = process.env.DATABASE_URI?.trim();
 const hasConnectionString = Boolean(rawConnectionString && rawConnectionString.length > 0);
 
-if (!hasConnectionString) {
-  console.warn(
-    'DATABASE_URI environment variable is not defined. Skipping PostgreSQL adapter setup; database operations will throw until it is configured.',
-  );
-}
-
 const connectionString = hasConnectionString ? (rawConnectionString as string) : undefined;
 const projectRoot = process.cwd();
 const migrationsDir = path.resolve(
@@ -39,6 +33,15 @@ const shouldPushSchema =
     ? process.env.PAYLOAD_DB_PUSH === 'true'
     : process.env.NODE_ENV !== 'production';
 
+const warnMissingDatabase = () =>
+  console.warn(
+    'DATABASE_URI environment variable is not defined. Database-backed features are disabled for this development session.',
+  );
+
+if (!hasConnectionString) {
+  warnMissingDatabase();
+}
+
 const createMissingDatabaseProxy = <T extends object>(resource: string) =>
   new Proxy({} as T, {
     get: (_, property) => {
@@ -48,13 +51,13 @@ const createMissingDatabaseProxy = <T extends object>(resource: string) =>
 
       return () => {
         throw new Error(
-          `DATABASE_URI environment variable is not defined. Cannot use ${resource} until it is configured.`,
+          `DATABASE_URI environment variable is not defined. Cannot use ${resource} until it is configured. If you intend to run the app without a database (for example, to capture screenshots), add a placeholder DATABASE_URI to your local .env file.`,
         );
       };
     },
   });
 
-export const payloadPostgresAdapter = hasConnectionString
+const payloadPostgresAdapter = hasConnectionString
   ? postgresAdapter({
       pool: {
         connectionString,
@@ -63,7 +66,14 @@ export const payloadPostgresAdapter = hasConnectionString
       // Automatically push schema changes based on env configuration
       push: shouldPushSchema,
     })
-  : createMissingDatabaseProxy<ReturnType<typeof postgresAdapter>>('PostgreSQL adapter');
+  : {
+      name: 'postgres-disabled',
+      allowIDOnCreate: false,
+      defaultIDType: 'uuid',
+      init: async () => {
+        warnMissingDatabase();
+      },
+    };
 
 // Create a direct connection for Drizzle ORM usage when available
 const pool = hasConnectionString
@@ -72,10 +82,35 @@ const pool = hasConnectionString
     })
   : createMissingDatabaseProxy<pg.Pool>('PostgreSQL connection pool');
 
-export const payloadDrizzle = hasConnectionString
+const payloadDrizzle = hasConnectionString
   ? drizzle(pool)
-  : createMissingDatabaseProxy<ReturnType<typeof drizzle>>('Drizzle client');
-export const payloadDbPool = pool;
+  : (new Proxy(
+      {
+        async execute() {
+          warnMissingDatabase();
+          return { rows: [] };
+        },
+      },
+      {
+        get(target, property) {
+          if (property in target) {
+            return target[property as keyof typeof target];
+          }
+
+          if (property === 'then') {
+            return undefined;
+          }
+
+          return () => {
+            throw new Error(
+              `DATABASE_URI environment variable is not defined. Cannot access Drizzle property "${String(property)}" until it is configured.`,
+            );
+          };
+        },
+      },
+    ) as ReturnType<typeof drizzle>);
+
+export { payloadPostgresAdapter, payloadDrizzle, pool as payloadDbPool };
 
 const baseConfig: Parameters<typeof buildConfig>[0] = {
   admin: {
@@ -86,7 +121,7 @@ const baseConfig: Parameters<typeof buildConfig>[0] = {
   },
   collections: [Users, Providers, Services, Appointments, SupportTickets, Media],
   editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: process.env.PAYLOAD_SECRET?.trim() || 'development-secret-key',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
