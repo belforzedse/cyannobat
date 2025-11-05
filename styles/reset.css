@@ -23,6 +23,48 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Rokh';
+  src: url('/fonts/rokh/woff2/Rokh-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Rokh';
+  src: url('/fonts/rokh/woff2/Rokh-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Rokh';
+  src: url('/fonts/rokh/woff2/Rokh-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Rokh';
+  src: url('/fonts/rokh/woff2/Rokh-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Rokh';
+  src: url('/fonts/rokh/woff2/Rokh-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Rokh';
+  src: url('/fonts/rokh/woff2/Rokh-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+}
+
 html {
   min-height: 100vh;
   font-family:

@@ -174,8 +174,8 @@ const HeroPage = () => {
     backdrop-blur-md backdrop-saturate-[0.3]
 
     /* DARK */
-    dark:bg-[linear-gradient(145deg,rgba(20,27,40,0),rgba(20,27,40,0))]
-    dark:ring-white/10 dark:border-white/10
+    dark:bg-[linear-gradient(145deg,rgba(75,141,212,0.35),rgba(75,141,212,0.2))]
+    dark:ring-accent/20 dark:border-accent/15
     dark:shadow-[0_22px_60px_-24px_rgba(10,14,20,0.9)]
     dark:backdrop-blur-md dark:backdrop-saturate-[0.3]
   "
@@ -209,7 +209,7 @@ const HeroPage = () => {
             aria-hidden
           />
 
-          <div className="relative z-10 flex flex-1 flex-col items-end gap-6">
+          <div className="relative z-10 flex flex-1 flex-col items-center justify-center">
             <Image
               src="/images/image 50.png"
               alt="Saayan"
@@ -223,20 +223,21 @@ const HeroPage = () => {
       "
             />
 
+            <div className="flex flex-col items-end gap-6">
             <motion.h1
               variants={titleVariants}
               initial="initial"
               animate="animate"
               className="
         relative max-w-3xl text-balance
-        bg-gradient-to-b from-[#5EA2FF] to-[#3372C8] bg-clip-text text-transparent
-        text-5xl font-extrabold leading-tight tracking-[.01em]
-        sm:text-6xl lg:text-7xl
+         text-transparent
+        text-5xl  tracking-[.01em]
+        sm:text-6xl
         drop-shadow-[0_1px_0_rgba(255,255,255,0.6)]
-        dark:from-[#7AB4FF] dark:to-[#4A8BEA] dark:drop-shadow-[0_1px_0_rgba(255,255,255,0.18)]
+       font-rokh font-[800] dark:text-[#4798E3] text-[#5C7299] dark:drop-shadow-[0_1px_0_rgba(255,255,255,0.18)]
       "
             >
-              سایـــــــــان نوبت
+              سایـــــــــان نوبت{' '}
             </motion.h1>
 
             <motion.p
@@ -314,6 +315,7 @@ const HeroPage = () => {
                 </Button>
               </Link>
             </motion.div>
+            </div>
           </div>
         </GlassSurface>
       </div>

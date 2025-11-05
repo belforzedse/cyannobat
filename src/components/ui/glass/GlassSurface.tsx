@@ -18,9 +18,9 @@ const baseSurfaceClasses = [
   'transition-[box-shadow,border-color,backdrop-filter,transform] duration-400 ease-glass',
   "before:absolute before:inset-0 before:rounded-[inherit] before:pointer-events-none before:bg-[linear-gradient(180deg,rgba(255,255,255,0.6)_0%,rgba(255,255,255,0.45)_12%,rgba(255,255,255,0.25)_30%,rgba(255,255,255,0.08)_55%,transparent_100%),radial-gradient(circle_at_0%_0%,rgba(255,255,255,0.45)_0%,transparent_35%),radial-gradient(circle_at_100%_100%,rgba(255,255,255,0.25)_0%,transparent_45%)] before:border before:border-white/3 before:[mask-image:linear-gradient(180deg,white_0%,rgba(255,255,255,0.85)_25%,rgba(255,255,255,0.4)_65%,transparent_100%)] before:content-['']",
   "after:pointer-events-none after:absolute after:inset-[-2px] after:rounded-[inherit] after:bg-[radial-gradient(480px_280px_at_22%_18%,#569ADE38,transparent_58%),radial-gradient(520px_300px_at_78%_72%,#3684D233,transparent_64%)] after:opacity-0 after:transition-[opacity,filter] after:duration-500 after:ease-glass after:content-['']",
-  'dark:border-transparent dark:bg-[linear-gradient(150deg,#141B2870,#141B2860)]',
+  'dark:border-transparent dark:bg-transparent',
   'dark:shadow-[0_26px_84px_-32px_#0A1117C0,inset_0_1px_0_#5B8FD838,inset_0_-1px_0_#0A1117A8]',
-  'dark:before:border-white/4 dark:before:bg-[linear-gradient(180deg,rgba(255,255,255,0.1)_0%,rgba(20,27,40,0.1)_55%,transparent_100%)]',
+  'dark:before:border-transparent dark:before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(26,47,74,0.08)_55%,transparent_100%)]',
   'dark:after:bg-[radial-gradient(520px_320px_at_18%_18%,#3B74BE40,transparent_62%),radial-gradient(540px_340px_at_82%_78%,#5B8FD835,transparent_68%)]',
 ].join(' ');
 
