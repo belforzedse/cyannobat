@@ -226,44 +226,69 @@ export const generateAvailability = async (
     })
   ).docs as Provider[];
 
-  // Manually populate availability windows since Payload doesn't auto-populate nested arrays
-  // This is a known limitation - we need to fetch them separately and attach to each provider
+  // Manually populate availability windows since Payload doesn't auto-populate nested arrays in groups
   if (providers.length > 0) {
     try {
-      // Get all availability windows for the fetched providers
-      const providerIds = providers.map((p) => p.id);
-      const windowsResult = await payloadDrizzle.execute(
-        sql`
-          SELECT _parent_id as provider_id, day, start_time as "startTime", end_time as "endTime"
-          FROM providers_availability_windows
-          WHERE _parent_id = ANY(${providerIds})
-          ORDER BY _parent_id, _order
-        `,
-      );
+      payload.logger.info?.(`[AVAILABILITY] Fetching windows for ${providers.length} providers`);
 
-      // Group windows by provider
+      // Build a map of availability windows indexed by provider ID
       const windowsByProvider = new Map<number, Array<{ day: string; startTime: string; endTime: string }>>();
-      for (const row of windowsResult) {
-        const pid = Number(row.provider_id);
-        if (!windowsByProvider.has(pid)) {
-          windowsByProvider.set(pid, []);
+
+      for (const provider of providers) {
+        const providerIdNum = Number(provider.id);
+
+        try {
+          // Query availability windows for this specific provider using simpler approach
+          const query = `SELECT day, start_time as start_time, end_time as end_time FROM providers_availability_windows WHERE _parent_id = $1 ORDER BY _order`;
+          const windowsData = await payloadDrizzle.execute(sql`${sql.raw(query.replace('$1', `${providerIdNum}`))}`);
+
+          if (!windowsByProvider.has(providerIdNum)) {
+            windowsByProvider.set(providerIdNum, []);
+          }
+
+          if (Array.isArray(windowsData)) {
+            for (const row of windowsData) {
+              const window = row as any;
+              windowsByProvider.get(providerIdNum)!.push({
+                day: window.day,
+                startTime: window.start_time,
+                endTime: window.end_time,
+              });
+            }
+            payload.logger.info?.(`[AVAILABILITY] Provider ${providerIdNum} has ${windowsData.length} windows`);
+          }
+        } catch (providerError) {
+          payload.logger.warn?.(
+            `[AVAILABILITY] Failed to fetch windows for provider ${providerIdNum}:`,
+            providerError instanceof Error ? providerError.message : String(providerError),
+          );
         }
-        windowsByProvider.get(pid)!.push({
-          day: row.day,
-          startTime: row.startTime,
-          endTime: row.endTime,
-        });
       }
 
       // Attach windows to each provider
       for (const provider of providers) {
+        const providerIdNum = Number(provider.id);
         if (!provider.availability) {
           provider.availability = {};
         }
-        provider.availability.windows = windowsByProvider.get(provider.id) ?? [];
+        provider.availability.windows = windowsByProvider.get(providerIdNum) ?? [];
       }
+
+      payload.logger.info?.(`[AVAILABILITY] Successfully populated windows for ${windowsByProvider.size} providers`);
     } catch (error) {
-      payload.logger.warn?.('Failed to fetch availability windows, continuing without them', error);
+      payload.logger.error?.(
+        'Could not populate availability windows from database',
+        error instanceof Error ? { message: error.message, stack: error.stack } : String(error),
+      );
+      // Ensure all providers have at least an empty windows array
+      for (const provider of providers) {
+        if (!provider.availability) {
+          provider.availability = {};
+        }
+        if (!provider.availability.windows) {
+          provider.availability.windows = [];
+        }
+      }
     }
   }
 
