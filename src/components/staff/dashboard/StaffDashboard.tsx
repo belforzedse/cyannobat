@@ -11,6 +11,12 @@ import { Card } from '@/components/ui';
 import ProviderAvailabilityEditor from '@/components/staff/ProviderAvailabilityEditor';
 import StaffUserCreationCard from '@/components/staff/StaffUserCreationCard';
 import { getRoleLabel } from '@/lib/staff/utils/roleLabels';
+import CalendarView from '@/app/(payload)/staff/(dashboard)/CalendarView';
+import PrivateNotesPanel from '@/app/(payload)/staff/(dashboard)/PrivateNotesPanel';
+import DocumentPreviewPanel from '@/app/(payload)/staff/(dashboard)/DocumentPreviewPanel';
+import PrescriptionActions from '@/app/(payload)/staff/(dashboard)/PrescriptionActions';
+import ThemeCustomizer from '@/app/(payload)/staff/(dashboard)/ThemeCustomizer';
+import type { DashboardAnalytics } from '@/lib/staff/server/loadStaffData';
 
 import { AppointmentsList } from './AppointmentsList';
 import { AppointmentsTable } from './AppointmentsTable';
@@ -33,6 +39,7 @@ type SharedDashboardProps = {
   initialAppointments: StaffAppointment[];
   initialProviders: StaffProvider[];
   currentUser: StaffUser;
+  initialAnalytics?: DashboardAnalytics | null;
 };
 
 type StaffDashboardProps = SharedDashboardProps & {
@@ -44,6 +51,7 @@ const StaffDashboardContent = ({
   initialProviders,
   currentUser,
   mode,
+  initialAnalytics,
 }: StaffDashboardProps) => {
   const reducedMotionSetting = useReducedMotion();
   const prefersReducedMotion = reducedMotionSetting ?? false;
@@ -82,6 +90,8 @@ const StaffDashboardContent = ({
   const showProviderColumn = mode === 'receptionist';
   const showUserManagement = mode === 'receptionist' || isAdmin;
   const totalColumns = showProviderColumn ? 7 : 6;
+  const analytics = initialAnalytics ?? null;
+  const primaryProviderId = useMemo(() => providers[0]?.id, [providers]);
 
   const handleLogout = useCallback(async () => {
     await fetch('/api/staff/logout', {
@@ -178,6 +188,59 @@ const StaffDashboardContent = ({
         prefersReducedMotion={prefersReducedMotion}
         onLogout={handleLogout}
       />
+
+      {mode === 'doctor' && (
+        <motion.div
+          initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: prefersReducedMotion ? 0 : 0.15, duration: prefersReducedMotion ? 0 : 0.5 }}
+          className="space-y-6"
+        >
+          {analytics && (
+            <div className="grid gap-4 md:grid-cols-3">
+              <Card variant="glass" padding="lg" className="flex flex-col gap-2">
+                <span className="text-xs text-muted-foreground">ویزیت‌های ثبت شده</span>
+                <strong className="text-2xl font-semibold text-foreground">{analytics.visits.totalVisits}</strong>
+                <p className="text-xs text-muted-foreground">
+                  تکمیل شده: {analytics.visits.completedVisits} · لغو شده: {analytics.visits.cancelledVisits}
+                </p>
+              </Card>
+              <Card variant="glass" padding="lg" className="flex flex-col gap-2">
+                <span className="text-xs text-muted-foreground">درآمد تایید شده</span>
+                <strong className="text-2xl font-semibold text-foreground">
+                  {new Intl.NumberFormat('fa-IR', {
+                    style: 'currency',
+                    currency: analytics.revenue.currency ?? 'USD',
+                  }).format(analytics.revenue.totalRevenue || 0)}
+                </strong>
+                <p className="text-xs text-muted-foreground">جمع تراکنش‌های نهایی‌شده</p>
+              </Card>
+              <Card variant="glass" padding="lg" className="flex flex-col gap-2">
+                <span className="text-xs text-muted-foreground">رضایت بیماران</span>
+                <strong className="text-2xl font-semibold text-foreground">
+                  {analytics.satisfaction.averageScore ? analytics.satisfaction.averageScore.toFixed(1) : '—'}
+                </strong>
+                <p className="text-xs text-muted-foreground">
+                  تعداد پاسخ‌ها: {analytics.satisfaction.responseCount}
+                </p>
+              </Card>
+            </div>
+          )}
+
+          <div className="grid gap-6 xl:grid-cols-[2fr,1fr]">
+            <CalendarView providerId={primaryProviderId ?? undefined} />
+            <div className="space-y-6">
+              <PrivateNotesPanel />
+              <ThemeCustomizer />
+            </div>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <DocumentPreviewPanel />
+            <PrescriptionActions />
+          </div>
+        </motion.div>
+      )}
 
       {showUserManagement && (
         <motion.div

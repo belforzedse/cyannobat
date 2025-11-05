@@ -214,7 +214,7 @@ export const Appointments: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'reference',
-    defaultColumns: ['status', 'provider', 'service', 'schedule.start', 'client'],
+    defaultColumns: ['status', 'provider', 'service', 'schedule.start', 'client', 'patientFolder'],
   },
   hooks: {
     beforeValidate: [serviceSchedulingHook],
@@ -307,6 +307,14 @@ export const Appointments: CollectionConfig = {
       type: 'relationship',
       relationTo: 'users',
       required: true,
+    },
+    {
+      name: 'patientFolder',
+      type: 'relationship',
+      relationTo: 'patients',
+      admin: {
+        description: 'Links this appointment to the longitudinal patient folder.',
+      },
     },
     {
       name: 'provider',
@@ -430,6 +438,109 @@ export const Appointments: CollectionConfig = {
       admin: {
         description: 'Visible only to staff users.',
       },
+    },
+    {
+      name: 'privateNotes',
+      type: 'richText',
+      label: 'Private staff notes',
+      admin: {
+        description: 'Structured private notes that remain hidden from patients.',
+      },
+      access: {
+        read: ({ req }) => Boolean(req.user && userIsStaff(req.user)),
+        update: ({ req }) => Boolean(req.user && userIsStaff(req.user)),
+      },
+    },
+    {
+      name: 'visitSummary',
+      type: 'richText',
+      label: 'Visit summary',
+    },
+    {
+      name: 'clinicalDocuments',
+      label: 'Visit documents',
+      type: 'relationship',
+      relationTo: 'media',
+      hasMany: true,
+    },
+    {
+      name: 'treatmentPlan',
+      type: 'group',
+      label: 'Treatment instructions',
+      fields: [
+        {
+          name: 'instructions',
+          type: 'richText',
+        },
+        {
+          name: 'followUpDate',
+          type: 'date',
+        },
+        {
+          name: 'careTeam',
+          type: 'relationship',
+          relationTo: 'providers',
+          hasMany: true,
+        },
+      ],
+    },
+    {
+      name: 'prescriptions',
+      type: 'array',
+      label: 'Prescriptions',
+      fields: [
+        {
+          name: 'medication',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'dosage',
+          type: 'text',
+        },
+        {
+          name: 'frequency',
+          type: 'text',
+        },
+        {
+          name: 'duration',
+          type: 'text',
+        },
+        {
+          name: 'notes',
+          type: 'textarea',
+        },
+        {
+          name: 'document',
+          label: 'Prescription document',
+          type: 'relationship',
+          relationTo: 'media',
+        },
+      ],
+    },
+    {
+      name: 'patientFeedback',
+      label: 'Patient satisfaction',
+      type: 'group',
+      access: {
+        update: ({ req }) => Boolean(req.user && userIsStaff(req.user)),
+      },
+      fields: [
+        {
+          name: 'score',
+          type: 'number',
+          min: 1,
+          max: 5,
+        },
+        {
+          name: 'submittedAt',
+          type: 'date',
+        },
+        {
+          name: 'comment',
+          type: 'textarea',
+        },
+      ],
     },
     {
       name: 'cancellation',

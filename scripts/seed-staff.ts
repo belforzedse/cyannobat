@@ -61,6 +61,27 @@ const run = async () => {
         data: updateData as never,
         overrideAccess: true,
       });
+
+      if (user.roles.includes('patient')) {
+        await payload.upsert({
+          collection: 'patients',
+          where: {
+            owner: {
+              equals: target.id,
+            },
+          },
+          data: {
+            owner: target.id,
+            displayName: user.name,
+            themePreferences: {
+              colorScheme: 'system',
+              accentColor: 'emerald',
+              density: 'comfortable',
+            },
+          },
+          overrideAccess: true,
+        });
+      }
       continue;
     }
 
@@ -78,6 +99,37 @@ const run = async () => {
       data: createData as never,
       overrideAccess: true,
     });
+
+    if (user.roles.includes('patient')) {
+      const created = await payload.find({
+        collection: 'users',
+        where: {
+          email: {
+            equals: user.email,
+          },
+        },
+        limit: 1,
+        depth: 0,
+      });
+
+      const ownerId = created.docs[0]?.id;
+      if (ownerId) {
+        await payload.create({
+          collection: 'patients',
+          data: {
+            owner: ownerId,
+            displayName: user.name,
+            patientFolders: [
+              {
+                name: 'اسناد پزشکی',
+                description: 'پرونده‌های بارگذاری شده توسط کلینیک',
+              },
+            ],
+          } as never,
+          overrideAccess: true,
+        });
+      }
+    }
   }
 
   payload.logger.info('Seeded default patient/doctor/receptionist users.');

@@ -14,7 +14,7 @@ const DoctorStaffPage = async () => {
     redirect('/staff');
   }
 
-  const { appointments, providers } = await loadStaffDashboardData(payload, user, roles, {
+  const { appointments, providers, analytics } = await loadStaffDashboardData(payload, user, roles, {
     scope: 'doctor',
   });
 
@@ -24,6 +24,7 @@ const DoctorStaffPage = async () => {
         initialAppointments={appointments}
         initialProviders={providers}
         currentUser={currentUser}
+        initialAnalytics={analytics}
       />
     </section>
   );
