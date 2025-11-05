@@ -202,69 +202,69 @@ const HeroPage = () => {
 
           {/* bottom contrast fade — DARK ONLY */}
           <div
-            className="
-    absolute inset-x-0 bottom-0 hidden dark:block pointer-events-none h-1/2
+            className=" absolute inset-x-0 bottom-0 hidden dark:block pointer-events-none h-1/2
     dark:bg-gradient-to-b dark:from-transparent dark:via-black/35 dark:to-black/60
   "
             aria-hidden
           />
 
-          <div className="relative z-10 flex flex-1 flex-col items-center justify-center">
-            <Image
-              src="/images/image 50.png"
-              alt="Saayan"
-              width={640}
-              height={760}
-              priority
-              className="
-        pointer-events-none absolute -right-12 -top-10 h-auto w-[600px]
-        sm:w-[620px] lg:w-[640px]
+          <Image
+            src="/images/image 50.png"
+            alt="Saayan"
+            width={640}
+            height={760}
+            priority
+            className="
+        pointer-events-none absolute right-4 z-50 -top-2 bottom-5 h-auto w-[580px]
+        sm:w-[600px] lg:w-[620px]
         dark:drop-shadow-[0_18px_60px_rgba(6,12,20,0.55)]
       "
-            />
-
+          />
+          <div
+            className="relative z-10 flex flex-1 flex-col ml-14 mt-40
+           items-end"
+          >
             <div className="flex flex-col items-end gap-6">
-            <motion.h1
-              variants={titleVariants}
-              initial="initial"
-              animate="animate"
-              className="
-        relative max-w-3xl text-balance
-         text-transparent
+              <motion.h1
+                variants={titleVariants}
+                initial="initial"
+                animate="animate"
+                className="
+        relative max-w-3xl
         text-5xl  tracking-[.01em]
         sm:text-6xl
         drop-shadow-[0_1px_0_rgba(255,255,255,0.6)]
        font-rokh font-[800] dark:text-[#4798E3] text-[#5C7299] dark:drop-shadow-[0_1px_0_rgba(255,255,255,0.18)]
       "
-            >
-              سایـــــــــان نوبت{' '}
-            </motion.h1>
+              >
+                سایـــــــــان نوبت{' '}
+              </motion.h1>
 
-            <motion.p
-              variants={descriptionVariants}
-              initial="initial"
-              animate="animate"
-              className="
-        relative max-w-2xl text-balance text-base leading-7
-        text-slate-700/85 sm:text-lg
+              <motion.p
+                variants={descriptionVariants}
+                initial="initial"
+                animate="animate"
+                className="
+        relative max-w-2xl text-balance text-sm leading-7
+        text-slate-700/85 font-semibold sm:text-xl
         dark:text-white/80
       "
-            >
-              نوبت‌دهی راحت برای شما، تجربه‌ی حرفه‌ای برای بیماران.
-            </motion.p>
+              >
+                نوبت‌دهی راحت برای شما، تجربه‌ی حرفه‌ای برای بیماران.
+              </motion.p>
 
-            <motion.div
-              variants={buttonsVariants}
-              initial="initial"
-              animate="animate"
-              className="mt-auto flex flex-row-reverse flex-wrap items-center justify-end gap-3 pt-4"
-            >
-              {/* Primary (theme-aware) */}
-              <Link href={BOOKING_PATH}>
-                <Button
-                  variant="ghost"
-                  size="md"
-                  className="
+              <motion.div
+                variants={buttonsVariants}
+                initial="initial"
+                animate="animate"
+                className="mt-auto flex flex-row-reverse flex-wrap items-center justify-end gap-3 pt-4"
+              >
+                {/* Primary (theme-aware) */}
+                <Link href={BOOKING_PATH}>
+                  <Button
+                    variant="ghost"
+                    size="md"
+                    className="
             group rounded-full px-5 py-3 text-sm sm:text-base
             bg-white text-[#2F64A7]
             border border-slate-200 ring-1 ring-slate-900/5
@@ -276,31 +276,31 @@ const HeroPage = () => {
             dark:shadow-[0_10px_28px_-14px_rgba(68,132,230,0.55)]
             backdrop-blur-md
           "
-                >
-                  <span className="flex items-center gap-2">
-                    رزرو نوبت
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="h-4 w-4 rtl:rotate-180 transition-transform group-hover:translate-x-0.5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M5 12h14" />
-                      <path d="M12 5l7 7-7 7" />
-                    </svg>
-                  </span>
-                </Button>
-              </Link>
+                  >
+                    <span className="flex items-center gap-2">
+                      رزرو نوبت
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="h-4 w-4 rtl:rotate-180 transition-transform group-hover:translate-x-0.5"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M5 12h14" />
+                        <path d="M12 5l7 7-7 7" />
+                      </svg>
+                    </span>
+                  </Button>
+                </Link>
 
-              {/* Secondary */}
-              <Link href="#steps">
-                <Button
-                  variant="ghost"
-                  size="md"
-                  className="
+                {/* Secondary */}
+                <Link href="#steps">
+                  <Button
+                    variant="ghost"
+                    size="md"
+                    className="
             rounded-full px-5 py-3 text-sm sm:text-base
             bg-slate-50 text-slate-700
             border border-slate-200 ring-1 ring-slate-900/5
@@ -310,11 +310,11 @@ const HeroPage = () => {
             dark:hover:bg-white/12
             backdrop-blur-md
           "
-                >
-                  مشاهده مراحل
-                </Button>
-              </Link>
-            </motion.div>
+                  >
+                    مشاهده مراحل
+                  </Button>
+                </Link>
+              </motion.div>
             </div>
           </div>
         </GlassSurface>
