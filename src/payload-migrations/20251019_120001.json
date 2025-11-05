@@ -1,0 +1,159 @@
+{
+  "tables": {
+    "appointments": {
+      "columns": {
+        "patient_folder_id": {
+          "name": "patient_folder_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "private_notes": {
+          "name": "private_notes",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "visit_summary": {
+          "name": "visit_summary",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "treatment_plan_instructions": {
+          "name": "treatment_plan_instructions",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "treatment_plan_follow_up_date": {
+          "name": "treatment_plan_follow_up_date",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_feedback_score": {
+          "name": "patient_feedback_score",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_feedback_submitted_at": {
+          "name": "patient_feedback_submitted_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_feedback_comment": {
+          "name": "patient_feedback_comment",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      }
+    },
+    "appointments_clinical_documents": {
+      "columns": {
+        "id": { "name": "id", "type": "serial", "primaryKey": true, "notNull": true },
+        "order": { "name": "order", "type": "integer", "primaryKey": false, "notNull": false },
+        "parent_id": { "name": "parent_id", "type": "integer", "primaryKey": false, "notNull": true },
+        "path": { "name": "path", "type": "varchar", "primaryKey": false, "notNull": true },
+        "media_id": { "name": "media_id", "type": "integer", "primaryKey": false, "notNull": false }
+      }
+    },
+    "appointments_treatment_plan_care_team": {
+      "columns": {
+        "id": { "name": "id", "type": "serial", "primaryKey": true, "notNull": true },
+        "order": { "name": "order", "type": "integer", "primaryKey": false, "notNull": false },
+        "parent_id": { "name": "parent_id", "type": "integer", "primaryKey": false, "notNull": true },
+        "path": { "name": "path", "type": "varchar", "primaryKey": false, "notNull": true },
+        "providers_id": { "name": "providers_id", "type": "integer", "primaryKey": false, "notNull": false }
+      }
+    },
+    "appointments_prescriptions": {
+      "columns": {
+        "_order": { "name": "_order", "type": "integer", "primaryKey": false, "notNull": true },
+        "_parent_id": { "name": "_parent_id", "type": "integer", "primaryKey": false, "notNull": true },
+        "id": { "name": "id", "type": "varchar", "primaryKey": true, "notNull": true },
+        "medication": { "name": "medication", "type": "varchar", "primaryKey": false, "notNull": false },
+        "dosage": { "name": "dosage", "type": "varchar", "primaryKey": false, "notNull": false },
+        "frequency": { "name": "frequency", "type": "varchar", "primaryKey": false, "notNull": false },
+        "duration": { "name": "duration", "type": "varchar", "primaryKey": false, "notNull": false },
+        "notes": { "name": "notes", "type": "varchar", "primaryKey": false, "notNull": false },
+        "document_id": { "name": "document_id", "type": "integer", "primaryKey": false, "notNull": false }
+      }
+    },
+    "patients": {
+      "columns": {
+        "id": { "name": "id", "type": "serial", "primaryKey": true, "notNull": true },
+        "owner_id": { "name": "owner_id", "type": "integer", "primaryKey": false, "notNull": true },
+        "display_name": { "name": "display_name", "type": "varchar", "primaryKey": false, "notNull": true },
+        "primary_provider_id": { "name": "primary_provider_id", "type": "integer", "primaryKey": false, "notNull": false },
+        "theme_preferences_color_scheme": { "name": "theme_preferences_color_scheme", "type": "varchar", "primaryKey": false, "notNull": false },
+        "theme_preferences_accent_color": { "name": "theme_preferences_accent_color", "type": "varchar", "primaryKey": false, "notNull": false },
+        "theme_preferences_density": { "name": "theme_preferences_density", "type": "varchar", "primaryKey": false, "notNull": false },
+        "sharing_preferences_allow_patient_download": { "name": "sharing_preferences_allow_patient_download", "type": "boolean", "primaryKey": false, "notNull": false, "default": false },
+        "sharing_preferences_allow_patient_notes": { "name": "sharing_preferences_allow_patient_notes", "type": "boolean", "primaryKey": false, "notNull": false, "default": false },
+        "updated_at": { "name": "updated_at", "type": "timestamp(3) with time zone", "primaryKey": false, "notNull": true, "default": "now()" },
+        "created_at": { "name": "created_at", "type": "timestamp(3) with time zone", "primaryKey": false, "notNull": true, "default": "now()" }
+      }
+    },
+    "patients_patient_folders": {
+      "columns": {
+        "_order": { "name": "_order", "type": "integer", "primaryKey": false, "notNull": true },
+        "_parent_id": { "name": "_parent_id", "type": "integer", "primaryKey": false, "notNull": true },
+        "id": { "name": "id", "type": "varchar", "primaryKey": true, "notNull": true },
+        "name": { "name": "name", "type": "varchar", "primaryKey": false, "notNull": true },
+        "description": { "name": "description", "type": "varchar", "primaryKey": false, "notNull": false },
+        "notes": { "name": "notes", "type": "jsonb", "primaryKey": false, "notNull": false }
+      }
+    },
+    "patients_patient_folders_documents": {
+      "columns": {
+        "id": { "name": "id", "type": "serial", "primaryKey": true, "notNull": true },
+        "order": { "name": "order", "type": "integer", "primaryKey": false, "notNull": false },
+        "parent_id": { "name": "parent_id", "type": "integer", "primaryKey": false, "notNull": true },
+        "path": { "name": "path", "type": "varchar", "primaryKey": false, "notNull": true },
+        "media_id": { "name": "media_id", "type": "integer", "primaryKey": false, "notNull": false }
+      }
+    },
+    "patients_visit_notes": {
+      "columns": {
+        "_order": { "name": "_order", "type": "integer", "primaryKey": false, "notNull": true },
+        "_parent_id": { "name": "_parent_id", "type": "integer", "primaryKey": false, "notNull": true },
+        "id": { "name": "id", "type": "varchar", "primaryKey": true, "notNull": true },
+        "appointment_id": { "name": "appointment_id", "type": "integer", "primaryKey": false, "notNull": false },
+        "note": { "name": "note", "type": "varchar", "primaryKey": false, "notNull": false },
+        "is_private": { "name": "is_private", "type": "boolean", "primaryKey": false, "notNull": false },
+        "author_id": { "name": "author_id", "type": "integer", "primaryKey": false, "notNull": false },
+        "created_at": { "name": "created_at", "type": "timestamp(3) with time zone", "primaryKey": false, "notNull": false }
+      }
+    },
+    "patients_prescriptions": {
+      "columns": {
+        "_order": { "name": "_order", "type": "integer", "primaryKey": false, "notNull": true },
+        "_parent_id": { "name": "_parent_id", "type": "integer", "primaryKey": false, "notNull": true },
+        "id": { "name": "id", "type": "varchar", "primaryKey": true, "notNull": true },
+        "medication": { "name": "medication", "type": "varchar", "primaryKey": false, "notNull": false },
+        "dosage": { "name": "dosage", "type": "varchar", "primaryKey": false, "notNull": false },
+        "instructions": { "name": "instructions", "type": "varchar", "primaryKey": false, "notNull": false },
+        "issued_at": { "name": "issued_at", "type": "timestamp(3) with time zone", "primaryKey": false, "notNull": false },
+        "prescribed_by_id": { "name": "prescribed_by_id", "type": "integer", "primaryKey": false, "notNull": false },
+        "refills": { "name": "refills", "type": "integer", "primaryKey": false, "notNull": false },
+        "status": { "name": "status", "type": "varchar", "primaryKey": false, "notNull": false },
+        "document_id": { "name": "document_id", "type": "integer", "primaryKey": false, "notNull": false }
+      }
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

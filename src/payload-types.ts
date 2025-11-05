@@ -323,6 +323,14 @@ export interface Appointment {
    */
   reference?: string | null;
   client: number | User;
+  patientFolder?:
+    | number
+    | string
+    | {
+        relationTo: 'patients';
+        value: number | string | unknown;
+      }
+    | Record<string, unknown>;
   provider: number | Provider;
   service: number | Service;
   status: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'no_show';
@@ -349,6 +357,55 @@ export interface Appointment {
    * Visible only to staff users.
    */
   internalNotes?: string | null;
+  privateNotes?: unknown;
+  visitSummary?: unknown;
+  clinicalDocuments?:
+    | (
+        | number
+        | Media
+        | {
+            relationTo: 'media';
+            value: number | Media;
+          }
+      )[]
+    | null;
+  treatmentPlan?: {
+    instructions?: unknown;
+    followUpDate?: string | null;
+    careTeam?:
+      | (
+          | number
+          | Provider
+          | {
+              relationTo: 'providers';
+              value: number | Provider;
+            }
+        )[]
+      | null;
+  } | null;
+  prescriptions?:
+    | {
+        medication?: string | null;
+        dosage?: string | null;
+        frequency?: string | null;
+        duration?: string | null;
+        notes?: string | null;
+        document?:
+          | number
+          | Media
+          | {
+              relationTo: 'media';
+              value: number | Media;
+            }
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  patientFeedback?: {
+    score?: number | null;
+    submittedAt?: string | null;
+    comment?: string | null;
+  } | null;
   cancellation?: {
     cancelledAt?: string | null;
     reason?: string | null;

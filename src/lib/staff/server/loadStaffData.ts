@@ -9,6 +9,14 @@ import { userIsStaff } from '@/lib/auth';
 import type { StaffAppointment, StaffProvider, StaffUser } from '@/lib/staff/types';
 import { mapProviderDocToStaffProvider } from '@/lib/staff/utils/mapProvider';
 import type { Appointment, Provider as ProviderDoc, Service, User } from '@/payload-types';
+import {
+  getRevenueAnalytics,
+  getSatisfactionAnalytics,
+  getVisitAnalytics,
+  type RevenueAnalytics,
+  type SatisfactionAnalytics,
+  type VisitsAnalytics,
+} from './analytics';
 
 type RelationValue<T> =
   | T
@@ -123,9 +131,16 @@ type LoadDashboardDataOptions = {
   scope?: DashboardScope;
 };
 
+export type DashboardAnalytics = {
+  visits: VisitsAnalytics;
+  revenue: RevenueAnalytics;
+  satisfaction: SatisfactionAnalytics;
+};
+
 type LoadDashboardDataResult = {
   appointments: StaffAppointment[];
   providers: StaffProvider[];
+  analytics?: DashboardAnalytics;
 };
 
 const findProvidersForAccount = async (
@@ -211,9 +226,24 @@ export const loadStaffDashboardData = async (
     overrideAccess: true,
   });
 
+  const shouldLoadAnalytics = roles.includes('doctor');
+  let analytics: DashboardAnalytics | undefined;
+
+  if (shouldLoadAnalytics) {
+    const providerIds = filterByProvider ? providerDocs.map((provider) => provider.id) : undefined;
+    const [visits, revenue, satisfaction] = await Promise.all([
+      getVisitAnalytics({ providerIds }),
+      getRevenueAnalytics({ providerIds }),
+      getSatisfactionAnalytics({ providerIds }),
+    ]);
+
+    analytics = { visits, revenue, satisfaction };
+  }
+
   return {
     appointments: appointmentResult.docs.map(mapAppointment),
     providers: providerDocs.map(mapProviderDocToStaffProvider),
+    analytics,
   };
 };
 

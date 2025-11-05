@@ -11,6 +11,7 @@ import pg from 'pg';
 
 import { Media } from './collections/Media';
 import { Appointments } from './collections/Appointments';
+import { Patients } from './collections/Patients';
 import { Providers } from './collections/Providers';
 import { Services } from './collections/Services';
 import { SupportTickets } from './collections/SupportTickets';
@@ -84,7 +85,7 @@ const baseConfig: Parameters<typeof buildConfig>[0] = {
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Providers, Services, Appointments, SupportTickets, Media],
+  collections: [Users, Providers, Services, Appointments, Patients, SupportTickets, Media],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
