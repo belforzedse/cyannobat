@@ -15,6 +15,18 @@ const schema = z.object({
   appointmentId: z.string().min(1).optional().nullable(),
 });
 
+const extractRelationId = (relation: unknown): string | null => {
+  if (!relation) return null;
+  if (typeof relation === 'string') return relation;
+  if (typeof relation === 'number') return String(relation);
+  if (typeof relation === 'object' && 'id' in (relation as Record<string, unknown>)) {
+    const { id } = relation as { id?: unknown };
+    if (typeof id === 'string') return id;
+    if (typeof id === 'number') return String(id);
+  }
+  return null;
+};
+
 export const POST = async (request: Request) => {
   const { payload, user } = await authenticateStaffRequest(request);
   if (!user) return unauthorizedResponse();
@@ -50,8 +62,9 @@ export const POST = async (request: Request) => {
 
     if (!resolvedPatientId && appointmentDoc) {
       const folder = appointmentDoc.patientFolder;
-      if (folder && typeof folder === 'object' && 'id' in folder) {
-        resolvedPatientId = String((folder as { id: unknown }).id ?? '');
+      const relationId = extractRelationId(folder);
+      if (relationId) {
+        resolvedPatientId = relationId;
       }
     }
   }

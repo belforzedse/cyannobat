@@ -38,8 +38,21 @@ const extractRows = <T>(result: unknown): T[] => {
   return [];
 };
 
-const normalizeIds = (ids?: Array<string | number>): string[] =>
-  Array.isArray(ids) ? ids.map((id) => String(id)) : [];
+const normalizeProviderIds = (ids?: Array<string | number>): number[] => {
+  if (!Array.isArray(ids)) return [];
+  return ids
+    .map((id) => {
+      if (typeof id === 'number' && Number.isInteger(id)) return id;
+      if (typeof id === 'number' && Number.isFinite(id)) return Math.trunc(id);
+      if (typeof id === 'string') {
+        const parsed = Number(id.trim());
+        if (!Number.isInteger(parsed)) return null;
+        return parsed;
+      }
+      return null;
+    })
+    .filter((value): value is number => value !== null);
+};
 
 const buildDateClause = (filters?: DateRangeFilters) => {
   if (!filters?.from && !filters?.to) return sql``;
@@ -56,9 +69,11 @@ const buildDateClause = (filters?: DateRangeFilters) => {
 };
 
 const buildProviderClause = (providerIds?: Array<string | number>) => {
-  const ids = normalizeIds(providerIds);
+  const ids = normalizeProviderIds(providerIds);
   if (ids.length === 0) return sql``;
-  return sql`AND appointments.provider_id = ANY(${ids})`;
+
+  const arrayExpression = sql`ARRAY[${sql.join(ids.map((id) => sql`${id}`), sql`, `)}]::int[]`;
+  return sql`AND appointments.provider_id = ANY(${arrayExpression})`;
 };
 
 export const getVisitAnalytics = async (filters: ProviderScopedFilters = {}): Promise<VisitsAnalytics> => {

@@ -12,6 +12,18 @@ const createSchema = z.object({
   appointmentId: z.string().min(1).nullable().optional(),
 });
 
+const extractRelationId = (relation: unknown): string | null => {
+  if (!relation) return null;
+  if (typeof relation === 'string') return relation;
+  if (typeof relation === 'number') return String(relation);
+  if (typeof relation === 'object' && 'id' in (relation as Record<string, unknown>)) {
+    const { id } = relation as { id?: unknown };
+    if (typeof id === 'string') return id;
+    if (typeof id === 'number') return String(id);
+  }
+  return null;
+};
+
 const mapNote = (raw: unknown) => {
   if (!raw || typeof raw !== 'object') {
     return null;
@@ -102,8 +114,9 @@ export const POST = async (request: Request) => {
         depth: 0,
       });
       const folderRelation = appointment?.patientFolder;
-      if (folderRelation && typeof folderRelation === 'object' && 'id' in folderRelation) {
-        resolvedPatientId = String((folderRelation as { id: unknown }).id ?? '');
+      const relationId = extractRelationId(folderRelation);
+      if (relationId) {
+        resolvedPatientId = relationId;
       }
     } catch (error) {
       payload.logger.warn?.('Unable to resolve patient from appointment for note creation', error);
