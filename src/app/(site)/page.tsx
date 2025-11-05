@@ -7,7 +7,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import GlassCard from '@/components/GlassCard';
 import { Button } from '@/components/ui';
 import { GlassSurface } from '@/components/ui/glass';
-import { Calendar, Search, CheckCircle2, type LucideIcon } from 'lucide-react';
+import { Clock3, Stethoscope, FileHeart, type LucideIcon } from 'lucide-react';
 import { BOOKING_PATH } from '@/lib/routes';
 import { luxuryContainer, luxurySlideFade } from '@/lib/luxuryAnimations';
 import { ArrowLeft } from 'lucide-react';
@@ -23,19 +23,19 @@ const steps: Step[] = [
     title: 'انتخاب خدمت',
     description: `بیمار نوع خدمت مورد نظرش رو از لیست خدمات مطب یا کلینیک انتخاب می‌کنه
 (مثلاً ویزیت عمومی، زیبایی، ارتودنسی و...).`,
-    icon: Search,
+    icon: Stethoscope,
   },
   {
     title: 'انتخاب تاریخ و زمان',
     description: `با مشاهده‌ی تقویم پزشک، کاربر روز و ساعت مناسب خودش رو انتخاب می‌کنه —
 بدون نیاز به تماس تلفنی یا هماهنگی منشی`,
-    icon: Calendar,
+    icon: Clock3,
   },
   {
     title: 'تأیید جزئیات',
     description: `بیمار اطلاعات خودش رو وارد و نوبت رو تأیید می‌کنه.
 در پایان، پیام یادآوری از طریق SMS یا واتساپ برای او ارسال می‌شود.`,
-    icon: CheckCircle2,
+    icon: FileHeart,
   },
 ];
 
@@ -134,13 +134,13 @@ const HeroPage = () => {
                       {/* glow layer (behind) */}
                       <step.icon
                         aria-hidden
-                        className="col-start-1 row-start-1 h-6 w-6 text-accent/70 opacity-80 blur-[1px] drop-shadow-[0_6px_18px_rgba(76,139,234,0.35)]"
+                        className="col-start-1 row-start-1 h-6 w-6 text-accent/70 opacity-35 blur-[1px] drop-shadow-[0_6px_18px_rgba(76,139,234,0.35)]"
                         strokeWidth={2.6}
                       />
                       {/* crisp layer (front) */}
                       <step.icon
                         aria-hidden
-                        className="col-start-1 row-start-1 h-6 w-6 text-white/95 drop-shadow-[0_1px_10px_rgba(0,0,0,0.35)]"
+                        className="col-start-1 row-start-1 h-6 w-6  text-black dark:text-white/95 drop-shadow-[0_1px_10px_rgba(0,0,0,0.35)]"
                         strokeWidth={2.1}
                       />
                     </span>
@@ -162,24 +162,24 @@ const HeroPage = () => {
           variants={heroCardVariants}
           initial="initial"
           animate="animate"
-          className="
-    order-1 relative isolate overflow-hidden
-    min-h-[460px] rounded-[28px]
-    px-8 pb-16 pt-16 text-right sm:px-12 lg:order-1 lg:px-20
-
-    /* LIGHT */
-    bg-[linear-gradient(145deg,rgba(240,241,243,0),rgba(235,240,247,0))]
-    ring-1 ring-slate-900/5 border border-slate-200/15
-    shadow-[10px_14px_32px_-14px_rgba(16,24,40,0.1),_-6px_10px_28px_-18px_rgba(16,24,40,0.08),_0_-14px_48px_-22px_rgba(16,24,40,0.1),_inset_0_0px_1px_rgba(255,255,255,0.5),_inset_0_12px_24px_rgba(255,255,255,0.35),_inset_0_30px_60px_rgba(255,255,255,0.15),_inset_0_60px_120px_rgba(255,255,255,0.05),_inset_28px_28px_56px_rgba(255,255,255,0.15),_inset_-28px_-28px_56px_rgba(255,255,255,0.04)]
-    backdrop-blur-md backdrop-saturate-[0.3]
-
-    /* DARK */
-    dark:bg-[linear-gradient(145deg,rgba(75,141,212,0.35),rgba(75,141,212,0.2))]
-    dark:ring-accent/20 dark:border-accent/15
-    dark:shadow-[0_22px_60px_-24px_rgba(10,14,20,0.9)]
-    dark:backdrop-blur-md dark:backdrop-saturate-[0.3]
-  "
+          interactive={false}
+          className="order-1 relative isolate overflow-hidden min-h-[460px] px-8 pb-16 pt-16 text-right sm:px-12 lg:order-1 lg:px-20"
         >
+          {/* light bending border effect - top and sides */}
+          <div
+            className="pointer-events-none absolute inset-0 rounded-[2rem] dark:hidden"
+            style={{
+              background:
+                'linear-gradient(to bottom, rgba(216,230,248,0.45) 0%, transparent 8%), linear-gradient(to right, rgba(224,236,249,0.22) 0%, transparent 2%, transparent 98%, rgba(211,230,245,0.13) 100%)',
+              WebkitMaskImage:
+                'linear-gradient(to bottom, 1px, transparent 1px), linear-gradient(to right, 1px, transparent 1px, transparent calc(100% - 1px), 1px)',
+              maskImage:
+                'linear-gradient(to bottom, 1px, transparent 1px), linear-gradient(to right, 1px, transparent 1px, transparent calc(100% - 1px), 1px)',
+              borderRadius: '2rem',
+            }}
+            aria-hidden
+          />
+
           {/* top highlight */}
           <div
             className="

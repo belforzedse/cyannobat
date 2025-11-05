@@ -17,13 +17,14 @@ export interface GlassPanelStyleOptions {
 }
 
 const basePanelClasses = [
-  'relative rounded-[1.5rem] border border-border/3',
-  'bg-[linear-gradient(160deg,color-mix(in_srgb,var(--card)_0%,transparent),color-mix(in_srgb,var(--card)_0%,transparent))]',
-  'shadow-[6px_10px_20px_-10px_rgba(42,74,125,0.16),_-3px_6px_16px_-14px_rgba(42,74,125,0.12),_0_-10px_32px_-18px_rgba(42,74,125,0.14),_inset_0_0px_1px_rgba(255,255,255,0.5),_inset_0_8px_16px_rgba(255,255,255,0.35),_inset_0_20px_40px_rgba(255,255,255,0.15),_inset_0_40px_80px_rgba(255,255,255,0.05),_inset_20px_20px_40px_rgba(255,255,255,0.12),_inset_-20px_-20px_40px_rgba(255,255,255,0.02)]',
-  'backdrop-blur-sm backdrop-saturate-[0.28]',
+  'relative rounded-[1.5rem] border border-white/10',
+  'bg-[linear-gradient(160deg,rgba(224,236,249,0.1),rgba(211,230,245,0.05))]',
+  'shadow-[6px_10px_20px_-10px_rgba(42,74,125,0.18),_-3px_6px_16px_-14px_rgba(42,74,125,0.14),_0_-10px_32px_-18px_rgba(42,74,125,0.16),_inset_0_0px_1px_rgba(224,236,249,0.4),_inset_0_8px_16px_rgba(224,236,249,0.24),_inset_0_20px_40px_rgba(224,236,249,0.14),_inset_0_40px_80px_rgba(224,236,249,0.05),_inset_20px_20px_40px_rgba(224,236,249,0.12),_inset_-20px_-20px_40px_rgba(224,236,249,0.03)]',
+  'backdrop-blur-lg backdrop-saturate-[0.3]',
   'transition-[background-color,border-color,box-shadow,transform] duration-350 ease-glass',
   'text-foreground',
-  'dark:shadow-[6px_10px_20px_-10px_rgba(42,74,125,0.16),_-3px_6px_16px_-14px_rgba(42,74,125,0.12),_0_-10px_32px_-18px_rgba(42,74,125,0.14)]',
+  'dark:border-white/8 dark:bg-[linear-gradient(160deg,rgba(26,51,80,0.12),rgba(17,30,51,0.06))]',
+  'dark:shadow-[6px_10px_20px_-10px_rgba(5,10,20,0.6),_-3px_6px_16px_-14px_rgba(5,10,20,0.5),_0_-10px_32px_-18px_rgba(5,10,20,0.5),_inset_0_0px_1px_rgba(75,141,212,0.2),_inset_0_8px_16px_rgba(75,141,212,0.12),_inset_0_20px_40px_rgba(75,141,212,0.06)]',
 ].join(' ');
 
 const variantClasses: Record<GlassPanelVariant, string> = {

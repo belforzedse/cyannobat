@@ -206,8 +206,9 @@ const Sidebar = () => {
     <GlassSurface
       as="nav"
       aria-label="پیمایش اصلی و اقدامات سریع"
+      interactive={false}
       className={clsx(
-        'fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-xl items-center gap-2 rounded-[20px] px-3 py-2 shadow-lg backdrop-blur animate-fade-in-up',
+        'fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-xl items-center gap-2 rounded-[20px] px-3 py-2 animate-fade-in-up',
         'lg:inset-auto lg:right-4 lg:top-[98px] lg:h-[calc(100vh-150px)] lg:w-[75px] lg:max-w-none lg:flex-col lg:items-center lg:justify-between lg:gap-8 lg:px-2 lg:py-6',
       )}
     >
@@ -216,7 +217,7 @@ const Sidebar = () => {
         {/* Morphing active indicator for mobile */}
         {hasActiveItem && indicatorStyle.mobile.width > 0 && (
           <div
-            className="absolute rounded-2xl bg-gradient-to-br from-accent/20 to-accent/15 backdrop-blur-sm pointer-events-none -z-10"
+            className="absolute rounded-2xl bg-gradient-to-br from-accent/10 to-accent/8 backdrop-blur-sm pointer-events-none -z-10"
             style={{
               left: 0,
               width: `${indicatorStyle.mobile.width}px`,
@@ -226,7 +227,7 @@ const Sidebar = () => {
               transition:
                 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
               boxShadow:
-                '0 4px 12px rgba(65, 119, 172, 0.12), inset 0 1px 2px rgba(255, 255, 255, 0.3)',
+                '0 4px 12px rgba(65, 119, 172, 0.06), inset 0 1px 2px rgba(255, 255, 255, 0.15)',
               willChange: 'transform',
             }}
             aria-hidden
@@ -245,7 +246,7 @@ const Sidebar = () => {
           {/* Morphing active indicator for desktop */}
           {hasActiveMainItem && indicatorStyle.desktop.height > 0 && (
             <div
-              className="absolute rounded-3xl bg-gradient-to-br from-accent/20 to-accent/50 blur-md backdrop-blur-sm pointer-events-none -z-10"
+              className="absolute rounded-3xl bg-gradient-to-br from-accent/10 to-accent/25 blur-md backdrop-blur-sm pointer-events-none -z-10"
               style={{
                 top: 0,
                 height: `${indicatorStyle.desktop.height}px`,
@@ -255,7 +256,7 @@ const Sidebar = () => {
                 transition:
                   'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                 boxShadow:
-                  '0 4px 12px rgba(65, 119, 172, 0.12), inset 0 1px 2px rgba(255, 255, 255, 0.3)',
+                  '0 4px 12px rgba(65, 119, 172, 0.06), inset 0 1px 2px rgba(255, 255, 255, 0.15)',
                 willChange: 'transform',
               }}
               aria-hidden

@@ -7,7 +7,7 @@ import { Card } from '@/components/ui';
 import { type ServiceOption } from '@/lib/booking/types';
 import { luxuryContainer, luxuryPresets, luxurySlideFade } from '@/lib/luxuryAnimations';
 
-const listContainerClasses = 'grid gap-3 sm:grid-cols-2 lg:grid-cols-3';
+const listContainerClasses = 'grid gap-3 sm:grid-cols-2 lg:grid-cols-4';
 
 const ServiceSectionSkeleton = () => (
   <div className={listContainerClasses}>
@@ -61,10 +61,10 @@ const ServiceSection = ({
 
   return (
     <motion.section variants={sectionVariants} {...motionStates}>
-      <Card variant="muted" padding="lg" className="sm:rounded-3xl">
-        <div className="flex flex-col items-end gap-1 text-right sm:gap-2">
-          <h3 className="text-sm font-semibold text-foreground">انتخاب خدمت درمانی</h3>
-          <p className="text-xs leading-6 text-muted-foreground">
+      <Card variant="muted" padding="lg" className="dark:bg-inherit bg-white sm:rounded-3xl">
+        <div className="flex flex-col items-start gap-1 text-right sm:gap-2">
+          <h3 className="text-2xl font-rokh font-extrabold text-[#5C7299]">انتخاب خدمت درمانی</h3>
+          <p className="text-base leading-6 font-medium text-muted-foreground">
             ابتدا یکی از خدمات فعال کلینیک را برگزینید تا زمان‌های آزاد همان خدمت برای شما نمایش
             داده شود. در صورت تغییر خدمت، برنامه زمانی نیز بر اساس انتخاب جدید به‌روز خواهد شد.
           </p>
@@ -103,10 +103,10 @@ const ServiceSection = ({
                     type="button"
                     onClick={() => onSelectService(service.id)}
                     className={clsx(
-                      'flex h-full flex-col items-end gap-2 rounded-2xl border px-4 py-3 text-right',
+                      'flex h-full min-h-[80px] flex-col items-start leading-7 gap-2 rounded-2xl border px-5 py-4 text-right',
                       // Smooth, slow transitions for all properties
                       'transition-all duration-300 ease-out',
-                      'border-white/20 bg-white/55 hover:border-accent/50 hover:bg-white/75',
+                      'border-white/20 bg-gray-100 hover:border-accent/50 hover:bg-slate-200',
                       'dark:border-white/15 dark:bg-black/45 dark:hover:border-accent/40 dark:hover:bg-black/55',
                       isSelected &&
                         'border-accent/70 bg-accent/20 text-accent shadow-[0_18px_42px_-30px_rgba(88,175,192,0.6)] dark:border-accent/40 dark:bg-accent/15',
@@ -114,14 +114,10 @@ const ServiceSection = ({
                     aria-pressed={isSelected}
                     variants={itemVariants}
                   >
-                    <span className="text-sm font-semibold">{service.title}</span>
-                    {service.category ? (
-                      <span className="text-[11px] font-medium text-muted-foreground">
-                        {service.category}
-                      </span>
-                    ) : null}
+                    <span className="text-lg font-bold">{service.title}</span>
+
                     {durationLabel ? (
-                      <span className="text-[11px] text-muted-foreground">
+                      <span className="text-[12px]  text-bold text-muted-foreground">
                         مدت زمان تقریبی: {durationLabel}
                       </span>
                     ) : null}

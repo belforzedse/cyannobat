@@ -1,16 +1,16 @@
 :root {
-  --bg: #e8ecf1;
-  --bg-rgb: 232 236 241;
-  --fg: #2c2d31;
-  --fg-rgb: 44 45 49;
-  --muted: #d9dfe8;
-  --muted-rgb: 217 223 232;
-  --muted-foreground: #6d707a;
-  --muted-foreground-rgb: 109 112 122;
-  --card: #f2f5fa;
-  --card-rgb: 242 245 250;
-  --border: #dde3ec;
-  --border-rgb: 221 227 236;
+  --bg: #e0e8f2;
+  --bg-rgb: 224 232 242;
+  --fg: #1a2535;
+  --fg-rgb: 26 37 53;
+  --muted: #c5d1e0;
+  --muted-rgb: 197 209 224;
+  --muted-foreground: #525f76;
+  --muted-foreground-rgb: 82 95 118;
+  --card: #e8f0f9;
+  --card-rgb: 232 240 249;
+  --border: #d0dce8;
+  --border-rgb: 208 220 232;
   --accent: #3b82f6;
   --accent-rgb: 59 130 246;
   --accent-foreground: #1e293b;
@@ -29,8 +29,8 @@
   --status-error-rgb: 220 38 38;
   --status-info: #2563eb;
   --status-info-rgb: 37 99 235;
-  --glass: #f7f8fa;
-  --glass-rgb: 247 248 250;
+  --glass: #eef3f9;
+  --glass-rgb: 238 243 249;
   --ring: #2563eb;
   --ring-rgb: 37 99 235;
   --shadow-primary: 0 28px 60px -32px rgb(var(--accent-deep-rgb) / 0.25);
@@ -98,18 +98,18 @@
 }
 
 [data-theme='dark'] {
-  --bg: #0a1428;
-  --bg-rgb: 10 20 40;
-  --fg: #dce8f5;
-  --fg-rgb: 220 232 245;
-  --muted: #1a2d52;
-  --muted-rgb: 26 45 82;
-  --muted-foreground: #8a96a8;
-  --muted-foreground-rgb: 138 150 168;
-  --card: #1a2d52;
-  --card-rgb: 26 45 82;
-  --border: #2a4573;
-  --border-rgb: 42 69 115;
+  --bg: #111e33;
+  --bg-rgb: 17 30 51;
+  --fg: #e0eaf7;
+  --fg-rgb: 224 234 247;
+  --muted: #1f3352;
+  --muted-rgb: 31 51 82;
+  --muted-foreground: #8a9aaf;
+  --muted-foreground-rgb: 138 154 175;
+  --card: #1a2d47;
+  --card-rgb: 26 45 71;
+  --border: #2a4060;
+  --border-rgb: 42 64 96;
   --accent: #4b8dd4;
   --accent-rgb: 75 141 212;
   --accent-foreground: #f5f9ff;
@@ -128,8 +128,8 @@
   --status-error-rgb: 248 113 113;
   --status-info: #60a5fa;
   --status-info-rgb: 96 165 250;
-  --glass: #1a2d52e0;
-  --glass-rgb: 26 45 82;
+  --glass: #1b2d47d8;
+  --glass-rgb: 27 45 71;
   --ring: #4a7fd9;
   --ring-rgb: 74 127 217;
   --shadow-primary: 0 26px 62px -32px rgb(var(--accent-deep-rgb) / 0.32);

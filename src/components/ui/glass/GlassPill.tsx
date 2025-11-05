@@ -11,18 +11,18 @@ export interface GlassPillStyleOptions {
 }
 
 const basePillClasses = [
-  'inline-flex items-center justify-center gap-2 rounded-full border border-white/45',
-  'bg-[linear-gradient(145deg,rgba(255,255,255,0.7),rgba(255,255,255,0.4))]',
-  'shadow-[0_14px_32px_-22px_rgba(42,74,125,0.38),inset_0_1px_0_rgba(255,255,255,0.6)]',
-  'backdrop-blur-[16px]',
+  'inline-flex items-center justify-center gap-2 rounded-full border border-white/20',
+  'bg-[linear-gradient(145deg,rgba(230,242,254,0.85),rgba(216,235,250,0.65))]',
+  'shadow-[0_14px_32px_-22px_rgba(42,74,125,0.45),inset_0_1px_0_rgba(224,236,249,0.48),inset_0_8px_16px_rgba(224,236,249,0.22)]',
+  'backdrop-blur-[18px]',
   'transition-[box-shadow,border-color,background,transform] duration-250 ease-glass',
 ].join(' ');
 
 const interactivePillClasses = [
   'cursor-pointer',
-  'hover:border-accent/40',
-  'hover:bg-[linear-gradient(145deg,rgba(255,255,255,0.78),color-mix(in_srgb,var(--accent)_18%,transparent))]',
-  'hover:shadow-[0_22px_42px_-26px_rgba(86,154,222,0.32),0_12px_30px_-20px_rgba(42,74,125,0.32)]',
+  'hover:border-accent/50',
+  'hover:bg-[linear-gradient(145deg,rgba(236,248,254,0.92),rgba(224,242,252,0.75))]',
+  'hover:shadow-[0_22px_42px_-26px_rgba(86,154,222,0.42),0_12px_30px_-20px_rgba(42,74,125,0.38),inset_0_1px_0_rgba(224,236,249,0.56)]',
   'hover:-translate-y-0.5',
 ].join(' ');
 

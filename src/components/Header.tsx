@@ -13,22 +13,9 @@ const Header = () => {
     <GlassSurface
       as="header"
       role="banner"
-      className="sticky top-4 z-30 mx-4 flex items-center justify-between gap-3 rounded-[20px] px-8  text-right shadow-lg shadow-black/5 transition-all duration-300 ease-glass animate-fade-in-down sm:gap-6 sm:px-8  h-[64px] backdrop-blur-md backdrop-saturate-30"
+      interactive={false}
+      className="sticky top-4 z-30 mx-4 flex items-center justify-between gap-3 rounded-[20px] px-8  text-right transition-all duration-300 ease-glass animate-fade-in-down sm:gap-6 sm:px-8  h-[64px]"
     >
-      {/* soft accent glow */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-20 rounded-[20px] bg-gradient-to-br from-accent/5 via-transparent to-accent/5 opacity-50"
-      />
-      {/* hairline sheen */}
-      <div
-        aria-hidden
-        className="
-          pointer-events-none absolute inset-0 -z-10 rounded-[20px]
-          bg-gradient-to-r from-transparent via-white/15 to-transparent
-          opacity-30 dark:via-white/10
-        "
-      />
 
       {/* Logo */}
       <div className="flex items-center gap-2 select-none">

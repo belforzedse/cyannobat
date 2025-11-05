@@ -11,17 +11,17 @@ export type GlassSurfaceStyleOptions = {
 };
 
 const baseSurfaceClasses = [
-  'relative rounded-[2rem] border border-white/3',
-  'bg-[linear-gradient(155deg,rgba(255,255,255,0),rgba(255,255,255,0))]',
-  'shadow-[8px_12px_24px_-12px_#2A4A7D52,_-4px_8px_20px_-16px_#2A4A7D42,_inset_0_1px_2px_#FFFFFF80,_inset_0_-1px_0_#569ADE2E,_0_-12px_40px_-20px_#2A4A7D28]',
-  'backdrop-blur-md backdrop-saturate-[0.3]',
+  'relative rounded-[2rem] border border-white/8',
+  'bg-[linear-gradient(155deg,rgba(224,236,249,0.06),rgba(211,230,245,0.03))]',
+  'shadow-[8px_12px_24px_-12px_#2A4A7D60,_-4px_8px_20px_-16px_#2A4A7D4A,_inset_0_1px_2px_#E0ECF960,_inset_0_-1px_0_#569ADE32,_0_-12px_40px_-20px_#2A4A7D30]',
+  'backdrop-blur-xl backdrop-saturate-[0.3]',
   'transition-[box-shadow,border-color,backdrop-filter,transform] duration-400 ease-glass',
-  "before:absolute before:inset-0 before:rounded-[inherit] before:pointer-events-none before:bg-[linear-gradient(180deg,rgba(255,255,255,0.6)_0%,rgba(255,255,255,0.45)_12%,rgba(255,255,255,0.25)_30%,rgba(255,255,255,0.08)_55%,transparent_100%),radial-gradient(circle_at_0%_0%,rgba(255,255,255,0.45)_0%,transparent_35%),radial-gradient(circle_at_100%_100%,rgba(255,255,255,0.25)_0%,transparent_45%)] before:border before:border-white/3 before:[mask-image:linear-gradient(180deg,white_0%,rgba(255,255,255,0.85)_25%,rgba(255,255,255,0.4)_65%,transparent_100%)] before:content-['']",
-  "after:pointer-events-none after:absolute after:inset-[-2px] after:rounded-[inherit] after:bg-[radial-gradient(480px_280px_at_22%_18%,#569ADE38,transparent_58%),radial-gradient(520px_300px_at_78%_72%,#3684D233,transparent_64%)] after:opacity-0 after:transition-[opacity,filter] after:duration-500 after:ease-glass after:content-['']",
-  'dark:border-transparent dark:bg-transparent',
-  'dark:shadow-[0_26px_84px_-32px_#0A1117C0,inset_0_1px_0_#5B8FD838,inset_0_-1px_0_#0A1117A8]',
-  'dark:before:border-transparent dark:before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(26,47,74,0.08)_55%,transparent_100%)]',
-  'dark:after:bg-[radial-gradient(520px_320px_at_18%_18%,#3B74BE40,transparent_62%),radial-gradient(540px_340px_at_82%_78%,#5B8FD835,transparent_68%)]',
+  "before:absolute before:inset-0 before:rounded-[inherit] before:pointer-events-none before:bg-[linear-gradient(180deg,rgba(230,242,254,0.3)_0%,rgba(224,236,249,0.18)_12%,rgba(216,230,248,0.08)_30%,rgba(211,223,245,0.02)_55%,transparent_100%),radial-gradient(circle_at_0%_0%,rgba(230,242,254,0.18)_0%,transparent_35%),radial-gradient(circle_at_100%_100%,rgba(224,236,249,0.12)_0%,transparent_45%)] before:border before:border-white/6 before:[mask-image:linear-gradient(180deg,white_0%,rgba(255,255,255,0.85)_25%,rgba(255,255,255,0.4)_65%,transparent_100%)] before:content-['']",
+  "after:pointer-events-none after:absolute after:inset-[-2px] after:rounded-[inherit] after:bg-[radial-gradient(480px_280px_at_22%_18%,#569ADE38,transparent_58%),radial-gradient(520px_300px_at_78%_72%,#3684D230,transparent_64%)] after:opacity-0 after:transition-[opacity,filter] after:duration-500 after:ease-glass after:content-['']",
+  'dark:border-white/6 dark:bg-[linear-gradient(155deg,rgba(75,141,212,0.08),rgba(75,141,212,0.04))]',
+  'dark:shadow-[0_26px_84px_-32px_rgba(5,10,20,0.85),inset_0_1px_0_rgba(75,141,212,0.18),inset_0_-1px_0_rgba(5,10,20,0.45)]',
+  'dark:before:border-transparent dark:before:bg-[linear-gradient(180deg,rgba(75,141,212,0.1)_0%,transparent_55%)]',
+  'dark:after:bg-[radial-gradient(520px_320px_at_18%_18%,rgba(58,116,190,0.28),transparent_62%),radial-gradient(540px_340px_at_82%_78%,rgba(75,141,212,0.18),transparent_68%)]',
 ].join(' ');
 
 const interactiveSurfaceClasses = [
