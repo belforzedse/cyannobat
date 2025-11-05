@@ -17,25 +17,25 @@ export interface GlassPanelStyleOptions {
 }
 
 const basePanelClasses = [
-  'relative rounded-[1.5rem] border border-border/45',
-  'bg-[linear-gradient(160deg,color-mix(in_srgb,var(--card)_90%,transparent),color-mix(in_srgb,var(--card)_75%,transparent))]',
-  'shadow-[0_28px_70px_-32px_rgba(42,74,125,0.42)]',
-  'backdrop-blur-[24px] backdrop-saturate-[1.35]',
+  'relative rounded-[1.5rem] border border-border/3',
+  'bg-[linear-gradient(160deg,color-mix(in_srgb,var(--card)_0%,transparent),color-mix(in_srgb,var(--card)_0%,transparent))]',
+  'shadow-[6px_10px_20px_-10px_rgba(42,74,125,0.16),_-3px_6px_16px_-14px_rgba(42,74,125,0.12),_0_-10px_32px_-18px_rgba(42,74,125,0.14),_inset_0_0px_1px_rgba(255,255,255,0.5),_inset_0_8px_16px_rgba(255,255,255,0.35),_inset_0_20px_40px_rgba(255,255,255,0.15),_inset_0_40px_80px_rgba(255,255,255,0.05),_inset_20px_20px_40px_rgba(255,255,255,0.12),_inset_-20px_-20px_40px_rgba(255,255,255,0.02)]',
+  'backdrop-blur-sm backdrop-saturate-[0.28]',
   'transition-[background-color,border-color,box-shadow,transform] duration-350 ease-glass',
   'text-foreground',
+  'dark:shadow-[6px_10px_20px_-10px_rgba(42,74,125,0.16),_-3px_6px_16px_-14px_rgba(42,74,125,0.12),_0_-10px_32px_-18px_rgba(42,74,125,0.14)]',
 ].join(' ');
 
 const variantClasses: Record<GlassPanelVariant, string> = {
   default: '',
   muted:
-    'bg-[linear-gradient(160deg,color-mix(in_srgb,var(--card)_82%,transparent),color-mix(in_srgb,var(--card)_68%,transparent))] dark:bg-[linear-gradient(160deg,color-mix(in_srgb,var(--card)_82%,transparent),color-mix(in_srgb,var(--card)_65%,transparent))] dark:text-[color:var(--muted-foreground)]',
+    'dark:text-[color:var(--muted-foreground)]',
   subtle:
-    'bg-[color-mix(in_srgb,var(--card)_70%,transparent)] dark:bg-[color-mix(in_srgb,var(--card)_60%,transparent)]',
+    '',
   accent: [
-    'border-accent/55',
-    'bg-[linear-gradient(165deg,color-mix(in_srgb,var(--accent)_22%,transparent),color-mix(in_srgb,var(--card)_78%,transparent))]',
+    'border-accent/12',
     'text-[color:var(--fg)]',
-    'dark:bg-[linear-gradient(170deg,color-mix(in_srgb,var(--accent)_22%,transparent),color-mix(in_srgb,var(--card)_74%,transparent))]',
+    'dark:border-accent/5',
     'dark:text-[color:var(--accent-strong)]',
   ].join(' '),
 };
@@ -43,10 +43,10 @@ const variantClasses: Record<GlassPanelVariant, string> = {
 const stateClasses: Record<GlassPanelState, string> = {
   default: '',
   active: [
-    'border-accent/40 shadow-[0_36px_76px_-34px_rgba(86,154,222,0.32)]',
+    'border-accent/20 shadow-[0_36px_76px_-34px_rgba(86,154,222,0.22)]',
     '-translate-y-0.5',
-    'dark:border-accent/50',
-    'dark:shadow-[0_42px_96px_-38px_rgba(75,141,212,0.35)]',
+    'dark:border-accent/8',
+    'dark:shadow-[0_42px_96px_-38px_rgba(75,141,212,0.25)]',
   ].join(' '),
 };
 
@@ -56,9 +56,10 @@ const densityClasses: Record<GlassPanelDensity, string> = {
 };
 
 const darkBaseOverrides = [
-  'dark:border-border/60',
-  'dark:bg-[linear-gradient(160deg,rgba(20,27,40,0.9),rgba(20,27,40,0.72))]',
+  'dark:border-transparent',
+  'dark:bg-[linear-gradient(160deg,rgba(20,27,40,0),rgba(20,27,40,0))]',
   'dark:shadow-[0_36px_90px_-36px_rgba(10,17,23,0.78)]',
+  'dark:backdrop-blur-sm dark:backdrop-saturate-[0.28]',
 ].join(' ');
 
 export const glassPanelStyles = ({

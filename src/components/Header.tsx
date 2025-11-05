@@ -13,7 +13,7 @@ const Header = () => {
     <GlassSurface
       as="header"
       role="banner"
-      className="sticky top-4 z-30 mx-4 flex items-center justify-between gap-3 rounded-[20px] border border-accent px-8 py-4 text-right shadow-lg shadow-black/5 transition-all duration-300 ease-glass animate-fade-in-down sm:gap-6 sm:px-8 sm:py-4 backdrop-blur-md backdrop-saturate-30"
+      className="sticky top-4 z-30 mx-4 flex items-center justify-between gap-3 rounded-[20px] px-8 py-4 text-right shadow-lg shadow-black/5 transition-all duration-300 ease-glass animate-fade-in-down sm:gap-6 sm:px-8 sm:py-4 backdrop-blur-md backdrop-saturate-30"
     >
       {/* soft accent glow */}
       <div
@@ -41,7 +41,7 @@ const Header = () => {
         <button
           type="button"
           aria-label="اعلان‌ها"
-          className="group relative flex h-[40px] w-[48px] items-center justify-center overflow-hidden rounded-full border border-white/20 bg-white/30 text-foreground shadow-sm backdrop-blur-xl transition-all duration-300 ease-glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-black/80"
+          className="group relative flex h-[40px] w-[48px] items-center justify-center overflow-hidden rounded-full border border-white/20 bg-white text-foreground shadow-sm backdrop-blur-xl transition-all duration-300 ease-glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-black/80"
         >
           <span className="sr-only">اعلان‌ها</span>
           <Bell className="h-5 w-5" aria-hidden="true" />

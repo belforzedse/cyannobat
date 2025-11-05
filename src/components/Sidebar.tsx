@@ -208,7 +208,7 @@ const Sidebar = () => {
       aria-label="پیمایش اصلی و اقدامات سریع"
       className={clsx(
         'fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-xl items-center gap-2 rounded-[20px] px-3 py-2 shadow-lg backdrop-blur animate-fade-in-up',
-        'lg:inset-auto lg:right-4 lg:top-[90px] lg:h-[calc(100vh-150px)] lg:w-[75px] lg:max-w-none lg:flex-col lg:items-center lg:justify-between lg:gap-8 lg:px-2 lg:py-6',
+        'lg:inset-auto lg:right-4 lg:top-[98px] lg:h-[calc(100vh-150px)] lg:w-[75px] lg:max-w-none lg:flex-col lg:items-center lg:justify-between lg:gap-8 lg:px-2 lg:py-6',
       )}
     >
       {/* Mobile Navigation */}

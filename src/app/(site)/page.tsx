@@ -168,14 +168,16 @@ const HeroPage = () => {
     px-8 pb-16 pt-16 text-right sm:px-12 lg:order-1 lg:px-20
 
     /* LIGHT */
-    bg-[linear-gradient(145deg,#EEF3FA_0%,#E5EDF9_45%,#D6E2F5_100%)]
-    ring-1 ring-slate-900/5 border border-slate-200
-    shadow-[0_16px_44px_-28px_rgba(16,24,40,0.22),inset_0_1px_0_rgba(255,255,255,0.6)]
+    bg-[linear-gradient(145deg,rgba(240,241,243,0),rgba(235,240,247,0))]
+    ring-1 ring-slate-900/5 border border-slate-200/15
+    shadow-[10px_14px_32px_-14px_rgba(16,24,40,0.1),_-6px_10px_28px_-18px_rgba(16,24,40,0.08),_0_-14px_48px_-22px_rgba(16,24,40,0.1),_inset_0_0px_1px_rgba(255,255,255,0.5),_inset_0_12px_24px_rgba(255,255,255,0.35),_inset_0_30px_60px_rgba(255,255,255,0.15),_inset_0_60px_120px_rgba(255,255,255,0.05),_inset_28px_28px_56px_rgba(255,255,255,0.15),_inset_-28px_-28px_56px_rgba(255,255,255,0.04)]
+    backdrop-blur-md backdrop-saturate-[0.3]
 
     /* DARK */
-    dark:bg-[linear-gradient(145deg,hsl(222,30%,16%),hsl(219,36%,22%))]
+    dark:bg-[linear-gradient(145deg,rgba(20,27,40,0),rgba(20,27,40,0))]
     dark:ring-white/10 dark:border-white/10
-    dark:shadow-[0_22px_60px_-24px_rgba(10,14,20,0.9),inset_0_1px_0_rgba(255,255,255,0.06)]
+    dark:shadow-[0_22px_60px_-24px_rgba(10,14,20,0.9)]
+    dark:backdrop-blur-md dark:backdrop-saturate-[0.3]
   "
         >
           {/* top highlight */}
@@ -217,7 +219,6 @@ const HeroPage = () => {
               className="
         pointer-events-none absolute -right-12 -top-10 h-auto w-[600px]
         sm:w-[620px] lg:w-[640px]
-        drop-shadow-[0_18px_60px_rgba(6,12,20,0.35)]
         dark:drop-shadow-[0_18px_60px_rgba(6,12,20,0.55)]
       "
             />
