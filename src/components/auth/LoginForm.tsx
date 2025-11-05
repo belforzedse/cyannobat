@@ -41,11 +41,13 @@ const LoginForm = ({
         throw new Error(result.message ?? 'ورود ناموفق بود.');
       }
 
-      const result = (await response.json()) as { user: { roles?: string[] } };
-      const roles = Array.isArray(result.user?.roles) ? result.user.roles : [];
-      const isStaff = roles.some((role) =>
-        staffRoles.includes(role as (typeof staffRoles)[number]),
-      );
+      const result = (await response.json()) as { user?: { roles?: string[] }; isStaff?: boolean };
+
+      // Use isStaff flag from API response (more reliable than recalculating)
+      const isStaff = result.isStaff ?? false;
+
+      console.log('Login response:', { user: result.user, isStaff, roles: result.user?.roles });
+      console.log('Redirecting to:', isStaff ? redirectToStaff : redirectToAccount);
 
       window.location.href = isStaff ? redirectToStaff : redirectToAccount;
     } catch (error) {

@@ -57,7 +57,7 @@ export const POST = async (request: Request) => {
       data: loginData,
     })) as StaffLoginResult;
 
-    const authUser = auth.user as PayloadRequest['user'];
+    let authUser = auth.user as PayloadRequest['user'];
 
     if (!authUser) {
       return NextResponse.json(
@@ -65,6 +65,13 @@ export const POST = async (request: Request) => {
         { status: 401 },
       );
     }
+
+    // Ensure roles are loaded (depth=1 to get the full user object with all fields)
+    authUser = (await payload.findByID({
+      collection: 'users',
+      id: String(authUser.id),
+      depth: 0,
+    })) as PayloadRequest['user'];
 
     const roles = extractRoles(authUser);
 

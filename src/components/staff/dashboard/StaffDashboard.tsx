@@ -11,11 +11,6 @@ import { Card } from '@/components/ui';
 import ProviderAvailabilityEditor from '@/components/staff/ProviderAvailabilityEditor';
 import StaffUserCreationCard from '@/components/staff/StaffUserCreationCard';
 import { getRoleLabel } from '@/lib/staff/utils/roleLabels';
-import CalendarView from '@/app/(payload)/staff/(dashboard)/CalendarView';
-import PrivateNotesPanel from '@/app/(payload)/staff/(dashboard)/PrivateNotesPanel';
-import DocumentPreviewPanel from '@/app/(payload)/staff/(dashboard)/DocumentPreviewPanel';
-import PrescriptionActions from '@/app/(payload)/staff/(dashboard)/PrescriptionActions';
-import ThemeCustomizer from '@/app/(payload)/staff/(dashboard)/ThemeCustomizer';
 import type { DashboardAnalytics } from '@/lib/staff/server/loadStaffData';
 
 import { AppointmentsList } from './AppointmentsList';

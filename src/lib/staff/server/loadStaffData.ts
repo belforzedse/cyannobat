@@ -168,7 +168,10 @@ export const loadStaffDashboardData = async (
   roles: string[],
   options: LoadDashboardDataOptions = {},
 ): Promise<LoadDashboardDataResult> => {
-  const now = new Date().toISOString();
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const nowISO = now.toISOString();
+
   const filterByProvider =
     options.scope === 'doctor'
       ? true
@@ -200,7 +203,7 @@ export const loadStaffDashboardData = async (
 
   const baseWhere: Where = {
     'schedule.start': {
-      greater_than_equal: now,
+      greater_than_equal: thirtyDaysAgo,
     },
   };
 

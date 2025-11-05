@@ -1,8 +1,10 @@
 import { DateTime } from 'luxon';
 import type { Payload } from 'payload';
+import { sql } from 'drizzle-orm';
 
 import type { Appointment, Provider, Service } from '@/payload-types';
 import { bookingHold } from '../redis';
+import { payloadDrizzle } from '@payload-config';
 
 type AvailabilitySlotKind = 'in_person' | 'virtual';
 
@@ -187,13 +189,14 @@ export const generateAvailability = async (
     where: serviceWhere,
     limit: 200,
     pagination: false,
-    depth: 0,
+    depth: 1,
   });
 
   const serviceMap = new Map<string, Service>();
   for (const service of services) {
-    if (service && typeof service.id === 'string') {
-      serviceMap.set(service.id, service);
+    if (service && service.id) {
+      const serviceId = String(service.id);
+      serviceMap.set(serviceId, service);
     }
   }
 
@@ -213,18 +216,81 @@ export const generateAvailability = async (
       }
     : undefined;
 
-  const { docs: providers } = await payload.find({
-    collection: 'providers',
-    where: providerWhere,
-    limit: 200,
-    pagination: false,
-    depth: 0,
-  });
+  let providers = (
+    await payload.find({
+      collection: 'providers',
+      where: providerWhere,
+      limit: 200,
+      pagination: false,
+      depth: 1,
+    })
+  ).docs as Provider[];
+
+  // Manually populate availability windows since Payload doesn't auto-populate nested arrays
+  // This is a known limitation - we need to fetch them separately and attach to each provider
+  if (providers.length > 0) {
+    try {
+      // Get all availability windows for the fetched providers
+      const providerIds = providers.map((p) => p.id);
+      const windowsResult = await payloadDrizzle.execute(
+        sql`
+          SELECT _parent_id as provider_id, day, start_time as "startTime", end_time as "endTime"
+          FROM providers_availability_windows
+          WHERE _parent_id = ANY(${providerIds})
+          ORDER BY _parent_id, _order
+        `,
+      );
+
+      // Group windows by provider
+      const windowsByProvider = new Map<number, Array<{ day: string; startTime: string; endTime: string }>>();
+      for (const row of windowsResult) {
+        const pid = Number(row.provider_id);
+        if (!windowsByProvider.has(pid)) {
+          windowsByProvider.set(pid, []);
+        }
+        windowsByProvider.get(pid)!.push({
+          day: row.day,
+          startTime: row.startTime,
+          endTime: row.endTime,
+        });
+      }
+
+      // Attach windows to each provider
+      for (const provider of providers) {
+        if (!provider.availability) {
+          provider.availability = {};
+        }
+        provider.availability.windows = windowsByProvider.get(provider.id) ?? [];
+      }
+    } catch (error) {
+      payload.logger.warn?.('Failed to fetch availability windows, continuing without them', error);
+    }
+  }
+
+  // Build a map of provider IDs to their services
+  // Since services list their providers (not vice versa), we need to build this from the service side
+  const providerServiceMap = new Map<string, Service[]>();
+  for (const [, service] of serviceMap) {
+    const relations = Array.isArray(service.providers)
+      ? service.providers
+      : service.providers
+        ? [service.providers]
+        : [];
+
+    for (const relation of relations) {
+      const providerId = resolveRelationshipId(relation);
+      if (!providerId) continue;
+      const list = providerServiceMap.get(providerId) ?? [];
+      list.push(service);
+      providerServiceMap.set(providerId, list);
+    }
+  }
 
   const providerDocs: Provider[] = [];
   for (const provider of providers) {
-    if (!provider || typeof provider.id !== 'string') continue;
-    const relevantServices = collectProviderServices(provider, serviceMap);
+    if (!provider || typeof provider.id === 'undefined') continue;
+    const providerId = String(provider.id);
+    const relevantServices = providerServiceMap.get(providerId) ?? [];
     if (relevantServices.length === 0) continue;
     providerDocs.push(provider);
   }
