@@ -2,7 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/primitives/Button';
 
 export type PrivateNote = {
   id: string;

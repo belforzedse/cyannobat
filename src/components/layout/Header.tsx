@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import ThemeToggle from './ThemeToggle';
+import { ThemeToggle } from '@/components/theme';
 import { BOOKING_PATH } from '@/lib/routes';
 import Logo from './Logo';
-import AccountWidget from './AccountWidget';
+import AccountWidget from '../AccountWidget';
 import { GlassSurface, GlassPill } from '@/components/ui/glass';
 import { ArrowLeft, Bell } from 'lucide-react';
 

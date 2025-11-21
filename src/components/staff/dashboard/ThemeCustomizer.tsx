@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/primitives/Button';
 
 export type ThemePreferences = {
   colorScheme: 'system' | 'light' | 'dark' | 'high-contrast';

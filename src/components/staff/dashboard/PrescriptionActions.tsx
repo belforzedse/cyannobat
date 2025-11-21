@@ -2,7 +2,7 @@
 
 import { FormEvent, useCallback, useState } from 'react';
 
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/primitives/Button';
 
 export type PrescriptionFormValues = {
   medication: string;

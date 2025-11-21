@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import clsx from 'clsx';
 import { type ProgressStepWithStatus } from '@/lib/booking/types';
-import GlassCard from '../GlassCard';
+import { GlassCard } from '@/components/ui/glass';
 import { GlassChip } from '../ui';
 
 type BookingStepperProps = {

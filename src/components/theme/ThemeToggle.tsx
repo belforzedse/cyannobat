@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { liquidSpring, rippleEffect } from '@/lib/animations';
+import { liquidSpring, rippleEffect } from '@/lib/animation';
 
 const ThemeToggle = () => {
   const { resolvedTheme, setTheme } = useTheme();

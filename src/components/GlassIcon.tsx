@@ -4,7 +4,7 @@ import React from 'react';
 import { motion, useReducedMotion, type HTMLMotionProps } from 'framer-motion';
 import clsx from 'clsx';
 import type { LucideIcon } from 'lucide-react';
-import { liquidSpring } from '@/lib/animations';
+import { liquidSpring } from '@/lib/animation';
 
 interface GlassIconProps extends Omit<HTMLMotionProps<'div'>, 'children'> {
   /** Lucide icon component to render */

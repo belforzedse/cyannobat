@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import SchedulePicker from '@/components/SchedulePicker';
 import { Card } from '@/components/ui';
 import { type AvailabilityDay, type AvailabilitySlot } from '@/lib/booking/types';
-import { luxuryPresets } from '@/lib/luxuryAnimations';
+import { luxuryPresets } from '@/lib/animation';
 
 type ScheduleSectionProps = {
   availability: AvailabilityDay[];

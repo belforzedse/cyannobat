@@ -27,3 +27,9 @@ export {
   type GlassPillStyleOptions,
   glassPillStyles,
 } from './GlassPill';
+export {
+  GlassCard,
+  type GlassCardProps,
+  type GlassCardVariant,
+} from './GlassCard';
+export { default as GlassCardDefault } from './GlassCard';

@@ -5,7 +5,7 @@ import clsx from 'clsx';
 
 import { Card } from '@/components/ui';
 import { type CustomerInfo } from '@/lib/booking/types';
-import { luxuryContainer, luxuryPresets, luxurySlideFade } from '@/lib/luxuryAnimations';
+import { luxuryContainer, luxuryPresets, luxurySlideFade } from '@/lib/animation';
 
 type BookingSummaryProps = {
   prefersReducedMotion: boolean | null;

@@ -11,14 +11,14 @@
  * ```
  */
 
-// Form components
-export { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from './Button';
+// Form components (primitives)
+export { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from './primitives/Button';
 export { FieldShell, type FieldShellProps } from './FieldShell';
-export { Input, type InputProps } from './Input';
-export { Textarea, type TextareaProps } from './Textarea';
-export { Select, type SelectProps, type SelectOption } from './Select';
-export { Checkbox, type CheckboxProps, type CheckboxTone, type CheckboxSize } from './Checkbox';
-export { Switch, type SwitchProps, type SwitchSize, type SwitchTone } from './Switch';
+export { Input, type InputProps } from './primitives/Input';
+export { Textarea, type TextareaProps } from './primitives/Textarea';
+export { Select, type SelectProps, type SelectOption } from './primitives/Select';
+export { Checkbox, type CheckboxProps, type CheckboxTone, type CheckboxSize } from './primitives/Checkbox';
+export { Switch, type SwitchProps, type SwitchSize, type SwitchTone } from './primitives/Switch';
 
 // Layout components
 export { Card, type CardProps, type CardVariant } from './Card';

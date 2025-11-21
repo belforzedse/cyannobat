@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
-import Header from '@/components/Header';
-import Sidebar from '@/components/Sidebar';
-import ThemeProvider from '@/components/ThemeProvider';
+import { Header, Sidebar } from '@/components/layout';
+import { ThemeProvider } from '@/components/theme';
 
 
 export const metadata = {

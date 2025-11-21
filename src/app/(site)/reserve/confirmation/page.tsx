@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { getPayload } from 'payload';
 
 import configPromise from '@payload-config';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/primitives/Button';
 import type { Appointment, Provider as ProviderDoc, Service } from '@/payload-types';
 
 export const dynamic = 'force-dynamic';

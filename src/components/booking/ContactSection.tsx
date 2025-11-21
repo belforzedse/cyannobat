@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 
 import { Input, Textarea, Card } from '@/components/ui';
-import { luxuryContainer, luxuryPresets, luxurySlideFade } from '@/lib/luxuryAnimations';
+import { luxuryContainer, luxuryPresets, luxurySlideFade } from '@/lib/animation';
 import { type CustomerInfo } from '@/lib/booking/types';
 
 type ContactSectionProps = {

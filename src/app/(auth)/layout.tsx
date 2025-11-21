@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import ThemeProvider from '@/components/ThemeProvider';
+import { ThemeProvider } from '@/components/theme';
 import { GlassSurface } from '@/components/ui/glass';
 
 const AuthLayout = ({ children }: { children: ReactNode }) => {

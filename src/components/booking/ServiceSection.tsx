@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 
 import { Card } from '@/components/ui';
 import { type ServiceOption } from '@/lib/booking/types';
-import { luxuryContainer, luxuryPresets, luxurySlideFade } from '@/lib/luxuryAnimations';
+import { luxuryContainer, luxuryPresets, luxurySlideFade } from '@/lib/animation';
 
 const listContainerClasses = 'grid gap-3 sm:grid-cols-2 lg:grid-cols-4';
 

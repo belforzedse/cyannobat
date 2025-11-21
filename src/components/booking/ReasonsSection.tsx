@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { motion, useReducedMotion } from 'framer-motion';
 
 import { Card, Textarea } from '@/components/ui';
-import { luxuryContainer, luxuryPresets, luxurySlideFade } from '@/lib/luxuryAnimations';
+import { luxuryContainer, luxuryPresets, luxurySlideFade } from '@/lib/animation';
 import { type ReasonOption } from '@/lib/booking/types';
 
 type ReasonsSectionProps = {

@@ -21,8 +21,7 @@ import {
   useGlobalLoadingOverlay,
 } from '@/components/GlobalLoadingOverlayProvider';
 import { useToast } from '@/components/ui';
-import GlassCard from '@/components/GlassCard';
-import { GlassPanel } from '../../../components/ui/glass/GlassPanel';
+import { GlassCard, GlassPanel } from '@/components/ui/glass';
 
 const BookingPageContent = () => {
   const reducedMotionSetting = useReducedMotion();

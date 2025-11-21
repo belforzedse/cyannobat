@@ -3,17 +3,26 @@
 import type { ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import clsx from 'clsx';
-import { luxuryPresets } from '@/lib/luxuryAnimations';
+import { luxuryPresets } from '@/lib/animation';
 import { GlassSurface } from '@/components/ui/glass';
 
-interface GlassCardProps {
+export type GlassCardVariant = 'primary' | 'secondary' | 'muted';
+
+export interface GlassCardProps {
   title?: string;
   description?: string;
   children?: ReactNode;
   className?: string;
+  variant?: GlassCardVariant;
 }
 
-const GlassCard = ({ title, description, children, className }: GlassCardProps) => {
+const variantStyles: Record<GlassCardVariant, string> = {
+  primary: 'bg-gradient-to-br from-white/80 to-white/60 dark:from-white/10 dark:to-white/5 border-white/30 dark:border-white/10',
+  secondary: 'bg-gradient-to-br from-accent/20 to-accent/10 dark:from-accent/15 dark:to-accent/5 border-accent/30 dark:border-accent/20',
+  muted: 'bg-gradient-to-br from-white/60 to-white/40 dark:from-white/5 dark:to-white/2 border-white/20 dark:border-white/5',
+};
+
+const GlassCard = ({ title, description, children, className, variant = 'primary' }: GlassCardProps) => {
   const shouldReduceMotion = useReducedMotion();
 
   // Simplified entrance animation only (no hover for performance)
@@ -28,8 +37,10 @@ const GlassCard = ({ title, description, children, className }: GlassCardProps) 
       viewport={{ once: true, margin: '-50px' }}
       variants={cardVariants}
       className={clsx(
-        'relative overflow-hidden p-6 text-right group',
+        'relative overflow-hidden p-6 text-right group border',
         'transition-transform duration-300 ease-out hover:-translate-y-1',
+        'shadow-lg hover:shadow-xl',
+        variantStyles[variant],
         className,
       )}
     >
@@ -80,3 +91,4 @@ const GlassCard = ({ title, description, children, className }: GlassCardProps) 
 };
 
 export default GlassCard;
+export { GlassCard };
