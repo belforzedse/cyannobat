@@ -3,7 +3,7 @@
 import React, { InputHTMLAttributes, forwardRef, useId } from 'react';
 import clsx from 'clsx';
 
-import { FieldShell } from './FieldShell';
+import { FieldShell } from '../FieldShell';
 
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string;

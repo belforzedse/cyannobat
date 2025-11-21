@@ -6,7 +6,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
 
-import { glassPillStyles } from './glass';
+import { glassPillStyles } from '@/components/ui/glass';
 
 const buttonToneStyles = {
   primary: {

@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import clsx from 'clsx';
 import { luxuryPresets } from '@/lib/animation';
-import { GlassSurface } from '@/components/ui/glass';
+import { GlassSurface } from './GlassSurface';
 
 export type GlassCardVariant = 'primary' | 'secondary' | 'muted';
 
