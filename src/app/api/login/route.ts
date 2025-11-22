@@ -1,22 +1,10 @@
 import { NextResponse } from 'next/server';
-import { getPayload, type PayloadRequest } from 'payload';
-
-import configPromise from '@payload-config';
-import { extractRoles, userIsStaff } from '@/lib/auth';
-
-type StaffLoginResult = {
-  user: PayloadRequest['user'] | null;
-  token?: string;
-  exp?: number;
-  refreshToken?: string;
-  refreshTokenExpiration?: number;
-};
+import { strapi } from '@/lib/strapi';
+import { extractStrapiRoles, userIsStrapiStaff, type StrapiUser } from '@/lib/strapi';
 
 export const dynamic = 'force-dynamic';
 
 export const POST = async (request: Request) => {
-  const payload = await getPayload({ config: configPromise });
-
   let body: unknown;
   try {
     body = await request.json();
@@ -47,69 +35,46 @@ export const POST = async (request: Request) => {
   }
 
   try {
-    const loginData: { email: string; username?: string; password: string } =
-      trimmedIdentifier.includes('@')
-        ? { email: trimmedIdentifier, password }
-        : { email: trimmedIdentifier, username: trimmedIdentifier, password };
+    // Strapi accepts identifier (email or username) and password
+    const auth = await strapi.login(trimmedIdentifier, password);
 
-    const auth = (await payload.login({
-      collection: 'users',
-      data: loginData,
-    })) as StaffLoginResult;
-
-    let authUser = auth.user as PayloadRequest['user'];
-
-    if (!authUser) {
+    if (!auth.user) {
       return NextResponse.json(
         { message: 'ورود ناموفق بود. ایمیل یا شماره تلفن یا رمز عبور را بررسی کنید.' },
         { status: 401 },
       );
     }
 
-    // Ensure roles are loaded (depth=1 to get the full user object with all fields)
-    authUser = (await payload.findByID({
-      collection: 'users',
-      id: String(authUser.id),
-      depth: 0,
-    })) as PayloadRequest['user'];
+    // Fetch full user with populated role
+    const authUser = await strapi.findByID<StrapiUser>('users', auth.user.id, {
+      populate: ['role'],
+    });
 
-    const roles = extractRoles(authUser);
+    const roles = extractStrapiRoles(authUser);
 
     const response = NextResponse.json({
       user: { id: String(authUser.id), email: authUser.email ?? '', roles },
-      isStaff: userIsStaff(authUser),
+      isStaff: userIsStrapiStaff(authUser),
     });
 
     const secureCookies = process.env.NODE_ENV === 'production';
 
-    if (auth.token) {
-      response.cookies.set('payload-token', auth.token, {
+    if (auth.jwt) {
+      // Strapi JWT doesn't have explicit expiration in the response,
+      // but typically expires in 7 days. We'll set a reasonable expiration.
+      const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+      response.cookies.set('jwt', auth.jwt, {
         path: '/',
         httpOnly: true,
         sameSite: 'lax',
         secure: secureCookies,
-        ...(auth.exp ? { expires: new Date(auth.exp * 1000) } : {}),
-      });
-    }
-
-    if (auth.refreshToken) {
-      const rtExp = auth.refreshTokenExpiration ?? undefined;
-      response.cookies.set('payload-refresh-token', auth.refreshToken, {
-        path: '/',
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: secureCookies,
-        ...(rtExp
-          ? {
-              expires: new Date(rtExp > 1_000_000_000_000 ? rtExp : rtExp * 1000),
-            }
-          : {}),
+        expires,
       });
     }
 
     return response;
   } catch (error) {
-    payload.logger.warn?.('Failed login attempt', error);
+    console.warn('Failed login attempt', error);
     return NextResponse.json(
       { message: 'ورود ناموفق بود. ایمیل یا شماره تلفن یا رمز عبور را بررسی کنید.' },
       { status: 401 },
