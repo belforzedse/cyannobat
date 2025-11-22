@@ -1,41 +1,23 @@
 import { NextResponse } from 'next/server';
-import { getPayload } from 'payload';
-import type { Payload } from 'payload';
-
-import configPromise from '@payload-config';
-import { userIsStaff } from '@/lib/auth';
+import { authenticateStrapiRequest, userIsStrapiStaff, type StrapiUser } from '@/lib/strapi';
 
 type StaffAuthResult =
   | {
-      payload: Payload;
-      user: NonNullable<Awaited<ReturnType<Payload['auth']>>['user']>;
+      user: StrapiUser;
     }
   | {
-      payload: Payload;
       user: null;
     };
 
 export const authenticateStaffRequest = async (request: Request): Promise<StaffAuthResult> => {
-  const payload = await getPayload({
-    config: configPromise,
-  });
+  const authResult = await authenticateStrapiRequest(request);
+  const user = authResult.user;
 
-  let user: Awaited<ReturnType<Payload['auth']>>['user'] = null;
-
-  try {
-    const authResult = await payload.auth({
-      headers: request.headers,
-    });
-    user = authResult?.user ?? null;
-  } catch (error) {
-    payload.logger.warn?.('Failed to authenticate request', error);
+  if (!user || !userIsStrapiStaff(user)) {
+    return { user: null };
   }
 
-  if (!user || !userIsStaff(user)) {
-    return { payload, user: null };
-  }
-
-  return { payload, user };
+  return { user };
 };
 
 export const unauthorizedResponse = () =>

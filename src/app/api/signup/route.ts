@@ -1,20 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getPayload, type PayloadRequest } from 'payload';
-
-import configPromise from '@payload-config';
-import { extractRoles, userIsStaff } from '@/lib/auth';
+import { strapi, extractStrapiRoles, userIsStrapiStaff, type StrapiUser } from '@/lib/strapi';
 import {
   isValidIranNationalId,
   normalizeIranNationalIdDigits,
 } from '@/lib/validators/iran-national-id';
-
-type AuthResult = {
-  user: PayloadRequest['user'] | null;
-  token?: string;
-  exp?: number;
-  refreshToken?: string;
-  refreshTokenExpiration?: number;
-};
 
 const iranPhoneRegex = /^(\+98|0)?9\d{9}$/;
 
@@ -111,40 +100,22 @@ const parseBody = async (
   };
 };
 
-const setAuthCookies = (response: NextResponse, auth: AuthResult) => {
+const setAuthCookies = (response: NextResponse, jwt: string) => {
   const secureCookies = process.env.NODE_ENV === 'production';
+  const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
-  if (auth.token) {
-    response.cookies.set('payload-token', auth.token, {
-      path: '/',
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: secureCookies,
-      ...(auth.exp ? { expires: new Date(auth.exp * 1000) } : {}),
-    });
-  }
-
-  if (auth.refreshToken) {
-    const rtExp = auth.refreshTokenExpiration ?? undefined;
-    response.cookies.set('payload-refresh-token', auth.refreshToken, {
-      path: '/',
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: secureCookies,
-      ...(rtExp
-        ? {
-            expires: new Date(rtExp > 1_000_000_000_000 ? rtExp : rtExp * 1000),
-          }
-        : {}),
-    });
-  }
+  response.cookies.set('jwt', jwt, {
+    path: '/',
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: secureCookies,
+    expires,
+  });
 };
 
 export const dynamic = 'force-dynamic';
 
 export const POST = async (request: Request) => {
-  const payload = await getPayload({ config: configPromise });
-
   const parsed = await parseBody(request);
 
   if (parsed instanceof NextResponse) {
@@ -154,25 +125,26 @@ export const POST = async (request: Request) => {
   const { name, phone, password, nationalId, email } = parsed;
 
   try {
-    const existing = await payload.find({
-      collection: 'users',
-      where: {
+    // Check for existing user by phone
+    const existing = await strapi.find<StrapiUser>('users', {
+      filters: {
         phone: {
-          equals: phone,
+          $eq: phone,
         },
       },
-      limit: 1,
-      depth: 0,
+      pagination: {
+        limit: 1,
+      },
     });
 
-    if (existing.docs.length > 0) {
+    if (existing.data.length > 0) {
       return NextResponse.json(
         { message: 'A user with that phone already exists' },
         { status: 409 },
       );
     }
   } catch (error) {
-    payload.logger.error?.('Failed to check for existing user by phone', error);
+    console.error('Failed to check for existing user by phone', error);
     return NextResponse.json(
       { message: 'Unable to process signup request at this time.' },
       { status: 500 },
@@ -180,53 +152,53 @@ export const POST = async (request: Request) => {
   }
 
   try {
-    const existingByNationalId = await payload.find({
-      collection: 'users',
-      where: {
+    // Check for existing user by national ID
+    const existingByNationalId = await strapi.find<StrapiUser>('users', {
+      filters: {
         nationalId: {
-          equals: nationalId,
+          $eq: nationalId,
         },
       },
-      limit: 1,
-      depth: 0,
+      pagination: {
+        limit: 1,
+      },
     });
 
-    if (existingByNationalId.docs.length > 0) {
+    if (existingByNationalId.data.length > 0) {
       return NextResponse.json(
         { message: 'A user with that national ID already exists' },
         { status: 409 },
       );
     }
   } catch (error) {
-    payload.logger.error?.('Failed to check for existing user by national ID', error);
+    console.error('Failed to check for existing user by national ID', error);
     return NextResponse.json(
       { message: 'Unable to process signup request at this time.' },
       { status: 500 },
     );
   }
 
-  let createdUser: PayloadRequest['user'] | null = null;
+  let authResult;
 
   try {
-    const created = await payload.create({
-      collection: 'users',
-      data: {
-        email: email ?? '',
+    // Strapi register creates user and returns JWT + user
+    // Use phone as username, email if provided
+    authResult = await strapi.register(
+      phone, // username
+      email ?? `${phone}@temp.local`, // email (required by Strapi)
+      password,
+      {
         name,
         phone,
         nationalId,
-        username: phone,
-        roles: ['patient'],
-        password,
+        // Note: roles assignment may need to be done via Strapi admin API
+        // or configured in Strapi's user-permissions plugin
       },
-      overrideAccess: true,
-    } as Parameters<typeof payload.create>[0]);
-
-    createdUser = created as PayloadRequest['user'];
+    );
   } catch (error) {
-    payload.logger.error?.('Failed to create user during signup', error);
+    console.error('Failed to create user during signup', error);
 
-    if (error instanceof Error && /duplicate key value|already exists/i.test(error.message)) {
+    if (error instanceof Error && /duplicate|already exists/i.test(error.message)) {
       return NextResponse.json(
         { message: 'A user with that phone already exists' },
         { status: 409 },
@@ -236,58 +208,30 @@ export const POST = async (request: Request) => {
     return NextResponse.json({ message: 'Failed to create user account.' }, { status: 500 });
   }
 
-  let auth: AuthResult | null = null;
-
-  try {
-    auth = (await payload.login({
-      collection: 'users',
-      data: {
-        email: phone,
-        username: phone,
-        password,
-      },
-    })) as AuthResult;
-  } catch (error) {
-    payload.logger.error?.('Failed to authenticate user after signup', error);
-
-    if (createdUser?.email) {
-      try {
-        auth = (await payload.login({
-          collection: 'users',
-          data: {
-            email: createdUser.email,
-            password,
-          },
-        })) as AuthResult;
-      } catch (fallbackError) {
-        payload.logger.error?.('Signup login fallback with email failed', fallbackError);
-      }
-    }
-  }
-
-  const authUser = auth?.user;
-
-  if (!authUser) {
+  if (!authResult.user) {
     return NextResponse.json({ message: 'Failed to authenticate new user.' }, { status: 500 });
   }
 
-  const ensuredAuthUser = authUser as NonNullable<PayloadRequest['user']>;
-  const roles = extractRoles(ensuredAuthUser);
+  // Fetch full user with populated role
+  const authUser = await strapi.findByID<StrapiUser>('users', authResult.user.id, {
+    populate: ['role'],
+  });
+
+  const roles = extractStrapiRoles(authUser);
 
   const response = NextResponse.json({
     user: {
-      id: String(ensuredAuthUser.id),
-      name: typeof ensuredAuthUser.name === 'string' ? ensuredAuthUser.name : '',
-      phone:
-        typeof (ensuredAuthUser as { phone?: unknown }).phone === 'string'
-          ? ensuredAuthUser.phone
-          : '',
+      id: String(authUser.id),
+      name: authUser.name ?? '',
+      phone: authUser.phone ?? '',
       roles,
     },
-    isStaff: userIsStaff(ensuredAuthUser),
+    isStaff: userIsStrapiStaff(authUser),
   });
 
-  setAuthCookies(response, auth as AuthResult);
+  if (authResult.jwt) {
+    setAuthCookies(response, authResult.jwt);
+  }
 
   return response;
 };
